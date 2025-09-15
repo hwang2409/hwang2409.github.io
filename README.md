@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Henry's Personal Website
 
-## Getting Started
+A minimal, clean personal website built with Next.js and deployed on GitHub Pages.
 
-First, run the development server:
+## Features
 
+- **Next.js 15**: Modern React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first CSS framework for rapid styling
+- **Minimal Design**: Clean, light interface with focus on content
+- **Responsive**: Works well on desktop, tablet, and mobile devices
+- **Fast Loading**: Optimized for performance with static export
+- **GitHub Pages Ready**: Configured for automatic deployment
+
+## Technologies Used
+
+- Next.js 15 with App Router
+- TypeScript
+- Tailwind CSS v4
+- React 19
+- GitHub Actions for CI/CD
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Getting Started
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/personal.git
+cd personal
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+### Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run export` - Build and export static files
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### GitHub Pages (Automatic)
 
-## Deploy on Vercel
+1. Push your code to the `main` branch
+2. The GitHub Action will automatically build and deploy to GitHub Pages
+3. Your site will be available at `https://yourusername.github.io/repository-name`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Manual Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Build the project:
+```bash
+npm run build
+```
+
+2. The static files will be in the `out` directory
+3. Upload the contents of `out` to your web server
+
+## Customization
+
+### Update Personal Information
+
+Edit the component files in `src/components/`:
+- `Hero.tsx` - Name and title
+- `About.tsx` - Bio and description
+- `Projects.tsx` - Project portfolio
+- `Experience.tsx` - Work experience
+- `Education.tsx` - Educational background
+- `Awards.tsx` - Awards and achievements
+- `Contact.tsx` - Contact information and links
+
+### Styling
+
+- Modify Tailwind classes in component files
+- Update `src/app/globals.css` for global styles
+- The design uses a minimal color palette with grays and blues
+
+### Content Structure
+
+The site is organized into these sections:
+- Hero/Introduction
+- About
+- Skills
+- Projects
+- Experience
+- Education
+- Awards
+- Contact
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+└── components/
+    ├── About.tsx
+    ├── Awards.tsx
+    ├── Contact.tsx
+    ├── Education.tsx
+    ├── Experience.tsx
+    ├── Hero.tsx
+    ├── Projects.tsx
+    └── Skills.tsx
+```
+
+## Browser Support
+
+- Modern browsers (Chrome, Firefox, Safari, Edge)
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
