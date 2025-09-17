@@ -16,6 +16,12 @@ export default function Contact() {
       </p>
       <div className="flex flex-wrap gap-6 text-black">
         <a
+          href="/blog"
+          className="hover:text-gray-600 transition-colors"
+        >
+          blog
+        </a>
+        <a
           href="/Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
