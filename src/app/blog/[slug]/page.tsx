@@ -58,3 +58,4 @@ export function generateStaticParams() {
     slug: post.slug,
   }));
 }
+

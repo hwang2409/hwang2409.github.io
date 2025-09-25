@@ -6,7 +6,7 @@ export default function Education() {
       duration: "2024 - 2029"
     },
     {
-      institution: "richmond hill high School",
+      institution: "richmond hill high school",
       degree: "ontario secondary school diploma (OSSD)",
       duration: "2022 - 2024"
     }
