@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Contact() {
   return (
     <footer className="mb-4">
@@ -15,12 +17,12 @@ export default function Contact() {
         and i&apos;ll respond whenever i can.
       </p>
       <div className="flex flex-wrap gap-6 text-black">
-        <a
+        <Link
           href="/blog"
           className="hover:text-gray-600 transition-colors"
         >
           blog
-        </a>
+        </Link>
         <a
           href="/Resume.pdf"
           target="_blank"

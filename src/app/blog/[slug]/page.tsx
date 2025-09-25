@@ -1,15 +1,11 @@
 import { getBlogPost, getAllBlogPosts } from '@/lib/blog';
 import { markdownToHtml } from '@/lib/blog';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-interface BlogPostPageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = getBlogPost(params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = getBlogPost(slug);
 
   if (!post) {
     notFound();
@@ -39,12 +35,12 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         />
 
         <footer className="mt-12">
-          <a 
+          <Link 
             href="/blog"
             className="text-black hover:text-gray-600 transition-colors underline"
           >
             ← back to blog
-          </a>
+          </Link>
         </footer>
       </div>
     </div>

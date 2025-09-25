@@ -54,9 +54,9 @@ export function getBlogPost(slug: string): BlogPost | null {
     const frontmatter = match[1];
     const content = match[2];
 
-    // Parse frontmatter
-    const frontmatterLines = frontmatter.split('\n');
-    const metadata: any = {};
+  // Parse frontmatter
+  const frontmatterLines = frontmatter.split('\n');
+  const metadata: Record<string, string> = {};
     
     for (const line of frontmatterLines) {
       const [key, ...valueParts] = line.split(':');
@@ -105,7 +105,8 @@ export function markdownToHtml(markdown: string): string {
   
   // Lists
   html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  // Use [\s\S] instead of dotall flag to support older targets
+  html = html.replace(/(<li>[\s\S]*<\/li>)/, '<ul>$1</ul>');
   
   // Paragraphs
   html = html.replace(/\n\n/g, '</p><p>');

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getAllBlogPosts } from '@/lib/blog';
 
 export default function Blog() {
@@ -17,12 +18,12 @@ export default function Blog() {
 
         <main className="space-y-6">
           {blogPosts.map((post, index) => (
-            <a
+            <Link
               key={index}
               href={`/blog/${post.slug}`}
               className="block border-l-2 border-gray-600 pl-4 hover:border-gray-800 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer rounded-r-md"
             >
-              <h2 className="text-lg font-bold text-black mb-1">
+              <h2 className="text-lg font-bold text-black mb-2">
                 {post.title}
               </h2>
               <p className="text-gray-400 text-sm mb-2">
@@ -31,17 +32,17 @@ export default function Blog() {
               <p className="text-black leading-relaxed">
                 {post.excerpt}
               </p>
-            </a>
+            </Link>
           ))}
         </main>
 
         <footer className="mt-12">
-          <a 
+          <Link 
             href="/"
             className="text-black hover:text-gray-600 transition-colors underline"
           >
             ← back to home
-          </a>
+          </Link>
         </footer>
       </div>
     </div>
