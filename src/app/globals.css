@@ -25,11 +25,6 @@ body {
   letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-transform: lowercase;
-}
-
-code, pre {
-  text-transform: none;
 }
 
 ::selection {

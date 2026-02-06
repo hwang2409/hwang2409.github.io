@@ -4,17 +4,17 @@ export default function Contact() {
   return (
     <footer className="py-10">
       <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
-        get in touch
+        Get in Touch
       </h2>
       <p className="text-neutral-300 mb-2">
-        chat?{' '}
+        Want to chat?{' '}
         <a
           href="mailto:h352wang@uwaterloo.ca"
           className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300 underline"
         >
-          email me
+          Email me
         </a>{' '}
-        and i&apos;ll respond whenever i can.
+        and I&apos;ll respond when possible.
       </p>
       <div className="flex flex-wrap gap-6 text-neutral-300">
         <Link

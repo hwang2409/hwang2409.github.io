@@ -12,7 +12,7 @@ export default function Blog() {
             blog
           </h1>
           <p className="text-neutral-300 leading-relaxed">
-            thoughts on software engineering, computer graphics, and building things from scratch.
+		  	My thoughts on anything and everything.
           </p>
         </header>
 

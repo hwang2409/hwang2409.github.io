@@ -1,21 +1,16 @@
 export default function Education() {
   const education = [
     {
-      institution: "university of waterloo",
-      degree: "bachelor's degree of software engineering (BSE)",
+      institution: "University of Waterloo",
+      degree: "Software Engineering (BSE)",
       duration: "2024 - 2029"
     },
-    {
-      institution: "richmond hill high school",
-      degree: "ontario secondary school diploma (OSSD)",
-      duration: "2022 - 2024"
-    }
   ];
 
   return (
     <section className="py-10">
       <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
-        education
+       Education 
       </h2>
       <div className="space-y-8">
         {education.map((edu, index) => (

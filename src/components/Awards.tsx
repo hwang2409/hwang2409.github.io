@@ -1,31 +1,26 @@
 export default function Awards() {
   const awards = [
     {
-      title: "hypatia math contest - national champion",
-      date: "Apr. 5th, 2023",
-      description: "perfect score, placing first out of 5000+ participants."
+      title: "Hypatia Math Contest - National Champion",
+      date: "2023-2024",
+      description: "Perfect score, placing first out of 5000+ participants."
     },
     {
-      title: "amc12 - top 5%",
-      date: "Nov. 6th, 2023",
-      description: "score of 124.5, qualified for AIME."
+      title: "AMC12 - Top 5%",
+      date: "2023-2024",
+      description: "Qualified for AIME with a score of 124.5."
     },
     {
-      title: "nrg hacks: finalist",
-      date: "Dec. 12th, 2023",
-      description: "developed an AI-powered teacher assistant website.",
-    },
-    {
-      title: "canadian lynx math contest - bronze medal",
-      date: "Sept. 28th, 2023",
-      description: "bronze on the canadian lynx math contest, hosted by the university of waterloo."
+      title: "Canadian Lynx Math Contest - Bronze Medal",
+      date: "2023-2024",
+      description: "Bronze on the Canadian Lynx Math Contest, hosted by UWaterloo."
     }
   ];
 
   return (
     <section className="py-10">
       <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
-      awards
+      Awards
       </h2>
       <div className="space-y-8">
         {awards.map((award, index) => (

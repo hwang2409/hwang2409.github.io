@@ -1,28 +1,22 @@
 export default function Experience() {
   const experiences = [
+	{
+		company: "Fish Audio",
+		role: "Software Engineering Intern",
+		duration: "Jan. 2026 - Present",
+		description: "",
+	},
     {
-      company: "nationgraph",
-      role: "software engineering intern",
+      company: "NationGraph",
+      role: "Software Engineering Intern",
       duration: "May. 2025 - Aug. 2025",
-      description: "developed a ML pipeline for classifying & normalizing 600M+ vendor names.",
+      description: "Developed a ML pipeline for classifying & normalizing 600M+ vendor names.",
     },
     {
-      company: "watonomous",
-      role: "autonomous software developer",
+      company: "WATonomous",
+      role: "Autonomous Software Developer",
       duration: "Sept. 2024 - Present",
-      description: "developing core autonomy software for a rover, improving navigation and real-time object detection capabilities.",
-    },
-    {
-      company: "mathnasium",
-      role: "tutor",
-      duration: "Oct. 2022 - Apr. 2023",
-      description: "planned tailored lessons and managed 8-10 students, grades 1-10, simultaneously.",
-    },
-    {
-      company: "tt math school",
-      role: "teaching assistant",
-      duration: "Sept. 2022 - Mar. 2024",
-      description: "supervised team of 4 teaching assistants, managing 120+ students.",
+      description: "Developing core autonomy software for a rover, improving navigation and real-time object detection capabilities.",
     },
   ];
 
