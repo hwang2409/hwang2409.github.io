@@ -14,13 +14,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const htmlContent = markdownToHtml(post.content);
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="relative z-10 min-h-screen">
+      <div className="max-w-3xl mx-auto px-6 py-32">
         <header className="mb-8">
-          <h1 className="text-2xl font-bold text-black mb-2 underline">
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-100 mb-4 border-b border-neutral-800 pb-3">
             {post.title}
           </h1>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-neutral-500 text-sm mb-4">
             {new Date(post.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -29,15 +29,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </p>
         </header>
 
-        <article 
-          className="prose prose-black max-w-none"
+        <article
+          className="prose max-w-none"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
 
         <footer className="mt-12">
-          <Link 
+          <Link
             href="/blog"
-            className="text-black hover:text-gray-600 transition-colors underline"
+            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300 underline"
           >
             ← back to blog
           </Link>
@@ -49,9 +49,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
 export function generateStaticParams() {
   const posts = getAllBlogPosts();
-  
+
   return posts.map((post) => ({
     slug: post.slug,
   }));
 }
-

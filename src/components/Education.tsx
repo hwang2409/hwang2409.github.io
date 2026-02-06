@@ -13,20 +13,20 @@ export default function Education() {
   ];
 
   return (
-    <section className="mb-4">
-      <h2 className="text-2xl font-bold text-black mb-2 underline">
+    <section className="py-10">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
         education
       </h2>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {education.map((edu, index) => (
-          <div key={index} className="border-l-2 border-gray-600 pl-4">
-            <h3 className="text-lg font-bold text-black mb-2">
+          <div key={index} className="border-l-2 border-neutral-800 pl-4">
+            <h3 className="text-lg font-semibold text-neutral-100 mb-2">
               {edu.institution}
             </h3>
-            <p className="text-gray-400 mb-2">
+            <p className="text-neutral-500 mb-2">
               {edu.degree}
             </p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-neutral-500 text-sm">
               {edu.duration}
             </p>
           </div>
@@ -35,4 +35,3 @@ export default function Education() {
     </section>
   );
 }
-

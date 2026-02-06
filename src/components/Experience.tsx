@@ -27,23 +27,23 @@ export default function Experience() {
   ];
 
   return (
-    <section className="mb-4">
-      <h2 className="text-2xl font-bold text-black mb-2 underline">
+    <section className="py-10">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
         experience
       </h2>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {experiences.map((exp, index) => (
-          <div key={index} className="border-l-2 border-gray-600 pl-4">
-            <h3 className="text-lg font-bold text-black mb-2">
+          <div key={index} className="border-l-2 border-neutral-800 pl-4">
+            <h3 className="text-lg font-semibold text-neutral-100 mb-2">
               {exp.company}
             </h3>
-            <p className="text-gray-400 mb-2">
+            <p className="text-neutral-500 mb-2">
               {exp.role}
             </p>
-            <p className="text-gray-400 text-sm mb-3">
+            <p className="text-neutral-500 text-sm mb-3">
               {exp.duration}
             </p>
-            <p className="text-black leading-relaxed">
+            <p className="text-neutral-300 leading-relaxed">
               {exp.description}
             </p>
           </div>
@@ -52,4 +52,3 @@ export default function Experience() {
     </section>
   );
 }
-

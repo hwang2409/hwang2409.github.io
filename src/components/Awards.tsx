@@ -23,20 +23,20 @@ export default function Awards() {
   ];
 
   return (
-    <section className="mb-4">
-      <h2 className="text-2xl font-bold text-black mb-2 underline">
+    <section className="py-10">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
       awards
       </h2>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {awards.map((award, index) => (
-          <div key={index} className="border-l-2 border-gray-600 pl-4">
-            <h3 className="text-lg font-bold text-black mb-2">
+          <div key={index} className="border-l-2 border-neutral-800 pl-4">
+            <h3 className="text-lg font-semibold text-neutral-100 mb-2">
               {award.title}
             </h3>
-            <p className="text-gray-400 text-sm mb-3">
+            <p className="text-neutral-500 text-sm mb-3">
               {award.date}
             </p>
-            <p className="text-black leading-relaxed">
+            <p className="text-neutral-300 leading-relaxed">
               {award.description}
             </p>
           </div>
@@ -45,4 +45,3 @@ export default function Awards() {
     </section>
   );
 }
-

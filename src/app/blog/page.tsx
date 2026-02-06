@@ -5,13 +5,13 @@ export default function Blog() {
   const blogPosts = getAllBlogPosts();
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="relative z-10 min-h-screen">
+      <div className="max-w-3xl mx-auto px-6 py-32">
         <header className="mb-8">
-          <h1 className="text-2xl font-bold text-black mb-2 underline">
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-100 mb-4 border-b border-neutral-800 pb-3">
             blog
           </h1>
-          <p className="text-black leading-relaxed">
+          <p className="text-neutral-300 leading-relaxed">
             thoughts on software engineering, computer graphics, and building things from scratch.
           </p>
         </header>
@@ -21,15 +21,15 @@ export default function Blog() {
             <Link
               key={index}
               href={`/blog/${post.slug}`}
-              className="block border-l-2 border-gray-600 pl-4 hover:border-gray-800 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer rounded-r-md"
+              className="block border-l-2 border-neutral-800 pl-4 hover:border-neutral-500 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer rounded-r-md"
             >
-              <h2 className="text-lg font-bold text-black mb-2">
+              <h2 className="text-lg font-semibold text-neutral-100 mb-2">
                 {post.title}
               </h2>
-              <p className="text-gray-400 text-sm mb-2">
+              <p className="text-neutral-500 text-sm mb-2">
                 {post.date}
               </p>
-              <p className="text-black leading-relaxed">
+              <p className="text-neutral-300 leading-relaxed">
                 {post.excerpt}
               </p>
             </Link>
@@ -37,9 +37,9 @@ export default function Blog() {
         </main>
 
         <footer className="mt-12">
-          <Link 
+          <Link
             href="/"
-            className="text-black hover:text-gray-600 transition-colors underline"
+            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300 underline"
           >
             ← back to home
           </Link>

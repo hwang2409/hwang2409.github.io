@@ -1,70 +1,112 @@
 export default function Projects() {
   const projects = [
     {
+      title: "NFL Game Prediction System",
+      date: "2025",
+      description: "ensemble ML system predicting NFL outcomes at 89% accuracy.",
+      technologies: ["python", "xgboost", "fastapi", "next.js", "postgresql", "redis", "docker"],
+      link: "https://github.com/hwang2409/bet"
+    },
+    {
       title: "hang.ai",
       date: "Sep. 2025 - Present",
-      description: "ai-powered study app that optimizes study efficiency and effectiveness.",
-      technologies: ["next.js", "tailwind css", "react", "python", "postgresql", "django"],
+      description: "ai-powered study platform with microservices architecture.",
+      technologies: ["fastapi", "react", "kong", "postgresql", "redis", "rabbitmq", "celery"],
       link: "http://hangai-six.vercel.app"
     },
     {
-      title: "chimy: 3d software renderer",
-      date: "Dec. 2023 - Present",
-      description: "software renderer for real-time generation and user navigation around 3d models.",
-      technologies: ["c", "sdl2"],
-      link: "https://github.com/hwang2409/chimy"
+      title: "fishaudio",
+      date: "2025",
+      description: "ai audio/video generation platform with tts and daw editor.",
+      technologies: ["fastapi", "next.js", "sveltekit", "mongodb", "stripe", "hatchet"],
+      link: "https://github.com/hwang2409/fishaudio"
     },
     {
-      title: "poki-musi: retro game console",
-      date: "Oct. 2024 - Dec. 2024",
-      description: "retro-style 8-bit game console",
-      technologies: ["python", "c", "raspberry pi"],
-      link: "https://github.com/hwang2409/poki-musi"
-    },
-    {
-      title: "penguin_net: neural network framework",
+      title: "neural network framework",
       date: "Aug. 2024 - Nov. 2024",
-      description: "machine learning library for building and training neural networks.",
-      technologies: ["c++"],
+      description: "pytorch-like deep learning framework built from scratch in c++.",
+      technologies: ["c++", "simd", "openmp", "fastapi", "react"],
       link: "https://github.com/hwang2409/penguin_net"
     },
     {
-      title: "llama_sim: logic gate simulator",
+      title: "parallel",
+      date: "2025",
+      description: "autonomous service robot with slam navigation and object detection.",
+      technologies: ["ros2", "nav2", "yolov8", "react", "three.js", "fastapi", "docker"],
+      link: "https://github.com/hwang2409/parallel"
+    },
+    {
+      title: "ollama host",
+      date: "2025",
+      description: "self-hosted chatgpt-style interface for local llm models.",
+      technologies: ["django", "react", "redis", "postgresql", "docker"],
+      link: "https://github.com/hwang2409/ollama-host"
+    },
+    {
+      title: "cas",
+      date: "2024",
+      description: "computer algebra system with dag-based symbolic computation.",
+      technologies: ["c++"],
+      link: "https://github.com/hwang2409/cas"
+    },
+    {
+      title: "crutch",
+      date: "2024",
+      description: "symbolic math library with calculus and equation solving.",
+      technologies: ["python", "networkx", "numpy"],
+      link: "https://github.com/hwang2409/crutch"
+    },
+    {
+      title: "whitematter",
+      date: "2025",
+      description: "hugging face dataset management and model training platform.",
+      technologies: ["django", "celery", "next.js", "redis"],
+      link: "https://github.com/hwang2409/whitematter"
+    },
+    {
+      title: "arena",
+      date: "2024",
+      description: "memory arena allocator with o(1) allocation and simd alignment.",
+      technologies: ["c"],
+      link: "https://github.com/hwang2409/arena"
+    },
+    {
+      title: "llama_sim",
       date: "Dec. 2024 - Present",
-      description: "tool for creating and testing complex circuits with elementary logic gates.",
+      description: "logic gate simulator for creating and testing circuits.",
       technologies: ["c", "javascript", "webassembly"],
       link: "https://github.com/hwang2409/llama_sim"
     },
   ];
 
   return (
-    <section className="mb-4">
-      <h2 className="text-2xl font-bold text-black mb-2 underline">
+    <section className="py-10">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
         projects
       </h2>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {projects.map((project, index) => (
           <a
             key={index}
             href={project.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="block border-l-2 border-gray-600 pl-4 hover:border-gray-800 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer rounded-r-md"
+            className="block border-l-2 border-neutral-800 pl-4 hover:border-neutral-500 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer rounded-r-md"
           >
-            <h3 className="text-lg font-bold text-black mb-2">
+            <h3 className="text-lg font-semibold text-neutral-100 mb-2">
               {project.title}
             </h3>
-            <p className="text-gray-400 text-sm mb-2">
+            <p className="text-neutral-500 text-sm mb-2">
               {project.date}
             </p>
-            <p className="text-black mb-3 leading-relaxed">
+            <p className="text-neutral-300 mb-3 leading-relaxed">
               {project.description}
             </p>
             <div className="flex flex-wrap gap-2">
               {project.technologies.map((tech) => (
                 <span
                   key={tech}
-                  className="text-gray-400 text-sm"
+                  className="text-neutral-500 text-sm"
                 >
                   {tech}
                 </span>
@@ -76,4 +118,3 @@ export default function Projects() {
     </section>
   );
 }
-

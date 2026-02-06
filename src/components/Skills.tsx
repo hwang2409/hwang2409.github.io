@@ -1,19 +1,19 @@
 export default function Skills() {
   const skills = [
-    'c', 'c++', 'java', 'python', 'js', 'react', 'git', 'docker', 'pytorch', 'numpy', 'node.js', 'LLMs', 'NLPs'
+    'c', 'c++', 'python', 'typescript', 'java', 'react', 'next.js', 'fastapi', 'django', 'ros2', 'docker', 'postgresql', 'mongodb', 'redis', 'pytorch', 'xgboost', 'tailwind css', 'three.js', 'webassembly'
 
   ];
 
   return (
-    <section className="mb-4">
-      <h2 className="text-2xl font-bold text-black mb-2 underline">
+    <section className="py-10">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
         skills
       </h2>
       <div className="flex flex-wrap gap-2">
         {skills.map((skill) => (
           <span
             key={skill}
-            className="text-gray-400 text-sm"
+            className="text-neutral-500 text-sm border border-neutral-800 rounded-full px-3 py-1"
           >
             {skill}
           </span>
@@ -22,4 +22,3 @@ export default function Skills() {
     </section>
   );
 }
-

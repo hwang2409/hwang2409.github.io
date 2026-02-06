@@ -2,24 +2,24 @@ import Link from 'next/link';
 
 export default function Contact() {
   return (
-    <footer className="mb-4">
-      <h2 className="text-2xl font-bold text-black mb-2 underline">
+    <footer className="py-10">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-100 mb-6 ">
         get in touch
       </h2>
-      <p className="text-black mb-2">
+      <p className="text-neutral-300 mb-2">
         chat?{' '}
-        <a 
-          href="mailto:your-email@example.com" 
-          className="text-black hover:text-gray-600 transition-colors underline"
+        <a
+          href="mailto:h352wang@uwaterloo.ca"
+          className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300 underline"
         >
           email me
         </a>{' '}
         and i&apos;ll respond whenever i can.
       </p>
-      <div className="flex flex-wrap gap-6 text-black">
+      <div className="flex flex-wrap gap-6 text-neutral-300">
         <Link
           href="/blog"
-          className="hover:text-gray-600 transition-colors"
+          className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
         >
           blog
         </Link>
@@ -27,7 +27,7 @@ export default function Contact() {
           href="/Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-gray-600 transition-colors"
+          className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
         >
           resume
         </a>
@@ -35,7 +35,7 @@ export default function Contact() {
           href="https://linkedin.com/in/henry-w-se"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-gray-600 transition-colors"
+          className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
         >
           linkedin
         </a>
@@ -43,7 +43,7 @@ export default function Contact() {
           href="https://github.com/hwang2409"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-gray-600 transition-colors"
+          className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
         >
           github
         </a>
@@ -51,4 +51,3 @@ export default function Contact() {
     </footer>
   );
 }
-
