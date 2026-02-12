@@ -1,7 +1,7 @@
 ---
-title: Projects: CV & SLAM
+title: Projects: CV
 date: 2026-02-12
-excerpt: My experience in SLAM + CV
+excerpt: My experience in CV
 ---
 
 ## SLAM
