@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { getAllBlogPosts } from '@/lib/blog';
 
+export const metadata = {
+  title: "blog",
+};
+
 export default function Blog() {
   const blogPosts = getAllBlogPosts();
 

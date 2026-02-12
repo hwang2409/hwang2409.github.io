@@ -100,6 +100,9 @@ export function markdownToHtml(markdown: string): string {
   // Inline code
   html = html.replace(/`(.*?)`/g, '<code>$1</code>');
   
+  // Images (must come before links)
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
+
   // Links
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   
