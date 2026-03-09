@@ -9,45 +9,36 @@ export default function Blog() {
   const blogPosts = getAllBlogPosts();
 
   return (
-    <div className="relative z-10 min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 py-32">
-        <header className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-neutral-100 mb-4 border-b border-neutral-800 pb-3">
-            blog
-          </h1>
-          <p className="text-neutral-300 leading-relaxed">
-		  	My thoughts on anything and everything.
-          </p>
-        </header>
+    <div className="relative z-10 min-h-screen flex items-center justify-center">
+      <div className="max-w-xl mx-auto px-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-100 mb-8">
+          blog
+        </h1>
 
-        <main className="space-y-6">
+        <ul className="space-y-4 mb-10">
           {blogPosts.map((post, index) => (
-            <Link
-              key={index}
-              href={`/blog/${post.slug}`}
-              className="block border-l-2 border-neutral-800 pl-4 hover:border-neutral-500 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer rounded-r-md"
-            >
-              <h2 className="text-lg font-semibold text-neutral-100 mb-2">
-                {post.title}
-              </h2>
-              <p className="text-neutral-500 text-sm mb-2">
-                {post.date}
-              </p>
-              <p className="text-neutral-300 leading-relaxed">
-                {post.excerpt}
-              </p>
-            </Link>
+            <li key={index}>
+              <Link
+                href={`/blog/${post.slug}`}
+                className="group flex items-baseline justify-between gap-4"
+              >
+                <span className="text-neutral-300 group-hover:text-neutral-100 transition-colors duration-300">
+                  {post.title}
+                </span>
+                <span className="text-neutral-600 text-sm shrink-0">
+                  {post.date}
+                </span>
+              </Link>
+            </li>
           ))}
-        </main>
+        </ul>
 
-        <footer className="mt-12">
-          <Link
-            href="/"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300 underline"
-          >
-            ← back to home
-          </Link>
-        </footer>
+        <Link
+          href="/"
+          className="text-neutral-500 hover:text-neutral-300 transition-colors duration-300 text-sm"
+        >
+          ← home
+        </Link>
       </div>
     </div>
   );

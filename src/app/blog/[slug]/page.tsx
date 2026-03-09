@@ -23,12 +23,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="relative z-10 min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 py-32">
+      <div className="max-w-xl mx-auto px-6 py-24">
         <header className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-neutral-100 mb-4 border-b border-neutral-800 pb-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-100 mb-2">
             {post.title}
           </h1>
-          <p className="text-neutral-500 text-sm mb-4">
+          <p className="text-neutral-600 text-sm">
             {new Date(post.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -45,9 +45,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <footer className="mt-12">
           <Link
             href="/blog"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300 underline"
+            className="text-neutral-500 hover:text-neutral-300 transition-colors duration-300 text-sm"
           >
-            ← back to blog
+            ← blog
           </Link>
         </footer>
       </div>
