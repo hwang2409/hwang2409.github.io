@@ -2,28 +2,36 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="relative z-10 min-h-screen flex items-center justify-center">
-      <div className="max-w-xl mx-auto px-6 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-100 mb-2">
+    <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
+      <div className="panel w-full max-w-lg">
+        <h1 className="mono text-4xl md:text-5xl font-bold text-accent mb-4 tracking-tight">
           Henry Wang
         </h1>
-        <p className="text-neutral-400 text-lg mb-8">swe @ uwaterloo</p>
-        <p className="text-neutral-300 leading-relaxed mb-10">
-          I&apos;m a second year Software Engineering student @ the University
-          of Waterloo. My projects delve into ML, computer graphics, game
-          programming, and digital logic design. I like to build, snowboard, and
-          listen to music.
+
+        <p className="mono text-muted text-sm mb-8">
+          {'>'} swe @ uwaterloo
         </p>
-        <div className="flex flex-wrap justify-center gap-6">
+
+        <p className="text-sm leading-relaxed mb-8 max-w-sm" style={{ color: '#888' }}>
+	      full stack SWE interested in ML, computer graphics, game theory.
+		</p>
+
+        <p className="text-sm leading-relaxed mb-8 max-w-sm" style={{ color: '#888' }}>
+		  current SWE @ fish.audio, prev @ NationGraph
+        </p>
+
+        <div className="border-t border-dashed border-border mb-6" />
+
+        <nav className="mono flex flex-wrap gap-x-5 gap-y-2 text-sm">
           <a
             href="mailto:h352wang@uwaterloo.ca"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
+            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
           >
             email
           </a>
           <Link
             href="/blog"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
+            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
           >
             blog
           </Link>
@@ -31,7 +39,7 @@ export default function Home() {
             href="/Resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
+            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
           >
             resume
           </a>
@@ -39,7 +47,7 @@ export default function Home() {
             href="https://linkedin.com/in/henry-w-se"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
+            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
           >
             linkedin
           </a>
@@ -47,11 +55,11 @@ export default function Home() {
             href="https://github.com/hwang2409"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors duration-300"
+            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
           >
             github
           </a>
-        </div>
+        </nav>
       </div>
     </div>
   );

@@ -27,11 +27,28 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Consolas';
+  src: url('/fonts/consolas-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Consolas';
+  src: url('/fonts/consolas-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #0a0a0a;
-  --foreground: #e5e5e5;
-  --muted: #525252;
-  --accent: #a3a3a3;
+  --background: #0e0e0e;
+  --foreground: #d0d0d0;
+  --muted: #666;
+  --accent: #c8b89a;
+  --border: #252525;
 }
 
 @theme inline {
@@ -39,29 +56,44 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
-  --font-sans: "Sohne", "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --color-border: var(--border);
+  --color-faint: #1a1a1a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: "Consolas", "Courier New", monospace;
   font-size: 15px;
   line-height: 1.7;
   font-weight: 400;
-  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection {
-  background: #333;
-  color: #e5e5e5;
+/* CRT scan lines */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 255, 255, 0.018) 1px,
+    rgba(255, 255, 255, 0.018) 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
 }
 
-/* Custom scrollbar */
+::selection {
+  background: #2a2520;
+  color: #c8b89a;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -69,81 +101,147 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--muted);
-  border-radius: 4px;
+  background: #252525;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+  background: #333;
 }
 
-/* Blog content styling */
+/* Monospace utility */
+.mono {
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+/* Panel — the core 2009 structural element */
+.panel {
+  border: 1px dashed var(--border);
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* Prose */
 .prose h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 1.5rem 0 1rem 0;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem 0;
   color: var(--foreground);
 }
 
 .prose h2 {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin: 1.25rem 0 0.75rem 0;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.5rem 0;
   color: var(--foreground);
 }
 
 .prose h3 {
-  font-size: 1.125rem;
-  font-weight: bold;
-  margin: 1rem 0 0.5rem 0;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem 0;
   color: var(--foreground);
 }
 
 .prose p {
   margin: 0.75rem 0;
-  line-height: 1.6;
-  color: var(--foreground);
+  line-height: 1.75;
+  color: #999;
 }
 
 .prose ul {
   margin: 0.75rem 0;
-  padding-left: 1.5rem;
+  padding-left: 1.25rem;
+  list-style: none;
 }
 
 .prose li {
-  margin: 0.25rem 0;
-  line-height: 1.6;
-  color: var(--foreground);
+  margin: 0.3rem 0;
+  line-height: 1.75;
+  color: #999;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.prose li::before {
+  content: '—';
+  position: absolute;
+  left: -0.5rem;
+  color: var(--accent);
+  opacity: 0.5;
+}
+
+.prose img {
+  border: 1px dashed var(--border);
+  padding: 4px;
+  margin: 1.5rem 0;
+  max-width: 100%;
+}
+
+.prose center {
+  color: var(--muted);
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.8rem;
+  margin: -0.5rem 0 1.5rem 0;
 }
 
 .prose code {
-  background: #1a1a1a;
-  color: #e5e5e5;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
+  background: #161616;
+  color: var(--accent);
+  padding: 0.15rem 0.4rem;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.85rem;
+  border: 1px solid #222;
 }
 
 .prose pre {
-  background: #141414;
-  border: 1px solid #262626;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  background: #111;
+  border: 1px dashed var(--border);
+  padding: 1.25rem;
   overflow-x: auto;
-  margin: 1rem 0;
+  margin: 1.25rem 0;
 }
 
 .prose pre code {
   background: none;
   padding: 0;
+  border: none;
+  color: #aaa;
 }
 
 .prose a {
   color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(200, 184, 154, 0.3);
+  transition: text-decoration-color 0.2s;
 }
 
 .prose a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.prose blockquote {
+  border-left: 2px dashed var(--accent);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--muted);
+}
+
+.prose blockquote p {
+  color: var(--muted);
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 2rem 0;
+}
+
+.prose strong {
   color: var(--foreground);
+  font-weight: 600;
 }

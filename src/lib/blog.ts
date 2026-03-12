@@ -1,5 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import matter from 'gray-matter';
+import { remark } from 'remark';
+import remarkHtml from 'remark-html';
 
 export interface BlogPost {
   slug: string;
@@ -11,7 +14,7 @@ export interface BlogPost {
 
 export function getAllBlogPosts(): BlogPost[] {
   const blogDir = path.join(process.cwd(), 'content', 'blog');
-  
+
   if (!fs.existsSync(blogDir)) {
     return [];
   }
@@ -29,49 +32,39 @@ export function getAllBlogPosts(): BlogPost[] {
     }
   }
 
-  // Sort posts by date (newest first)
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return posts.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 }
 
 export function getBlogPost(slug: string): BlogPost | null {
   try {
-    const filePath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`);
-    
+    const filePath = path.join(
+      process.cwd(),
+      'content',
+      'blog',
+      `${slug}.md`
+    );
+
     if (!fs.existsSync(filePath)) {
       return null;
     }
 
     const fileContent = fs.readFileSync(filePath, 'utf8');
-    
-    // Simple frontmatter parser
-    const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-    const match = fileContent.match(frontmatterRegex);
-    
-    if (!match) {
-      return null;
-    }
+    const { data, content } = matter(fileContent);
 
-    const frontmatter = match[1];
-    const content = match[2];
-
-  // Parse frontmatter
-  const frontmatterLines = frontmatter.split('\n');
-  const metadata: Record<string, string> = {};
-    
-    for (const line of frontmatterLines) {
-      const [key, ...valueParts] = line.split(':');
-      if (key && valueParts.length > 0) {
-        const value = valueParts.join(':').trim().replace(/^["']|["']$/g, '');
-        metadata[key.trim()] = value;
-      }
-    }
+    const dateValue = data.date;
+    const dateStr =
+      dateValue instanceof Date
+        ? dateValue.toISOString().split('T')[0]
+        : String(dateValue || '');
 
     return {
       slug,
-      title: metadata.title || '',
-      date: metadata.date || '',
-      excerpt: metadata.excerpt || '',
-      content: content.trim()
+      title: data.title || '',
+      date: dateStr,
+      excerpt: data.excerpt || '',
+      content: content.trim(),
     };
   } catch (error) {
     console.error(`Error reading blog post ${slug}:`, error);
@@ -79,46 +72,9 @@ export function getBlogPost(slug: string): BlogPost | null {
   }
 }
 
-// Simple markdown to HTML converter
-export function markdownToHtml(markdown: string): string {
-  let html = markdown;
-  
-  // Headers
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-  
-  // Bold
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  
-  // Code blocks
-  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-  
-  // Inline code
-  html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-  
-  // Images (must come before links)
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
-
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  
-  // Lists
-  html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
-  // Use [\s\S] instead of dotall flag to support older targets
-  html = html.replace(/(<li>[\s\S]*<\/li>)/, '<ul>$1</ul>');
-  
-  // Paragraphs
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = '<p>' + html + '</p>';
-  
-  // Clean up empty paragraphs
-  html = html.replace(/<p><\/p>/g, '');
-  html = html.replace(/<p>\s*<\/p>/g, '');
-  
-  return html;
+export async function markdownToHtml(markdown: string): Promise<string> {
+  const result = await remark()
+    .use(remarkHtml, { sanitize: false })
+    .process(markdown);
+  return result.toString();
 }
-

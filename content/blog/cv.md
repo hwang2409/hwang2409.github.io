@@ -1,5 +1,5 @@
 ---
-title: Projects: CV
+title: "my cv projects"
 date: 2026-02-12
 excerpt: My experience in CV
 ---

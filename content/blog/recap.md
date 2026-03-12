@@ -1,7 +1,7 @@
 ---
-title: "A Recap"
+title: "recap"
 date: "2026-01-01"
-excerpt: "Looking back."
+excerpt: ""
 ---
 Last year was pretty eventful, I landed my first internship, moved out, and finally figured out what I wanted in life.
 

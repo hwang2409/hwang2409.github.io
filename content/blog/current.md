@@ -1,10 +1,15 @@
 ---
-title: My Current Work
+title: currently
 date: 2026-02-27
-excerpt: What I'm currently working on
+excerpt: what i've been working on
 ---
 
 ## 02/27/2026
-- Working on a cool startup with my friend Jay
-- Building a TFT assistant
-- Building a dating app around TT algorithms?
+- working on a startup with my friend
+- building out the architecture for a couple ideas:
+    - tft assistant
+    - something to do with tiktok algorithms
+
+## 03/12/2026
+- saw a bunch of posts about polymarket trading bots, decided to build one of my own
+- restart work on an old project i scrapped a while ago

@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import ParticleCanvas from "@/components/ParticleCanvas";
+import type { Metadata } from 'next';
+import './globals.css';
+import ParticleCanvas from '@/components/ParticleCanvas';
 
 export const metadata: Metadata = {
   title: {
-    default: "Henry Wang",
-    template: "%s | Henry Wang",
+    default: 'Henry Wang',
+    template: '%s | Henry Wang',
   },
-  description: "software engineering student at the university of waterloo exploring ML, computer graphics, and digital logic design.",
+  description:
+    'Software engineering student at the University of Waterloo.',
 };
 
 export default function RootLayout({
