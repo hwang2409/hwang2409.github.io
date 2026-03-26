@@ -17,7 +17,7 @@
 }
 
 html {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 body {
@@ -299,8 +299,12 @@ body {
 }
 
 .mermaid-lightbox-hint {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   color: #555;
   font-size: 0.7rem;
-  margin-top: 1rem;
   letter-spacing: 0.05em;
+  z-index: 10;
 }

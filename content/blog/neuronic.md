@@ -1,7 +1,7 @@
 ---
 title: Neuronic
 excerpt: Mastering Research
-date: 03/26/2026
+date: 03/05/2026
 ---
 
 # Building Neuronic
