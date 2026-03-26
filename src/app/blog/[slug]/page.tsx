@@ -105,6 +105,10 @@ export default async function BlogPostPage({
 export function generateStaticParams() {
   const posts = getAllBlogPosts();
 
+  if (posts.length === 0) {
+    return [{ slug: '_placeholder' }];
+  }
+
   return posts.map((post) => ({
     slug: post.slug,
   }));
