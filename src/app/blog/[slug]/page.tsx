@@ -3,6 +3,7 @@ import { markdownToHtml } from '@/lib/blog';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import MermaidRenderer from '@/components/MermaidRenderer';
 
 export async function generateMetadata({
   params,
@@ -68,6 +69,7 @@ export default async function BlogPostPage({
             className="prose max-w-none"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
+          <MermaidRenderer />
         </div>
       </main>
 
