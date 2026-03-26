@@ -1,54 +1,11 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Sohne';
-  src: url('/fonts/sohne-buch.woff2') format('woff2'),
-       url('/fonts/sohne-buch.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Sohne';
-  src: url('/fonts/sohne-kraftig.woff2') format('woff2'),
-       url('/fonts/sohne-kraftig.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Sohne';
-  src: url('/fonts/sohne-halbfett.woff2') format('woff2'),
-       url('/fonts/sohne-halbfett.woff') format('woff');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Consolas';
-  src: url('/fonts/consolas-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Consolas';
-  src: url('/fonts/consolas-bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   --background: #0e0e0e;
-  --foreground: #d0d0d0;
-  --muted: #666;
-  --accent: #c8b89a;
-  --border: #252525;
+  --foreground: #e8e8e8;
+  --muted: #8a8a8a;
+  --accent: #d4c4a8;
+  --border: #2a2a2a;
 }
 
 @theme inline {
@@ -57,99 +14,122 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-border: var(--border);
-  --color-faint: #1a1a1a;
+}
+
+html {
+  font-size: 18px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Consolas", "Courier New", monospace;
-  font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.8;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* CRT scan lines */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 1px,
-    rgba(255, 255, 255, 0.018) 1px,
-    rgba(255, 255, 255, 0.018) 2px
-  );
-  pointer-events: none;
-  z-index: 9999;
+/* Page fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.5s ease-out both;
 }
 
 ::selection {
   background: #2a2520;
-  color: #c8b89a;
+  color: #d4c4a8;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #252525;
-  border-radius: 0;
+  background: #222;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #333;
 }
 
-/* Monospace utility */
-.mono {
-  font-family: "Consolas", "Courier New", monospace;
+/* Bracket label glow on hover */
+.bracket-label {
+  transition: text-shadow 0.3s ease;
 }
 
-/* Panel — the core 2009 structural element */
-.panel {
-  border: 1px dashed var(--border);
-  padding: 2.5rem;
-  background: rgba(255, 255, 255, 0.01);
+.bracket-label:hover {
+  text-shadow: 0 0 12px rgba(212, 196, 168, 0.3);
+}
+
+/* Nav link underline slide */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Logo hover */
+.logo {
+  transition: letter-spacing 0.3s ease, color 0.2s ease;
+}
+
+.logo:hover {
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+/* Footer separator */
+.footer-sep {
+  border-top: 1px solid var(--border);
 }
 
 /* Prose */
 .prose h1 {
-  font-family: "Consolas", "Courier New", monospace;
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   margin: 2rem 0 0.75rem 0;
   color: var(--foreground);
 }
 
 .prose h2 {
-  font-family: "Consolas", "Courier New", monospace;
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   margin: 1.75rem 0 0.5rem 0;
   color: var(--foreground);
 }
 
 .prose h3 {
-  font-family: "Consolas", "Courier New", monospace;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 1.25rem 0 0.5rem 0;
   color: var(--foreground);
 }
 
 .prose p {
   margin: 0.75rem 0;
-  line-height: 1.75;
-  color: #999;
+  line-height: 1.8;
+  color: #b0b0b0;
 }
 
 .prose ul {
@@ -160,30 +140,27 @@ body::after {
 
 .prose li {
   margin: 0.3rem 0;
-  line-height: 1.75;
-  color: #999;
+  line-height: 1.8;
+  color: #b0b0b0;
   position: relative;
   padding-left: 1rem;
 }
 
 .prose li::before {
-  content: '—';
+  content: '-';
   position: absolute;
-  left: -0.5rem;
-  color: var(--accent);
-  opacity: 0.5;
+  left: -0.25rem;
+  color: var(--muted);
 }
 
 .prose img {
-  border: 1px dashed var(--border);
-  padding: 4px;
   margin: 1.5rem 0;
   max-width: 100%;
+  opacity: 0.9;
 }
 
 .prose center {
   color: var(--muted);
-  font-family: "Consolas", "Courier New", monospace;
   font-size: 0.8rem;
   margin: -0.5rem 0 1.5rem 0;
 }
@@ -192,40 +169,38 @@ body::after {
   background: #161616;
   color: var(--accent);
   padding: 0.15rem 0.4rem;
-  font-family: "Consolas", "Courier New", monospace;
   font-size: 0.85rem;
-  border: 1px solid #222;
 }
 
 .prose pre {
   background: #111;
-  border: 1px dashed var(--border);
   padding: 1.25rem;
   overflow-x: auto;
   margin: 1.25rem 0;
+  border: 1px solid var(--border);
 }
 
 .prose pre code {
   background: none;
   padding: 0;
-  border: none;
-  color: #aaa;
+  color: #c0c0c0;
 }
 
 .prose a {
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(200, 184, 154, 0.3);
-  transition: text-decoration-color 0.2s;
+  text-decoration-color: rgba(212, 196, 168, 0.3);
+  transition: text-decoration-color 0.2s, color 0.2s;
 }
 
 .prose a:hover {
   text-decoration-color: var(--accent);
+  color: var(--foreground);
 }
 
 .prose blockquote {
-  border-left: 2px dashed var(--accent);
+  border-left: 2px solid var(--accent);
   padding-left: 1rem;
   margin: 1rem 0;
   color: var(--muted);
@@ -237,11 +212,11 @@ body::after {
 
 .prose hr {
   border: none;
-  border-top: 1px dashed var(--border);
+  border-top: 1px solid var(--border);
   margin: 2rem 0;
 }
 
 .prose strong {
   color: var(--foreground);
-  font-weight: 600;
+  font-weight: 700;
 }

@@ -2,65 +2,99 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
-      <div className="panel w-full max-w-lg">
-        <h1 className="mono text-4xl md:text-5xl font-bold text-accent mb-4 tracking-tight">
-          Henry Wang
-        </h1>
-
-        <p className="mono text-muted text-sm mb-8">
-          {'>'} swe @ uwaterloo
-        </p>
-
-        <p className="text-sm leading-relaxed mb-8 max-w-sm" style={{ color: '#888' }}>
-	      full stack SWE interested in ML, computer graphics, game theory.
-		</p>
-
-        <p className="text-sm leading-relaxed mb-8 max-w-sm" style={{ color: '#888' }}>
-		  current SWE @ fish.audio, prev @ NationGraph
-        </p>
-
-        <div className="border-t border-dashed border-border mb-6" />
-
-        <nav className="mono flex flex-wrap gap-x-5 gap-y-2 text-sm">
-          <a
-            href="mailto:h352wang@uwaterloo.ca"
-            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
-          >
-            email
-          </a>
+    <div className="relative z-10 min-h-screen flex flex-col">
+      <header className="w-full max-w-5xl mx-auto px-6 pt-10 pb-6 flex items-center justify-between text-sm">
+        <Link href="/" className="logo text-foreground font-semibold">
+          hw.
+        </Link>
+        <nav className="flex gap-5">
           <Link
             href="/blog"
-            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
+            className="nav-link text-muted hover:text-foreground transition-colors duration-200"
           >
             blog
           </Link>
-          <a
-            href="/Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
+          <Link
+            href="/resume"
+            className="nav-link text-muted hover:text-foreground transition-colors duration-200"
           >
             resume
-          </a>
+          </Link>
+        </nav>
+      </header>
+
+      <main className="flex-1 flex items-center">
+        <div className="w-full max-w-5xl mx-auto px-6 animate-in">
+          <h1 className="text-2xl font-semibold text-foreground mb-3">
+            Henry Wang
+          </h1>
+
+          <p className="text-sm text-muted mb-8">
+            swe @ uwaterloo
+          </p>
+
+          <div className="space-y-4 text-sm">
+            <div>
+              <span className="bracket-label text-accent cursor-default">[currently]</span>{' '}
+              <span className="text-muted">SWE @ </span>
+              <a
+                href="https://fish.audio"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground hover:text-accent transition-colors duration-200"
+              >
+                fish.audio
+              </a>
+            </div>
+
+            <div>
+              <span className="bracket-label text-accent cursor-default">[previously]</span>{' '}
+              <span className="text-muted">SWE @ </span>
+              <span className="text-foreground">NationGraph</span>
+            </div>
+
+            <div>
+              <span className="bracket-label text-accent cursor-default">[interests]</span>{' '}
+              <span className="text-muted">
+                ML, computer graphics, game theory
+              </span>
+            </div>
+
+            <div>
+              <span className="bracket-label text-accent cursor-default">[also]</span>{' '}
+              <span className="text-muted">snowboarding, music</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer className="footer-sep w-full max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-sm text-muted">
+        <span className="text-muted/40">hw.</span>
+        <div className="flex gap-5">
           <a
-            href="https://linkedin.com/in/henry-w-se"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
+            href="mailto:h352wang@uwaterloo.ca"
+            className="nav-link hover:text-foreground transition-colors duration-200"
           >
-            linkedin
+            email
           </a>
           <a
             href="https://github.com/hwang2409"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-accent underline decoration-accent/30 underline-offset-3 hover:decoration-accent transition-colors duration-200"
+            className="nav-link hover:text-foreground transition-colors duration-200"
           >
             github
           </a>
-        </nav>
-      </div>
+          <a
+            href="https://linkedin.com/in/henry-w-se"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link hover:text-foreground transition-colors duration-200"
+          >
+            linkedin
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
