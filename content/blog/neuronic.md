@@ -1,22 +1,18 @@
 ---
 title: Neuronic
 excerpt: Mastering Research
-date: 03/05/2026
+date: 03/02/2026
 ---
 
 # Building Neuronic
 
-*How we designed an AI study platform that doesn't just store your notes — it understands what you know, what you don't, and what to study next.*
-
-**March 2026 · Engineering Deep Dive**
+**March 2026**
 
 ---
 
-Most study apps are glorified text editors with a flashcard button bolted on. You type notes, maybe generate some cards, and hope for the best. There's no understanding of *what* you're learning, no sense of *how well* you know it, and no intelligence about *what to do next*.
+Most study apps are glorified text editors with a flashcard button bolted on. No understanding of *what* you're learning, no sense of *how well* you know it, nothing about *what to do next*.
 
-We built Neuronic to change that. It's an AI-powered study platform where every note you create feeds into a living model of your knowledge — extracting concepts, tracking mastery, detecting gaps, and driving you toward real understanding through active recall, spaced repetition, and targeted practice.
-
-This post is a technical deep dive into how it all works.
+I built Neuronic to fix that. It's an AI study platform where every note feeds into a living model of your knowledge — extracting concepts, tracking mastery, detecting gaps, and driving you toward real understanding through active recall, spaced repetition, and targeted practice.
 
 | Metric | Value |
 |--------|-------|
@@ -27,9 +23,9 @@ This post is a technical deep dive into how it all works.
 
 ---
 
-## The Seven Pillars of Learning
+## The Seven Pillars
 
-Neuronic is organized around a learning lifecycle. Every feature maps to one of seven pillars — not as a marketing gimmick, but as an engineering constraint. Every line of code must serve one of these stages:
+Every feature in Neuronic maps to one of seven stages in a learning lifecycle. This isn't marketing — it's an engineering constraint. Every line of code serves one of these:
 
 ```
 ┌─────────┐ ┌────────────┐ ┌──────────┐ ┌────────┐ ┌──────┐ ┌───────┐ ┌─────────────┐
@@ -38,25 +34,25 @@ Neuronic is organized around a learning lifecycle. Every feature maps to one of 
 └─────────┘ └────────────┘ └──────────┘ └────────┘ └──────┘ └───────┘ └─────────────┘
 ```
 
-**Capture** is multi-modal: markdown notes, canvas diagrams (Excalidraw), visual moodboards, PDF/PPTX uploads, YouTube transcript imports, arXiv paper ingestion, voice recordings with Whisper transcription, and a Chrome extension for one-click web clipping.
+**Capture** — Multi-modal input: markdown, Excalidraw canvas, moodboards, PDF/PPTX uploads, YouTube transcript imports, arXiv ingestion, Whisper voice transcription, and a Chrome extension for web clipping.
 
-**Understand** is where AI enters. Every note is analyzed by Claude to extract concepts, definitions, formulas, prerequisites, and summaries. This feeds into the knowledge graph and powers the concept mastery system.
+**Understand** — AI analysis via Claude. Every note gets its concepts, definitions, formulas, prerequisites, and summaries extracted. This feeds the knowledge graph and concept mastery system.
 
-**Organize** uses folders, tags, wiki-style `[[bidirectional links]]`, and a force-directed knowledge graph that visualizes connections between notes and concepts.
+**Organize** — Folders, tags, `[[bidirectional links]]`, and a force-directed knowledge graph visualizing connections between notes and concepts.
 
-**Retain** is the engine — SM-2 spaced repetition applied to both flashcards *and* notes, plus AI-generated quizzes, the Feynman technique with voice-based explanation scoring, and a Socratic dialogue mode where Claude probes your understanding.
+**Retain** — The engine. SM-2 spaced repetition on flashcards *and* notes, AI-generated quizzes, Feynman technique with voice-based explanation scoring, and Socratic dialogue where Claude probes your understanding.
 
-**Act** turns insight into action: study plans parsed from syllabi, todo management, Pomodoro timers, focus mode, and an IFTTT-style automation engine.
+**Act** — Study plans parsed from syllabi, todos, Pomodoro timers, focus mode, and an IFTTT-style automation engine.
 
-**Track** surfaces progress: a dashboard with activity heatmaps, weak area detection, performance trends, knowledge gap visualization, and smart nudges.
+**Track** — Dashboard with activity heatmaps, weak area detection, performance trends, knowledge gap visualization, and smart nudges.
 
-**Collaborate** enables study groups with shared notes, a Q&A forum with voting and bounties, synchronized Pomodoro rooms, and friend activity feeds.
+**Collaborate** — Study groups with shared notes, Q&A forum with voting and bounties, synchronized Pomodoro rooms, and friend activity feeds.
 
 ---
 
 ## System Architecture
 
-Neuronic is a monorepo with a React frontend, FastAPI backend, and SQLite database. The AI layer sits as a service between the backend and Anthropic's Claude API, with FastEmbed providing local vector embeddings for hybrid search.
+Neuronic is a monorepo: React frontend, FastAPI backend, SQLite database. The AI layer sits between the backend and Claude's API, with FastEmbed handling local vector embeddings for hybrid search.
 
 ```mermaid
 graph LR
@@ -105,15 +101,15 @@ graph LR
     F --> K
 ```
 
-The architecture is deliberately simple. SQLite in WAL mode handles concurrent reads without contention. The async FastAPI layer means long-running AI calls don't block the event loop. Redis caches hot paths (note lists, dashboard data), and Celery handles background jobs like audio transcription and batch analysis.
+Deliberately simple. SQLite in WAL mode handles concurrent reads without contention. Async FastAPI means long-running AI calls don't block the event loop. Redis caches hot paths (note lists, dashboard data), Celery handles background jobs like audio transcription and batch analysis.
 
-API keys are encrypted at rest with Fernet symmetric encryption. Users can bring their own Anthropic keys, which are never stored in plaintext — the server falls back to its own key pool when none is provided.
+API keys are encrypted at rest with Fernet symmetric encryption. Users can bring their own Anthropic keys — they're never stored in plaintext. The server falls back to its own key pool when none is provided.
 
 ---
 
 ## The Note Analysis Pipeline
 
-When you save a note, a cascade of background processing transforms raw text into structured knowledge. This pipeline is the backbone of everything else — concept mastery, knowledge gaps, smart search, and study recommendations all depend on it.
+When you save a note, a cascade of background processing turns raw text into structured knowledge. This pipeline is the backbone of everything else — concept mastery, knowledge gaps, smart search, and study recommendations all depend on it.
 
 ```mermaid
 flowchart TD
@@ -140,17 +136,17 @@ flowchart TD
     style I fill:#1a1a1a,stroke:#58a6ff,color:#58a6ff
 ```
 
-Steps 3-5 run concurrently. The embedding is computed locally via FastEmbed (BAAI/bge-small-en-v1.5, 384 dimensions) — no external API call needed. The Claude analysis runs in parallel and fans out to four downstream consumers: concept sync, analysis storage, review scheduling, and the automation event bus.
+Steps 3-5 run concurrently. The embedding is computed locally via FastEmbed (BAAI/bge-small-en-v1.5, 384 dimensions) — no external API call needed. Claude analysis runs in parallel and fans out to four downstream consumers: concept sync, analysis storage, review scheduling, and the automation event bus.
 
 ---
 
 ## Spaced Repetition at Scale
 
-Most apps apply SM-2 to flashcards alone. We apply it to **everything** — flashcards, notes, and even concepts. The algorithm is the same, but the inputs differ:
+Most apps apply SM-2 to flashcards alone. I apply it to *everything* — flashcards, notes, and concepts.
 
 - **Flashcards**: Classic flip-and-rate. Quality 0-5, explicit user rating.
 - **Notes**: Active recall mode. See the title, try to recall the content, rate your recall 1-4.
-- **Quiz feedback loop**: Quiz scores passively update the source note's SM-2 state. A bad quiz score shortens the review interval.
+- **Quiz feedback loop**: Quiz scores passively update the source note's SM-2 state. Bad score? Shorter interval. Good score? It recedes.
 
 ```mermaid
 flowchart LR
@@ -178,13 +174,13 @@ flowchart LR
  └──────┘    └──────┘    └──────┘    └──────┘    └──────┘
 ```
 
-The key innovation is the **quiz feedback loop**. When a user takes a quiz generated from a note, the score updates that note's SM-2 state. Score below 60%? The interval resets and the note surfaces in the review queue sooner. Score above 80%? The ease factor increases and the note recedes. This creates a passive spaced repetition layer that works even if the user never explicitly reviews notes.
+The interesting part is the quiz feedback loop. When you take a quiz generated from a note, the score updates that note's SM-2 state. Score below 60%? Interval resets, note resurfaces sooner. Above 80%? Ease factor goes up, note recedes. Turns out this creates spaced repetition that works even if you never explicitly review notes.
 
 ---
 
 ## Knowledge Graph & Concept Mastery
 
-The knowledge graph is where everything converges. Every concept extracted from every note becomes a node. Edges form when two concepts co-occur in the same document. Mastery is computed from a weighted blend of flashcard performance, quiz scores, and Feynman technique assessments.
+This is where everything converges. Every concept extracted from every note becomes a node. Edges form when two concepts co-occur in the same document. Mastery is a weighted blend of flashcard performance, quiz scores, and Feynman technique assessments.
 
 ```mermaid
 flowchart LR
@@ -208,13 +204,13 @@ flowchart LR
     style GAP fill:#1a1a1a,stroke:#f47068,color:#f47068
 ```
 
-The gap detection system is particularly useful. It compares a note's prerequisites against the user's known concepts. If you're studying eigenvalues but haven't encountered linear algebra, the dashboard surfaces that gap with a one-click button to auto-generate a prerequisite note via Claude.
+Gap detection is probably my favorite part. It compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard surfaces that gap with a one-click button to auto-generate a prerequisite note via Claude.
 
 ---
 
 ## Hybrid Search & RAG
 
-Search combines three signals: **semantic similarity** (cosine distance on 384-dim embeddings), **keyword matching** (substring search in titles and content), and **recency boost** (recently edited notes rank higher). The RAG pipeline uses this same search to ground Claude's responses in the user's own notes.
+Search combines three signals: **semantic similarity** (cosine distance on 384-dim embeddings), **keyword matching** (substring in titles and content), and **recency boost** (recently edited notes rank higher). The RAG pipeline uses this same search to ground Claude's responses in your own notes.
 
 ```mermaid
 flowchart LR
@@ -243,31 +239,29 @@ flowchart LR
 
 ## Six Study Modalities
 
-Learning isn't one-size-fits-all. Neuronic offers six distinct study modes, each targeting a different cognitive process:
+### Flashcards
+AI-generated with duplicate detection. Keyboard-driven sessions. SM-2 scheduling. Export to Anki.
 
-### ✳ Flashcards
-AI-generated with duplicate detection. Keyboard-driven study sessions. SM-2 scheduling. Export to Anki.
-
-### ≣ Quizzes
+### Quizzes
 Multiple choice, true/false, fill-in-the-blank. Exam simulation mode with strict timers and no peeking.
 
-### ◎ Note Review
+### Note Review
 Active recall queue. See the title, reconstruct the content mentally, rate your recall. SM-2 scheduled.
 
-### ♨ Feynman Technique
+### Feynman Technique
 Explain a concept aloud or in writing. AI scores your understanding 0-100 and identifies gaps.
 
-### ✧ Socratic Dialogue
-AI asks probing questions to test your understanding. Adaptive difficulty based on responses.
+### Socratic Dialogue
+AI asks probing questions to test understanding. Adaptive difficulty based on your responses.
 
-### ▶ Focus Sessions
-Immersive study with Pomodoro timers, subject lock-in, distraction blocking, and streak tracking.
+### Focus Sessions
+Pomodoro timers, subject lock-in, distraction blocking, and streak tracking.
 
 ---
 
 ## The Automation Engine
 
-The automation engine bridges passive capture and active learning. Users define if-this-then-that rules: triggers fire on events like "PDF uploaded" or "quiz score below 60%", and actions execute asynchronously — generating flashcards, creating todos, posting to forums, or sending notifications.
+The automation engine bridges passive capture and active learning. You define if-this-then-that rules: triggers fire on events like "PDF uploaded" or "quiz score below 60%", and actions execute asynchronously — generating flashcards, creating todos, posting to forums, or sending notifications.
 
 ```mermaid
 flowchart LR
@@ -282,32 +276,11 @@ flowchart LR
     style EXEC fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
 ```
 
-The engine processes events asynchronously via `fire_event()`. Every rule match is logged for auditability, and failed actions retry with exponential backoff. This means a user can set up a rule like "whenever I upload a PDF, generate 10 flashcards and create a review todo for next week" — and never think about it again.
+Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff. So you can set up something like "whenever I upload a PDF, generate 10 flashcards and create a review todo for next week" — and never think about it again.
 
 ---
 
-## What Makes This Different
-
-There are hundreds of note-taking apps and dozens of flashcard apps. Here's what none of them do together:
-
-> Most study apps are passive — they store what you put in. Neuronic is active — it asks what you don't understand, creates learning material automatically, tracks mastery in real-time, and nudges you toward what matters.
-
-- **AI as co-learner, not just assistant.** Claude doesn't just answer questions — it analyzes your notes via RAG, detects knowledge gaps (missing prerequisites), generates flashcards intelligently (with dedup), and provides personalized study nudges.
-- **SM-2 on everything.** Spaced repetition applied to both flashcards and notes, with quiz scores passively updating review schedules.
-- **Concept mastery tracking.** Automatic concept extraction, prerequisite chains, mastery visualization, and gap detection — not found in any note app.
-- **Multi-modal capture.** Voice recordings, PDFs, YouTube transcripts, arXiv papers, canvas diagrams, web clips — all feeding into the same knowledge system.
-- **Automation engine.** IFTTT-style rules bridge passive capture and active learning.
-- **No lock-in.** Export to Anki, Markdown ZIP, PDF, or compile AI study guides.
-
----
-
-## What's Next
-
-We're working on collaborative knowledge graphs (seeing where your study group's mastery overlaps and diverges), predictive study scheduling (ML-based "you'll forget this in 3 days" alerts), and a mobile app for review-on-the-go.
-
-The core thesis remains: **studying should be intelligent, not just diligent**. Every feature we build serves one question: "Does this help the user understand more, in less time, with less friction?"
-
-If it doesn't, we don't ship it.
+That's Neuronic. Studying should be intelligent, not just diligent.
 
 ---
 

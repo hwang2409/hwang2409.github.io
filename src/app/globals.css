@@ -17,7 +17,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 body {
@@ -188,6 +188,46 @@ body {
   line-height: 1.5;
   white-space: pre;
 }
+
+/* Syntax highlighting */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name { color: #999; }
+
+.hljs-string,
+.hljs-attr { color: #b5b5b5; }
+
+.hljs-number,
+.hljs-literal { color: #d0d0d0; }
+
+.hljs-comment,
+.hljs-meta { color: #555; font-style: italic; }
+
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ { color: #e0e0e0; }
+
+.hljs-function .hljs-title,
+.hljs-title.function_ { color: #c8c8c8; }
+
+.hljs-variable,
+.hljs-template-variable { color: #b0b0b0; }
+
+.hljs-operator,
+.hljs-punctuation { color: #888; }
+
+.hljs-params { color: #aaa; }
+
+.hljs-property { color: #bbb; }
+
+.hljs-regexp { color: #ccc; }
+
+.hljs-tag { color: #999; }
+
+.hljs-attr { color: #aaa; }
+
+.hljs-symbol { color: #ddd; }
 
 .prose a {
   color: var(--accent);
