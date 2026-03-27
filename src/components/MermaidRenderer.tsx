@@ -36,13 +36,12 @@ function openLightbox(svgHtml: string) {
   const svg = container.querySelector('svg');
   if (svg) {
     svg.removeAttribute('style');
-    const vb = svg.getAttribute('viewBox');
-    if (vb) {
-      svg.removeAttribute('width');
-      svg.removeAttribute('height');
-    }
-    container.style.transform = 'scale(1.8)';
-    container.style.transformOrigin = 'center center';
+    svg.removeAttribute('width');
+    svg.removeAttribute('height');
+    svg.style.maxWidth = '85vw';
+    svg.style.maxHeight = '80vh';
+    svg.style.width = 'auto';
+    svg.style.height = 'auto';
   }
 
   const hint = document.createElement('span');

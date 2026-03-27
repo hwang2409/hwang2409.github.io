@@ -333,9 +333,7 @@ body {
 
 .mermaid-lightbox-content svg {
   display: block;
-  width: 90vw;
-  max-width: 900px;
-  height: auto;
+  margin: 0 auto;
 }
 
 .mermaid-lightbox-hint {

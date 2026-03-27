@@ -6,7 +6,7 @@ date: 03/14/2026
 
 # Whitematter
 
-I wanted to know what happens between `loss.backward()` and the weights changing. Not conceptually — I mean the actual bytes. Which multiply goes where. How a convolution gradient turns into a transposed convolution. What the chain rule looks like when it's not a diagram in a textbook but 83,000 lines of C++.
+I wanted to know what happens between `loss.backward()` and the weights changing. Not conceptually  - I mean the actual bytes. Which multiply goes where. How a convolution gradient turns into a transposed convolution. What the chain rule looks like when it's not a diagram in a textbook but 83,000 lines of C++.
 
 So I built a deep learning framework from scratch: tensors, autograd, layers, optimizers, SIMD kernels, GPU shaders, the whole stack. Then wrapped it in a web platform where you can train models from a browser.
 
@@ -63,7 +63,7 @@ No Python in the training loop. The backend transpiles an architecture descripti
 
 ## Tensors and Autograd
 
-The tensor is a contiguous float buffer with shape metadata, stride info, and a pointer to the function that created it. That pointer is the autograd system — every operation records a closure that knows how to compute its gradient.
+The tensor is a contiguous float buffer with shape metadata, stride info, and a pointer to the function that created it. That pointer is the autograd system  - every operation records a closure that knows how to compute its gradient.
 
 ```cpp
 auto x = Tensor::randn({64, 784}, true);   // requires_grad=true
@@ -95,7 +95,7 @@ flowchart TD
     style L fill:#1a1a1a,stroke:#555,color:#c0c0c0
 ```
 
-Broadcasting follows NumPy rules — shapes are right-aligned, dimensions of size 1 expand. Bias addition, attention masking, and batch-wise scaling all rely on it.
+Broadcasting follows NumPy rules  - shapes are right-aligned, dimensions of size 1 expand. Bias addition, attention masking, and batch-wise scaling all rely on it.
 
 ---
 
@@ -143,11 +143,11 @@ Every layer handles its own weight initialization, tracks running stats where ne
 
 Naive matrix multiplication in C++ is slow. Cache misses kill you. Whitematter stacks three levels of optimization:
 
-**SIMD** — Element-wise ops use vector instructions: AVX2 on Intel (8 floats/instruction), NEON on Apple Silicon (4 floats/instruction). Detected at compile time.
+**SIMD**  - Element-wise ops use vector instructions: AVX2 on Intel (8 floats/instruction), NEON on Apple Silicon (4 floats/instruction). Detected at compile time.
 
-**BLAS** — Matmul dispatches to system BLAS (Apple Accelerate, OpenBLAS). Hand-tuned GEMM routines that exploit cache hierarchy. Roughly 10x over a naive triple loop. Convolutions use **im2col** — unfold receptive fields into columns, multiply by flattened kernels.
+**BLAS**  - Matmul dispatches to system BLAS (Apple Accelerate, OpenBLAS). Hand-tuned GEMM routines that exploit cache hierarchy. Roughly 10x over a naive triple loop. Convolutions use **im2col**  - unfold receptive fields into columns, multiply by flattened kernels.
 
-**GPU** — Metal compute shaders on macOS, CUDA kernels for NVIDIA. A unified `Device` abstraction: `tensor->to(Device::Metal)` is all it takes.
+**GPU**  - Metal compute shaders on macOS, CUDA kernels for NVIDIA. A unified `Device` abstraction: `tensor->to(Device::Metal)` is all it takes.
 
 ```mermaid
 flowchart LR
@@ -181,7 +181,7 @@ flowchart TD
     style A fill:#1a1a1a,stroke:#555,color:#c0c0c0
 ```
 
-The code generator maps architecture JSON to a complete C++ training script — includes, model definition, data loading, optimizer setup, training loop, metric printing. Writes to a temp directory, invokes CMake, worker supervises execution. Loss, accuracy, and learning rate stream to the browser via SSE. You can cancel mid-training.
+The code generator maps architecture JSON to a complete C++ training script  - includes, model definition, data loading, optimizer setup, training loop, metric printing. Writes to a temp directory, invokes CMake, worker supervises execution. Loss, accuracy, and learning rate stream to the browser via SSE. You can cancel mid-training.
 
 **Bundled training utilities:**
 - Optimizers: SGD, Adam, AdamW, RMSprop
@@ -191,15 +191,15 @@ The code generator maps architecture JSON to a complete C++ training script — 
 - Early stopping, checkpointing
 - ONNX export
 
-One-click deploy to AWS EC2 — provisions an instance, uploads the binary, exposes a REST inference endpoint.
+One-click deploy to AWS EC2  - provisions an instance, uploads the binary, exposes a REST inference endpoint.
 
 ---
 
 ## Reference Models
 
-The model zoo ships with full implementations: **ResNet-18** (residual blocks, BatchNorm, adaptive pooling), **MobileNetV2** (inverted residuals, depthwise separable convolutions), and a **GPT** decoder (causal multi-head attention, positional encoding, autoregressive generation — trained on Shakespeare as proof-of-concept).
+The model zoo ships with full implementations: **ResNet-18** (residual blocks, BatchNorm, adaptive pooling), **MobileNetV2** (inverted residuals, depthwise separable convolutions), and a **GPT** decoder (causal multi-head attention, positional encoding, autoregressive generation  - trained on Shakespeare as proof-of-concept).
 
-All three use only Whitematter's layer primitives. Reading the source is how you learn what these architectures actually are — not abstractions over abstractions, but the literal matrix operations.
+All three use only Whitematter's layer primitives. Reading the source is how you learn what these architectures actually are  - not abstractions over abstractions, but the literal matrix operations.
 
 ---
 
@@ -207,7 +207,7 @@ All three use only Whitematter's layer primitives. Reading the source is how you
 
 Because I wanted to understand it.
 
-PyTorch is great. If you're training for production, use PyTorch. But PyTorch is a building — you walk in, press buttons, things happen. I wanted to build the building. Writing matmul backward by hand teaches you it's just two transposed multiplications. Implementing BatchNorm teaches you why training and eval modes exist. Writing convolution as im2col teaches you that convolutions are matrix multiplies in disguise.
+PyTorch is great. If you're training for production, use PyTorch. But PyTorch is a building  - you walk in, press buttons, things happen. I wanted to build the building. Writing matmul backward by hand teaches you it's just two transposed multiplications. Implementing BatchNorm teaches you why training and eval modes exist. Writing convolution as im2col teaches you that convolutions are matrix multiplies in disguise.
 
 The web platform exists so the framework doesn't require a C++ toolchain to use. But the framework exists because the learning is in the implementation.
 
