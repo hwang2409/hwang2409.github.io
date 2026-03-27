@@ -21,7 +21,7 @@ mermaid.initialize({
     clusterBorder: '#333',
     edgeLabelBackground: '#111',
     fontFamily: 'JetBrains Mono, monospace',
-    fontSize: '13px',
+    fontSize: '11px',
   },
 });
 
