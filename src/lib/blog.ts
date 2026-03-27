@@ -81,7 +81,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeHighlight)
+    .use(rehypeHighlight, { plainText: ['mermaid'] })
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();

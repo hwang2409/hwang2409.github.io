@@ -25,24 +25,26 @@ mermaid.initialize({
   },
 });
 
-function openLightbox(svgHtml: string) {
+function openLightbox(diagramEl: HTMLElement) {
   const overlay = document.createElement('div');
   overlay.className = 'mermaid-lightbox';
 
   const container = document.createElement('div');
   container.className = 'mermaid-lightbox-content';
-  container.innerHTML = svgHtml;
 
-  const svg = container.querySelector('svg');
-  if (svg) {
-    svg.removeAttribute('style');
-    svg.removeAttribute('width');
-    svg.removeAttribute('height');
-    svg.style.maxWidth = '85vw';
-    svg.style.maxHeight = '80vh';
-    svg.style.width = 'auto';
-    svg.style.height = 'auto';
-  }
+  // Clone the diagram exactly as rendered — don't touch the SVG attributes
+  const clone = diagramEl.cloneNode(true) as HTMLElement;
+  clone.style.cssText = 'margin:0;border:none;background:transparent;padding:0;cursor:default;overflow:visible';
+  container.appendChild(clone);
+
+  // Compute scale: fit the diagram within 85vw x 75vh, cap at 2.5x
+  const rect = diagramEl.getBoundingClientRect();
+  const maxW = window.innerWidth * 0.85;
+  const maxH = window.innerHeight * 0.75;
+  const scale = Math.min(maxW / rect.width, maxH / rect.height, 2.5);
+
+  container.style.transform = `scale(${scale})`;
+  container.style.transformOrigin = 'center center';
 
   const hint = document.createElement('span');
   hint.className = 'mermaid-lightbox-hint';
@@ -91,7 +93,7 @@ export default function MermaidRenderer() {
           wrapper.innerHTML = svg;
           wrapper.style.cursor = 'pointer';
           wrapper.title = 'Click to enlarge';
-          wrapper.addEventListener('click', () => openLightbox(svg));
+          wrapper.addEventListener('click', () => openLightbox(wrapper));
           pre.replaceWith(wrapper);
         } catch (e) {
           console.error(`Mermaid render failed for block ${i}:`, e);
