@@ -227,6 +227,14 @@ export default function Resume() {
           >
             linkedin
           </a>
+          <a
+            href="https://x.com/oreaooaoaoaoa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link hover:text-foreground transition-colors duration-200"
+          >
+            x
+          </a>
         </div>
       </footer>
     </div>

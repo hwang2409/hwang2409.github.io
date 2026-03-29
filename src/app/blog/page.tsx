@@ -31,17 +31,17 @@ export default function Blog() {
       </header>
 
       <main className="flex-1">
-        <div className="w-full max-w-5xl mx-auto px-6 py-10 animate-in">
-          <h1 className="text-xl font-semibold text-foreground mb-8">
+        <div className="w-full max-w-5xl mx-auto px-6 py-10">
+          <h1 className="text-xl font-semibold text-foreground mb-8 stagger-1">
             writing
           </h1>
 
           <ul className="space-y-4">
             {blogPosts.map((post, index) => (
-              <li key={index}>
+              <li key={index} className={`stagger-${Math.min(index + 2, 8)}`}>
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="group flex items-baseline justify-between gap-6"
+                  className="blog-item group flex items-baseline justify-between gap-6"
                 >
                   <span className="text-muted group-hover:text-foreground transition-colors duration-200 text-sm">
                     {post.title}
@@ -80,6 +80,14 @@ export default function Blog() {
             className="nav-link hover:text-foreground transition-colors duration-200"
           >
             linkedin
+          </a>
+          <a
+            href="https://x.com/oreaooaoaoaoa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link hover:text-foreground transition-colors duration-200"
+          >
+            x
           </a>
         </div>
       </footer>

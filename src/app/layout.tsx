@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import { IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import ParticleCanvas from '@/components/ParticleCanvas';
 
-const jetbrainsMono = JetBrains_Mono({
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   display: 'swap',
 });
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
   },
   description:
     'Software engineering student at the University of Waterloo.',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jetbrainsMono.className} antialiased`}>
+      <body className={`${ibmPlexMono.className} antialiased`}>
         <ParticleCanvas />
         {children}
       </body>

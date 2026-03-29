@@ -66,12 +66,14 @@ export default async function BlogPostPage({
             })}
           </p>
 
-          <article
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
-          <MermaidRenderer />
-          <IframeResizer />
+          <div className="article-panel">
+            <article
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
+            <MermaidRenderer />
+            <IframeResizer />
+          </div>
         </div>
       </main>
 
@@ -99,6 +101,14 @@ export default async function BlogPostPage({
             className="nav-link hover:text-foreground transition-colors duration-200"
           >
             linkedin
+          </a>
+          <a
+            href="https://x.com/oreaooaoaoaoa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link hover:text-foreground transition-colors duration-200"
+          >
+            x
           </a>
         </div>
       </footer>
