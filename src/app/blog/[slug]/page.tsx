@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import MermaidRenderer from '@/components/MermaidRenderer';
+import IframeResizer from '@/components/IframeResizer';
 
 export async function generateMetadata({
   params,
@@ -70,6 +71,7 @@ export default async function BlogPostPage({
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
           <MermaidRenderer />
+          <IframeResizer />
         </div>
       </main>
 

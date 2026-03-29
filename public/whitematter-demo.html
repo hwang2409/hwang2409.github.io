@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>whitematter demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0; padding: 0;
+            color: #b0b0b0;
+            background: transparent;
+            line-height: 1.6;
+            height: 100%;
+        }
+        .drop-zone {
+            border: 1.5px dashed #333;
+            border-radius: 8px;
+            padding: 32px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .drop-zone:hover { border-color: #555; }
+        .drop-zone.active { border-color: #888; }
+        .drop-zone p { margin: 0; color: #666; font-size: 14px; }
+        .preview-section { margin-top: 16px; text-align: center; }
+        .preview {
+            width: 96px; height: 96px;
+            image-rendering: pixelated;
+            border: 1px solid #282828; border-radius: 4px;
+        }
+        .preview-caption { font-size: 11px; color: #444; margin-top: 4px; }
+        .result { margin-top: 16px; }
+        .result-title { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+        .label { width: 76px; text-align: right; font-size: 12px; color: #666; flex-shrink: 0; }
+        .bar-track { flex: 1; background: #1a1a1a; border-radius: 3px; height: 20px; overflow: hidden; }
+        .bar {
+            height: 100%; background: #444; border-radius: 3px;
+            transition: width 0.4s ease;
+            display: flex; align-items: center; padding: 0 6px; min-width: fit-content;
+        }
+        .bar span { color: #ccc; font-size: 10px; font-weight: 500; white-space: nowrap; }
+        .bar-row:first-child .bar { background: #666; }
+        .pct-outside { font-size: 10px; color: #555; width: 36px; flex-shrink: 0; }
+        #status { color: #555; font-size: 12px; margin-top: 10px; }
+        #status.ready { color: #888; }
+        #status.error { color: #999; }
+        .timing { font-size: 11px; color: #444; margin-top: 2px; }
+        .note { font-size: 11px; color: #333; margin-top: 12px; }
+    </style>
+</head>
+<body>
+    <div class="drop-zone" id="dropZone">
+        <p>Drop an image here or click to upload</p>
+        <input type="file" accept="image/*" id="fileInput" style="display:none">
+    </div>
+
+    <div id="previewSection" class="preview-section" style="display:none;">
+        <canvas id="previewCanvas" class="preview" width="32" height="32"></canvas>
+        <p class="preview-caption">32x32 model input</p>
+    </div>
+
+    <div id="results" class="result" style="display:none;">
+        <div class="result-title">Predictions</div>
+        <div id="bars"></div>
+        <p id="timing" class="timing"></p>
+    </div>
+
+    <p id="status">Loading model...</p>
+
+    <script>
+    const CLASSES = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck'];
+    const MEAN = [0.4914, 0.4822, 0.4465];
+    const STD  = [0.2470, 0.2435, 0.2616];
+    let session = null;
+
+    async function loadModel() {
+        const s = document.getElementById('status');
+        try {
+            session = await ort.InferenceSession.create('/resnet18.onnx', {
+                executionProviders: ['wasm']
+            });
+            s.textContent = 'Model loaded. Upload an image to classify.';
+            s.className = 'ready';
+        } catch (e) {
+            s.textContent = 'Failed to load model: ' + e.message;
+            s.className = 'error';
+        }
+    }
+
+    async function classify(imageData) {
+        if (!session) return;
+        const s = document.getElementById('status');
+        s.textContent = 'Running inference...'; s.className = '';
+        const t0 = performance.now();
+        const f = new Float32Array(3*32*32);
+        for (let c=0;c<3;c++) for (let h=0;h<32;h++) for (let w=0;w<32;w++) {
+            f[c*1024+h*32+w] = (imageData.data[(h*32+w)*4+c]/255.0 - MEAN[c]) / STD[c];
+        }
+        const res = await session.run({input: new ort.Tensor('float32', f, [1,3,32,32])});
+        const logits = Array.from(res[Object.keys(res)[0]].data);
+        const ms = (performance.now()-t0).toFixed(0);
+        const mx = Math.max(...logits);
+        const ex = logits.map(x=>Math.exp(x-mx));
+        const sm = ex.reduce((a,b)=>a+b);
+        const probs = ex.map(x=>x/sm);
+        const sorted = CLASSES.map((n,i)=>({n,p:probs[i]})).sort((a,b)=>b.p-a.p);
+
+        document.getElementById('bars').innerHTML = sorted.slice(0,5).map(({n,p})=>{
+            const pct=(p*100).toFixed(1), w=Math.max(p*100,0.5), ins=p>=0.08;
+            return `<div class="bar-row"><span class="label">${n}</span>
+                <div class="bar-track"><div class="bar" style="width:${w}%">
+                ${ins?`<span>${pct}%</span>`:''}</div></div>
+                ${!ins?`<span class="pct-outside">${pct}%</span>`:'<span class="pct-outside"></span>'}
+            </div>`;
+        }).join('');
+        document.getElementById('results').style.display='block';
+        document.getElementById('timing').textContent=`${ms}ms inference`;
+        s.textContent=`${sorted[0].n} (${(sorted[0].p*100).toFixed(1)}%)`;
+        s.className='ready';
+    }
+
+    function processImage(file) {
+        const r=new FileReader();
+        r.onload=function(e){
+            const img=new Image();
+            img.onload=function(){
+                const c=document.getElementById('previewCanvas');
+                c.width=32;c.height=32;
+                const ctx=c.getContext('2d');
+                const sz=Math.min(img.width,img.height);
+                ctx.drawImage(img,(img.width-sz)/2,(img.height-sz)/2,sz,sz,0,0,32,32);
+                document.getElementById('previewSection').style.display='block';
+                classify(ctx.getImageData(0,0,32,32));
+            };
+            img.src=e.target.result;
+        };
+        r.readAsDataURL(file);
+    }
+
+    const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
+    dz.onclick=()=>fi.click();
+    fi.onchange=e=>{if(e.target.files[0])processImage(e.target.files[0])};
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('active')};
+    dz.ondragleave=()=>dz.classList.remove('active');
+    dz.ondrop=e=>{e.preventDefault();dz.classList.remove('active');if(e.dataTransfer.files[0])processImage(e.dataTransfer.files[0])};
+    // Auto-resize iframe to fit content
+    function notifyHeight() {
+        const h = document.body.scrollHeight;
+        window.parent.postMessage({type:'wm-resize',height:h}, '*');
+    }
+    new MutationObserver(notifyHeight).observe(document.body, {childList:true,subtree:true,attributes:true});
+    window.addEventListener('load', notifyHeight);
+
+    loadModel();
+    </script>
+</body>
+</html>

@@ -4,11 +4,9 @@ excerpt: My Default System Architecture
 date: 03/23/2026
 ---
 
-# The Stack
 
-Every project I start looks the same. React up front, FastAPI in the middle, SQLite and Redis in the back, Claude somewhere in the loop, SSE pushing data to the browser. Two projects in a row, same bones  - so here's the skeleton.
+Every project I start looks the same. React up front, FastAPI in the middle, SQLite and Redis in the back, Claude somewhere in the loop, SSE pushing data to the browser. Two projects in a row, same bones - so here's the skeleton.
 
-**March 2026**
 
 ---
 
@@ -56,7 +54,7 @@ I've used Express, Flask, Django. FastAPI wins on three things:
 
 **Pydantic models.** Request/response schemas are Python classes. Validation is automatic. The schema *is* the documentation.
 
-**SSE support.** `StreamingResponse` with an async generator  - that's it for real-time updates. No WebSocket ceremony.
+**SSE support.** `StreamingResponse` with an async generator - that's it for real-time updates. No WebSocket ceremony.
 
 ```python
 @app.post("/api/process")
@@ -92,7 +90,7 @@ The key decision: Claude never touches the database directly. It receives contex
 
 Every time I reach for Postgres I ask myself: do I actually need it? The answer keeps being no.
 
-SQLite in WAL mode handles concurrent reads without contention. Single writer is fine when your write volume is "one user doing things." The database is a single file  - no daemon, no connection strings, no Docker container for local dev.
+SQLite in WAL mode handles concurrent reads without contention. Single writer is fine when your write volume is "one user doing things." The database is a single file - no daemon, no connection strings, no Docker container for local dev.
 
 ```mermaid
 flowchart TD
@@ -109,7 +107,7 @@ SQLAlchemy async sessions on top, Alembic for migrations. ~200 lines of boilerpl
 
 ## Background Work & SSE
 
-Some things can't happen in the request cycle  - transcription, batch AI analysis, PDF processing. These go to background workers.
+Some things can't happen in the request cycle - transcription, batch AI analysis, PDF processing. These go to background workers.
 
 ```
 Request comes in → validate → enqueue job → return 202 Accepted
@@ -195,7 +193,7 @@ function useSSE<T>(url: string | null) {
 
 Four lines of logic. Covers 90% of real-time use cases.
 
-Auth is JWT  - short-lived access tokens, refresh tokens in httpOnly cookies. For projects that don't need it, I skip it entirely. No auth is better than half-implemented auth.
+Auth is JWT - short-lived access tokens, refresh tokens in httpOnly cookies. For projects that don't need it, I skip it entirely. No auth is better than half-implemented auth.
 
 ---
 
@@ -216,8 +214,7 @@ One Dockerfile, one nginx config, one GitHub Actions workflow. No Kubernetes. A 
 
 ## When This Breaks Down
 
-This stack has limits. SQLite's single writer chokes on high write concurrency. SSE holds a connection per client, which stops scaling at thousands. Python's GIL blocks the event loop on CPU-heavy work. I know where the ceilings are  - I just haven't hit them yet, and most projects never will. The ones that do have already proven they're worth the migration effort.
+This stack has limits. SQLite's single writer chokes on high write concurrency. SSE holds a connection per client, which stops scaling at thousands. Python's GIL blocks the event loop on CPU-heavy work. I know where the ceilings are - I just haven't hit them yet, and most projects never will. The ones that do have already proven they're worth the migration effort.
 
 ---
 
-*2026*

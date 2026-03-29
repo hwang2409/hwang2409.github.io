@@ -4,15 +4,13 @@ excerpt: GPU Programming Is a Different Language
 date: 03/26/2026
 ---
 
-# CUDA
 
-I have a working ML framework. Tensors, autograd, layers, optimizers  - runs on CPU with SIMD and BLAS, trains MNIST in seconds. Then I thought: how hard can GPU support be?
+I have a working ML framework. Tensors, autograd, layers, optimizers - runs on CPU with SIMD and BLAS, trains MNIST in seconds. Then I thought: how hard can GPU support be?
 
 Every assumption you have about how computers work is slightly wrong on a GPU, and the wrongness compounds.
 
 This is where I'm at right now. Not a tutorial. A dispatch from the middle.
 
-**March 2026**
 
 ---
 
@@ -65,7 +63,7 @@ void CUDABackend::matmul(const float* h_A, const float* h_B,
 
 Copy in. Compute. Copy out. For every single operation. Hundreds of ops per forward pass, and the GPU spends most of its time waiting for data over PCIe.
 
-The fix is keeping tensors resident on the GPU  - allocate once, compute many times, only copy back when you need to read a value like the loss. But that means rewriting the tensor abstraction so it knows where its data lives, which means touching every operation, every autograd closure, every layer. That rewrite is ongoing.
+The fix is keeping tensors resident on the GPU - allocate once, compute many times, only copy back when you need to read a value like the loss. But that means rewriting the tensor abstraction so it knows where its data lives, which means touching every operation, every autograd closure, every layer. That rewrite is ongoing.
 
 ---
 
@@ -73,7 +71,7 @@ The fix is keeping tensors resident on the GPU  - allocate once, compute many ti
 
 This one took me a full day to debug.
 
-C++ is row-major. cuBLAS expects column-major (Fortran lineage). Pass row-major data to cuBLAS without accounting for this and you get wrong answers  - not errors, just quietly wrong results.
+C++ is row-major. cuBLAS expects column-major (Fortran lineage). Pass row-major data to cuBLAS without accounting for this and you get wrong answers - not errors, just quietly wrong results.
 
 The trick: `B^T @ A^T` in column-major gives you `(A @ B)^T` in column-major, which is `A @ B` in row-major. So you swap the operands:
 
@@ -108,7 +106,7 @@ __global__ void add_kernel(const float* a, const float* b,
 }
 ```
 
-One thread per element. The simple kernels  - activations, element-wise ops  - are all this pattern. ReLU is `fmaxf(0.0f, x)`, sigmoid is `1.0f / (1.0f + expf(-x))`, each activation is maybe 10 lines. Trivial.
+One thread per element. The simple kernels - activations, element-wise ops - are all this pattern. ReLU is `fmaxf(0.0f, x)`, sigmoid is `1.0f / (1.0f + expf(-x))`, each activation is maybe 10 lines. Trivial.
 
 The problems start when you need *cooperation between threads*.
 
@@ -116,7 +114,7 @@ The problems start when you need *cooperation between threads*.
 
 ## Reductions Are Hard
 
-Element-wise ops are embarrassingly parallel  - every element is independent. Reductions are the opposite: combine N values into one, which inherently requires communication.
+Element-wise ops are embarrassingly parallel - every element is independent. Reductions are the opposite: combine N values into one, which inherently requires communication.
 
 Sum reduction uses a two-phase approach:
 
@@ -154,7 +152,7 @@ The large-row path allocates temporary buffers on every call. That's `cudaMalloc
 
 GPUs are fast because they're asynchronous. Launch a kernel and the CPU continues immediately. But sometimes you need a result on the CPU before you can continue.
 
-Gradient norm clipping has this problem  - you need the total norm (a scalar) to decide how to scale gradients:
+Gradient norm clipping has this problem - you need the total norm (a scalar) to decide how to scale gradients:
 
 ```cpp
 // Phase 1: partial norms on GPU
@@ -217,7 +215,7 @@ Buffer goes out of scope, returns to pool instead of being freed. Works well for
 
 ## cuDNN: Someone Else's Complexity
 
-Convolutions and batch normalization use cuDNN. Writing a fast convolution kernel is a research problem  - I'm not going to beat their team.
+Convolutions and batch normalization use cuDNN. Writing a fast convolution kernel is a research problem - I'm not going to beat their team.
 
 The integration is straightforward but verbose:
 
@@ -238,7 +236,7 @@ cudnnConvolutionForward(cudnn, &alpha, input_desc, d_input,
                          output_desc, d_output);
 ```
 
-Workspace is pre-allocated at 8 MB. If it's too small, cuDNN falls back to slower algorithms  - no error, just worse performance. Silent degradation.
+Workspace is pre-allocated at 8 MB. If it's too small, cuDNN falls back to slower algorithms - no error, just worse performance. Silent degradation.
 
 ---
 
@@ -260,4 +258,3 @@ The most important optimization isn't in any kernel. It's keeping the data on th
 
 ---
 
-*2026*
