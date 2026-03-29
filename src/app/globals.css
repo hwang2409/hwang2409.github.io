@@ -412,14 +412,6 @@ body::after {
 }
 
 /* Ensure node text is never clipped by its bounding rect */
-.mermaid-diagram .node rect,
-.mermaid-diagram .node circle,
-.mermaid-diagram .node polygon,
-.mermaid-diagram .node path {
-  rx: 3;
-  ry: 3;
-}
-
 .mermaid-diagram .nodeLabel,
 .mermaid-diagram .edgeLabel,
 .mermaid-diagram .label {
@@ -427,11 +419,6 @@ body::after {
 }
 
 .mermaid-diagram .node foreignObject {
-  overflow: visible;
-}
-
-.mermaid-diagram .node foreignObject div {
-  padding: 4px 8px;
   overflow: visible;
 }
 
