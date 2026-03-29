@@ -6,6 +6,14 @@ import mermaid from 'mermaid';
 mermaid.initialize({
   startOnLoad: false,
   theme: 'dark',
+  securityLevel: 'loose',
+  flowchart: {
+    padding: 16,
+    nodeSpacing: 50,
+    rankSpacing: 60,
+    htmlLabels: true,
+    useMaxWidth: true,
+  },
   themeVariables: {
     darkMode: true,
     background: '#111',
@@ -20,8 +28,8 @@ mermaid.initialize({
     clusterBkg: '#141414',
     clusterBorder: '#333',
     edgeLabelBackground: '#111',
-    fontFamily: 'JetBrains Mono, monospace',
-    fontSize: '11px',
+    fontFamily: 'IBM Plex Mono, monospace',
+    fontSize: '12px',
   },
 });
 
@@ -69,6 +77,13 @@ export default function MermaidRenderer() {
     async function render() {
       const codeBlocks = document.querySelectorAll('code.language-mermaid');
       if (codeBlocks.length === 0) return;
+
+      // Wait for IBM Plex Mono to load so Mermaid measures text correctly
+      if (document.fonts) {
+        try {
+          await document.fonts.ready;
+        } catch {}
+      }
 
       const ts = Date.now();
 
