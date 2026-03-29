@@ -411,7 +411,7 @@ body::after {
   overflow: visible;
 }
 
-/* Ensure node text is never clipped by its bounding rect */
+/* Ensure node text is never clipped and multi-line labels stay centered */
 .mermaid-diagram .nodeLabel,
 .mermaid-diagram .edgeLabel,
 .mermaid-diagram .label {
@@ -420,6 +420,16 @@ body::after {
 
 .mermaid-diagram .node foreignObject {
   overflow: visible;
+}
+
+.mermaid-diagram .node foreignObject > div,
+.mermaid-diagram .node .nodeLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
 }
 
 .mermaid-diagram:hover {
