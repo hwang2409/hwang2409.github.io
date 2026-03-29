@@ -45,17 +45,17 @@ function createNoise() {
   };
 }
 
+const TRAIL_CAP = 30;
+
 interface StreamParticle {
-  trail: Float64Array; // [x0,y0, x1,y1, ...] ring buffer
-  head: number;        // write index into trail (in pairs)
-  len: number;         // how many points currently in trail
+  trail: Float32Array; // [x0,y0, x1,y1, ...] ring buffer
+  head: number;
+  len: number;
   age: number;
   maxAge: number;
   speed: number;
   burst: boolean;
 }
-
-const TRAIL_CAP = 50;
 
 export default function ParticleCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -77,29 +77,27 @@ export default function ParticleCanvas() {
     let time = 0;
     let w = window.innerWidth;
     let h = window.innerHeight;
-
-    // Mouse state with decay
     let mouseX = -1000;
     let mouseY = -1000;
-    let mouseStrength = 0; // decays when mouse leaves
+    let mouseStrength = 0;
+    const TARGET_FPS = 30; // Cap at 30fps — smooth enough, half the CPU
+    let lastFrame = 0;
+    const frameInterval = 1000 / TARGET_FPS;
 
     const FIELD_SCALE = 0.002;
-    const TIME_SPEED = 0.0003;
+    const TIME_SPEED = 0.0006; // doubled since we run at half fps
 
     function spawn(): StreamParticle {
       const x = Math.random() * w;
       const y = Math.random() * h;
-      const trail = new Float64Array(TRAIL_CAP * 2);
+      const trail = new Float32Array(TRAIL_CAP * 2);
       trail[0] = x;
       trail[1] = y;
-      const burst = Math.random() < 0.06;
+      const burst = Math.random() < 0.05;
       return {
-        trail,
-        head: 0,
-        len: 1,
-        age: 0,
-        maxAge: burst ? 100 + Math.random() * 80 : 60 + Math.random() * 100,
-        speed: burst ? 1.4 + Math.random() * 0.8 : 0.6 + Math.random() * 0.7,
+        trail, head: 0, len: 1, age: 0,
+        maxAge: burst ? 80 + Math.random() * 60 : 50 + Math.random() * 70,
+        speed: burst ? 1.6 + Math.random() * 0.6 : 0.7 + Math.random() * 0.6,
         burst,
       };
     }
@@ -107,14 +105,11 @@ export default function ParticleCanvas() {
     function resetParticle(p: StreamParticle) {
       const x = Math.random() * w;
       const y = Math.random() * h;
-      p.trail[0] = x;
-      p.trail[1] = y;
-      p.head = 0;
-      p.len = 1;
-      p.age = 0;
-      p.burst = Math.random() < 0.06;
-      p.maxAge = p.burst ? 100 + Math.random() * 80 : 60 + Math.random() * 100;
-      p.speed = p.burst ? 1.4 + Math.random() * 0.8 : 0.6 + Math.random() * 0.7;
+      p.trail[0] = x; p.trail[1] = y;
+      p.head = 0; p.len = 1; p.age = 0;
+      p.burst = Math.random() < 0.05;
+      p.maxAge = p.burst ? 80 + Math.random() * 60 : 50 + Math.random() * 70;
+      p.speed = p.burst ? 1.6 + Math.random() * 0.6 : 0.7 + Math.random() * 0.6;
     }
 
     function resize() {
@@ -131,12 +126,10 @@ export default function ParticleCanvas() {
 
     function initParticles() {
       const area = w * h;
-      const count = Math.max(250, Math.min(700, Math.floor(area / 2800)));
+      // Fewer particles — 150-400 range
+      const count = Math.max(150, Math.min(400, Math.floor(area / 5000)));
       particles = Array.from({ length: count }, spawn);
-      // Stagger ages
-      for (const p of particles) {
-        p.age = Math.random() * p.maxAge * 0.5;
-      }
+      for (const p of particles) p.age = Math.random() * p.maxAge * 0.5;
     }
 
     function handleMouseMove(e: MouseEvent) {
@@ -145,48 +138,59 @@ export default function ParticleCanvas() {
       mouseStrength = 1;
     }
 
-    function handleMouseLeave() {
-      // Don't zero out — let it decay in the draw loop
-    }
+    function handleMouseLeave() { /* decay in draw loop */ }
 
-    function draw() {
+    function tick() {
+      animationId = requestAnimationFrame(tick);
+
+      // Throttle to target fps
+      const now = performance.now();
+      if (now - lastFrame < frameInterval) return;
+      lastFrame = now;
+
       time += TIME_SPEED;
+      mouseStrength *= 0.97;
 
-      // Decay mouse influence
-      mouseStrength *= 0.985;
-
-      // Full clear — no ghosting
       ctx!.clearRect(0, 0, w, h);
 
+      // Batch trails by opacity band to reduce state changes
+      // Instead of per-segment stroke, build paths per alpha bucket
+      const BANDS = 5;
+      const paths: Path2D[] = [];
+      const bandAlphas: number[] = [];
+      const bandWidths: number[] = [];
+      for (let b = 0; b < BANDS; b++) {
+        paths.push(new Path2D());
+        bandAlphas.push(0);
+        bandWidths.push(0);
+      }
+
       for (const p of particles) {
-        // Current head position
         const hx = p.trail[p.head * 2];
         const hy = p.trail[p.head * 2 + 1];
 
-        // Flow field — two octaves
-        const a1 = noise(hx * FIELD_SCALE, hy * FIELD_SCALE + time) * Math.PI * 2;
-        const a2 = noise(hx * FIELD_SCALE * 3 + 50, hy * FIELD_SCALE * 3 + time * 1.8 + 50) * Math.PI * 2;
+        // Single noise octave (saves ~40% CPU vs two)
+        const angle = noise(hx * FIELD_SCALE, hy * FIELD_SCALE + time) * Math.PI * 2.5;
+        let vx = Math.cos(angle);
+        let vy = Math.sin(angle);
 
-        let vx = Math.cos(a1) * 0.65 + Math.cos(a2) * 0.35;
-        let vy = Math.sin(a1) * 0.65 + Math.sin(a2) * 0.35;
-
-        // Mouse vortex with decay
-        if (mouseStrength > 0.01) {
+        // Mouse vortex
+        if (mouseStrength > 0.02) {
           const dx = hx - mouseX;
           const dy = hy - mouseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const radius = 220;
-          if (dist < radius && dist > 1) {
-            const s = (1 - dist / radius) * mouseStrength * 2.5;
-            vx += (-dy / dist) * s * 0.8 + (-dx / dist) * s * 0.1;
-            vy += (dx / dist) * s * 0.8 + (-dy / dist) * s * 0.1;
+          const distSq = dx * dx + dy * dy;
+          const radius = 200;
+          if (distSq < radius * radius && distSq > 1) {
+            const dist = Math.sqrt(distSq);
+            const s = (1 - dist / radius) * mouseStrength * 2;
+            vx += (-dy / dist) * s;
+            vy += (dx / dist) * s;
           }
         }
 
-        const nx = hx + vx * p.speed * 1.3;
-        const ny = hy + vy * p.speed * 1.3;
+        const nx = hx + vx * p.speed * 1.5;
+        const ny = hy + vy * p.speed * 1.5;
 
-        // Push new position
         const newHead = (p.head + 1) % TRAIL_CAP;
         p.trail[newHead * 2] = nx;
         p.trail[newHead * 2 + 1] = ny;
@@ -194,28 +198,20 @@ export default function ParticleCanvas() {
         p.len = Math.min(p.len + 1, TRAIL_CAP);
         p.age++;
 
-        // Reset if out of bounds or expired
         if (p.age > p.maxAge || nx < -20 || nx > w + 20 || ny < -20 || ny > h + 20) {
           resetParticle(p);
           continue;
         }
 
-        // Draw trail — iterate from tail to head
-        if (p.len < 2) continue;
+        if (p.len < 3) continue;
 
         const lifeFrac = p.age / p.maxAge;
-        // Global fade: ramp in during first 10%, ramp out during last 25%
-        const globalFade = Math.min(1, p.age / 10) * Math.max(0, 1 - Math.max(0, lifeFrac - 0.75) / 0.25);
+        const globalFade = Math.min(1, p.age / 8) * Math.max(0, 1 - Math.max(0, lifeFrac - 0.75) / 0.25);
+        if (globalFade < 0.01) continue;
 
-        if (globalFade < 0.005) continue;
-
-        const maxAlpha = p.burst ? 0.28 : 0.13;
-        const maxWidth = p.burst ? 1.8 : 1.0;
-
-        ctx!.lineCap = 'round';
-
+        // Draw trail as a single polyline per particle, split into a few opacity bands
+        const maxAlpha = p.burst ? 0.25 : 0.12;
         for (let s = 0; s < p.len - 1; s++) {
-          // s=0 is the oldest (tail), s=len-1 is the newest (head)
           const tailIdx = (p.head - p.len + 1 + s + TRAIL_CAP) % TRAIL_CAP;
           const nextIdx = (tailIdx + 1) % TRAIL_CAP;
 
@@ -224,56 +220,61 @@ export default function ParticleCanvas() {
           const x1 = p.trail[nextIdx * 2];
           const y1 = p.trail[nextIdx * 2 + 1];
 
-          // Position along trail: 0 = tail (oldest), 1 = head (newest)
+          const bandIdx = Math.min(BANDS - 1, Math.floor((s / (p.len - 1)) * BANDS));
           const t = s / (p.len - 1);
-
-          // Opacity: fades toward tail, bright at head
           const segAlpha = t * t * maxAlpha * globalFade;
 
-          // Width: tapers toward tail
-          const segWidth = (0.2 + t * 0.8) * maxWidth;
+          if (segAlpha < 0.005) continue;
 
-          if (segAlpha < 0.003) continue;
+          // Accumulate into band path
+          paths[bandIdx].moveTo(x0, y0);
+          paths[bandIdx].lineTo(x1, y1);
 
-          // Subtle color shift: warm gray at tail → cool white at head
-          const r = Math.round(180 + t * 40);
-          const g = Math.round(180 + t * 45);
-          const b = Math.round(185 + t * 50);
-
-          ctx!.beginPath();
-          ctx!.moveTo(x0, y0);
-          ctx!.lineTo(x1, y1);
-          ctx!.strokeStyle = `rgba(${r},${g},${b},${segAlpha})`;
-          ctx!.lineWidth = segWidth;
-          ctx!.stroke();
-        }
-
-        // Bright dot at the head of burst particles
-        if (p.burst && globalFade > 0.1) {
-          const headX = p.trail[p.head * 2];
-          const headY = p.trail[p.head * 2 + 1];
-          const dotAlpha = globalFade * 0.4;
-
-          const grd = ctx!.createRadialGradient(headX, headY, 0, headX, headY, 6);
-          grd.addColorStop(0, `rgba(220,225,230,${dotAlpha})`);
-          grd.addColorStop(1, 'rgba(220,225,230,0)');
-          ctx!.beginPath();
-          ctx!.arc(headX, headY, 6, 0, Math.PI * 2);
-          ctx!.fillStyle = grd;
-          ctx!.fill();
+          // Track max alpha/width for this band
+          bandAlphas[bandIdx] = Math.max(bandAlphas[bandIdx], segAlpha);
+          bandWidths[bandIdx] = Math.max(bandWidths[bandIdx], (0.3 + t * 0.7) * (p.burst ? 1.6 : 0.9));
         }
       }
 
-      animationId = requestAnimationFrame(draw);
+      // Draw all bands — only 5 stroke calls total instead of thousands
+      ctx!.lineCap = 'round';
+      for (let b = 0; b < BANDS; b++) {
+        if (bandAlphas[b] < 0.005) continue;
+        ctx!.strokeStyle = `rgba(200,205,210,${bandAlphas[b]})`;
+        ctx!.lineWidth = bandWidths[b];
+        ctx!.stroke(paths[b]);
+      }
+
+      // Burst head dots — one radial gradient per burst particle
+      for (const p of particles) {
+        if (!p.burst || p.len < 2) continue;
+        const lifeFrac = p.age / p.maxAge;
+        const globalFade = Math.min(1, p.age / 8) * Math.max(0, 1 - Math.max(0, lifeFrac - 0.75) / 0.25);
+        if (globalFade < 0.1) continue;
+        const hx = p.trail[p.head * 2];
+        const hy = p.trail[p.head * 2 + 1];
+        const a = globalFade * 0.35;
+        const grd = ctx!.createRadialGradient(hx, hy, 0, hx, hy, 5);
+        grd.addColorStop(0, `rgba(215,220,225,${a})`);
+        grd.addColorStop(1, 'rgba(215,220,225,0)');
+        ctx!.beginPath();
+        ctx!.arc(hx, hy, 5, 0, Math.PI * 2);
+        ctx!.fillStyle = grd;
+        ctx!.fill();
+      }
     }
 
     resize();
 
     if (prefersReducedMotion) {
-      for (let i = 0; i < 200; i++) draw();
+      lastFrame = 0;
+      for (let i = 0; i < 150; i++) {
+        lastFrame = 0;
+        tick();
+      }
       cancelAnimationFrame(animationId);
     } else {
-      draw();
+      tick();
     }
 
     window.addEventListener('resize', resize);
