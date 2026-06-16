@@ -6,56 +6,88 @@
     <title>whitematter demo</title>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
     <style>
+        @font-face {
+            font-family: Consolas;
+            src: url("/fonts/consolas-regular.woff2") format("woff2");
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Consolas;
+            src: url("/fonts/consolas-bold.woff2") format("woff2");
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        :root {
+            --background: #fbfbfb;
+            --foreground: #111;
+            --muted: #666;
+            --border: #777;
+            --code: #f2f2f2;
+            --bar: #777;
+            color-scheme: light;
+        }
+
+        :root[data-theme="dark"] {
+            --background: #111;
+            --foreground: #eee;
+            --muted: #aaa;
+            --border: #777;
+            --code: #242424;
+            --bar: #aaa;
+            color-scheme: dark;
+        }
+
         *, *::before, *::after { box-sizing: border-box; }
         html, body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: Consolas, "Courier New", monospace;
             margin: 0; padding: 0;
-            color: #b0b0b0;
-            background: transparent;
+            color: var(--foreground);
+            background: var(--background);
             line-height: 1.6;
             height: 100%;
         }
         .drop-zone {
-            border: 1.5px dashed #333;
-            border-radius: 8px;
+            border: 1px dashed var(--border);
             padding: 32px 16px;
             text-align: center;
             cursor: pointer;
-            transition: border-color 0.2s;
             min-height: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-        .drop-zone:hover { border-color: #555; }
-        .drop-zone.active { border-color: #888; }
-        .drop-zone p { margin: 0; color: #666; font-size: 14px; }
+        .drop-zone:hover,
+        .drop-zone.active { border-color: var(--foreground); }
+        .drop-zone p { margin: 0; color: var(--muted); font-size: 14px; }
         .preview-section { margin-top: 16px; text-align: center; }
         .preview {
             width: 96px; height: 96px;
             image-rendering: pixelated;
-            border: 1px solid #282828; border-radius: 4px;
+            border: 1px solid var(--border);
         }
-        .preview-caption { font-size: 11px; color: #444; margin-top: 4px; }
+        .preview-caption { font-size: 11px; color: var(--muted); margin-top: 4px; }
         .result { margin-top: 16px; }
-        .result-title { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .result-title { font-size: 13px; font-weight: 700; color: var(--foreground); margin-bottom: 8px; }
         .bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-        .label { width: 76px; text-align: right; font-size: 12px; color: #666; flex-shrink: 0; }
-        .bar-track { flex: 1; background: #1a1a1a; border-radius: 3px; height: 20px; overflow: hidden; }
+        .label { width: 76px; text-align: right; font-size: 12px; color: var(--muted); flex-shrink: 0; }
+        .bar-track { flex: 1; background: var(--code); border: 1px solid var(--border); height: 20px; overflow: hidden; }
         .bar {
-            height: 100%; background: #444; border-radius: 3px;
-            transition: width 0.4s ease;
+            height: 100%; background: var(--bar);
             display: flex; align-items: center; padding: 0 6px; min-width: fit-content;
         }
-        .bar span { color: #ccc; font-size: 10px; font-weight: 500; white-space: nowrap; }
-        .bar-row:first-child .bar { background: #666; }
-        .pct-outside { font-size: 10px; color: #555; width: 36px; flex-shrink: 0; }
-        #status { color: #555; font-size: 12px; margin-top: 10px; }
-        #status.ready { color: #888; }
-        #status.error { color: #999; }
-        .timing { font-size: 11px; color: #444; margin-top: 2px; }
-        .note { font-size: 11px; color: #333; margin-top: 12px; }
+        .bar span { color: var(--background); font-size: 10px; font-weight: 700; white-space: nowrap; }
+        .bar-row:first-child .bar { background: var(--foreground); }
+        .pct-outside { font-size: 10px; color: var(--muted); width: 36px; flex-shrink: 0; }
+        #status { color: var(--muted); font-size: 12px; margin-top: 10px; }
+        #status.error { color: var(--foreground); font-weight: 700; }
+        .timing { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .note { font-size: 11px; color: var(--muted); margin-top: 12px; }
     </style>
 </head>
 <body>
@@ -78,6 +110,22 @@
     <p id="status">Loading model...</p>
 
     <script>
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+        document.documentElement.dataset.theme = savedTheme;
+    }
+    window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        if (event.data?.type === 'site-theme') {
+            document.documentElement.dataset.theme = event.data.theme;
+        }
+    });
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'theme' && (event.newValue === 'dark' || event.newValue === 'light')) {
+            document.documentElement.dataset.theme = event.newValue;
+        }
+    });
+
     const CLASSES = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck'];
     const MEAN = [0.4914, 0.4822, 0.4465];
     const STD  = [0.2470, 0.2435, 0.2616];

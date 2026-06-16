@@ -1,13 +1,7 @@
 import type { Metadata } from 'next';
-import { IBM_Plex_Mono } from 'next/font/google';
+import Link from 'next/link';
+import SiteNav from '@/components/SiteNav';
 import './globals.css';
-import ParticleCanvas from '@/components/ParticleCanvas';
-
-const ibmPlexMono = IBM_Plex_Mono({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -16,10 +10,16 @@ export const metadata: Metadata = {
   },
   description:
     'Software engineering student at the University of Waterloo.',
-  icons: {
-    icon: '/icon.svg',
-  },
 };
+
+const themeScript = `
+try {
+  var theme = window.localStorage.getItem('theme');
+  if (theme === 'dark' || theme === 'light') {
+    document.documentElement.dataset.theme = theme;
+  }
+} catch (_) {}
+`;
 
 export default function RootLayout({
   children,
@@ -27,10 +27,47 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${ibmPlexMono.className} antialiased`}>
-        <ParticleCanvas />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <div className="site-shell">
+          <header className="site-header">
+            <Link href="/" className="site-name">
+              Henry Wang
+            </Link>
+            <SiteNav />
+          </header>
+
+          <main className="site-main">{children}</main>
+
+          <footer className="site-footer">
+            <span>hw</span>
+            <div className="site-links">
+              <a href="mailto:h352wang@uwaterloo.ca">email</a>
+              <a
+                href="https://github.com/hwang2409"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                github
+              </a>
+              <a
+                href="https://linkedin.com/in/henry-w-se"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                linkedin
+              </a>
+              <a
+                href="https://x.com/oreaooaoaoaoa"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                x
+              </a>
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );
