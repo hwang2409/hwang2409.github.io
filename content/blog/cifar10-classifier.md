@@ -10,17 +10,17 @@ Upload an image. The model classifies it as one of: airplane, automobile, bird, 
 
 <p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Runs locally via WebAssembly. No data leaves your browser.</p>
 
-<p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Note: this demo is the model at ~20 epochs (~83% accuracy). There are 180 epochs left to train, and the full run should push it past 93%. Compute on a single RTX 2070 SUPER is slow. The model will be updated as training progresses.</p>
+<p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Note: this demo is the model at ~20 epochs (~83% accuracy). There are 180 epochs left to train, and the full-run target is 93%+. Compute on a single RTX 2070 SUPER is slow. The model will be updated as training progresses.</p>
 
-This is a ResNet-18 I trained from scratch using [whitematter](/blog/whitematter). 11 million parameters, CUDA-accelerated training on an RTX 2070 SUPER, exported to ONNX, running inference in your browser via ONNX Runtime Web. No server. No API. The entire model loads into your tab.
+The demo uses a ResNet-18 trained from scratch with [whitematter](/blog/whitematter): 11 million parameters, CUDA-accelerated training on an RTX 2070 SUPER, exported to ONNX, and running locally through ONNX Runtime Web.
 
-> [!side] The boundary is clean: train elsewhere, export once, run locally in the browser.
+> [!side] Training and inference are separate artifacts: train elsewhere, export once, run locally in the browser.
 
 ---
 
 ## The Architecture
 
-ResNet-18. Four groups of residual blocks, each with two 3x3 convolutions and a skip connection. The skip connection is the whole point: it lets gradients flow directly through the network without vanishing.
+ResNet-18. Four groups of residual blocks, each with two 3x3 convolutions and a skip connection. The skip connection gives the gradient a shorter path through the network.
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ out = out->add(x);                // skip connection: add input directly
 out = out->relu();                // activate
 ```
 
-That `add(x)` is the residual connection. Without it, a 18-layer network is hard to train because gradients attenuate through repeated multiplications. With it, the gradient has a direct path back through the identity mapping. The network only needs to learn the *residual*, the difference from the input.
+That `add(x)` is the residual connection. Without it, an 18-layer network is harder to train because gradients attenuate through repeated multiplications. With it, the network learns the residual, the difference from the input.
 
 When spatial dimensions change (32x32 → 16x16), the skip connection uses a 1x1 convolution to match dimensions:
 
@@ -96,7 +96,7 @@ cudnnConvolutionForward(dnn, &alpha,
     &beta, output_desc, d_output);
 ```
 
-The algorithm choice matters. `IMPLICIT_PRECOMP_GEMM` precomputes the im2col offsets. `WINOGRAD` uses a mathematical transform to reduce the number of multiplications for 3x3 kernels. cuDNN picks the fastest one for your tensor sizes.
+Algorithm selection affects throughput. `IMPLICIT_PRECOMP_GEMM` precomputes the im2col offsets. `WINOGRAD` uses a mathematical transform to reduce the number of multiplications for 3x3 kernels. cuDNN picks the fastest one for your tensor sizes.
 
 ---
 
@@ -112,7 +112,7 @@ y = gamma * (x - mean) / sqrt(var + eps) + beta
 
 Without it, the distribution of activations shifts every time you update weights. BatchNorm keeps things stable, lets you use higher learning rates, and acts as a mild regularizer.
 
-The backward pass is the ugly part. Three separate gradients (input, gamma, beta), each requiring the saved mean and inverse standard deviation from the forward pass:
+The backward pass has three separate gradients (input, gamma, beta), each requiring the saved mean and inverse standard deviation from the forward pass:
 
 ```cpp
 // grad_gamma = sum(grad_output * x_normalized)
@@ -173,26 +173,20 @@ flowchart LR
 
 The export tool writes all 122 tensors (weights, biases, BatchNorm running statistics) to a flat binary file with named entries. A Python script reads this and constructs the ONNX graph with every conv, batchnorm, and skip connection wired up explicitly.
 
-ONNX Runtime Web loads the 42MB model in your browser, compiles it to WebAssembly, and runs inference in ~50ms per image. The same model that took hours to train on a GPU runs on your phone.
+ONNX Runtime Web loads the 42MB model in your browser, compiles it to WebAssembly, and runs inference in ~50ms per image.
 
-> [!side] The training stack can be weird, but the inference artifact is portable.
-
----
-
-## What I'd Do Differently
-
-CIFAR-10 images are 32x32 pixels. That's tiny. The model works well on CIFAR-10 test images but struggles with real photos because they're much higher resolution and come from a different distribution. A model trained on ImageNet (224x224, 1000 classes) would generalize better, but would need a lot more compute.
-
-The cuDNN integration on different versions (8 vs 9) caused days of debugging. The batchnorm API behaves subtly differently. If I were starting over, I'd test against PyTorch's output tensor-by-tensor from day one.
+> [!side] The training stack is version-dependent, but the inference artifact is portable.
 
 ---
 
-## What's Next
+## Limitations
 
-This is the first model. The framework supports transformers, recurrent networks, and attention mechanisms, so training more models is mostly a matter of compute and time.
+CIFAR-10 images are 32x32 pixels. The model works well on CIFAR-10 test images but struggles with real photos because they are much higher resolution and come from a different distribution. A model trained on ImageNet (224x224, 1000 classes) would generalize better, but would need a lot more compute.
 
-Next up is a small language model. whitematter already has MultiHeadAttention, RoPE, RMSNorm, and a GPT training script that generates Shakespeare. The plan is to train something small but real, export it to ONNX, and embed it somewhere on this site. Maybe a chatbot that writes in iambic pentameter, maybe an autocomplete that suggests code. Something you can interact with directly.
+The cuDNN 8/9 API differences were the main integration issue. The batchnorm API behaves subtly differently. Future runs should compare against PyTorch's output tensor-by-tensor from the start.
 
-Beyond that: object detection, style transfer, maybe a tiny speech recognizer. Same C++ framework, same ONNX export, same browser runtime.
+---
 
-More soon.
+## Next
+
+Next target: a small language model exported to ONNX. Whitematter already has MultiHeadAttention, RoPE, RMSNorm, and a GPT training script, so the main work is training, export, and browser-side inference.

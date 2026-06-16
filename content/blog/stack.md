@@ -1,13 +1,13 @@
 ---
 title: The Stack
-excerpt: My Default System Architecture
+excerpt: Default architecture for small AI projects
 date: 03/23/2026
 ---
 
 
-Every project I start looks the same. React up front, FastAPI in the middle, SQLite and Redis in the back, Claude somewhere in the loop, SSE pushing data to the browser. Two projects in a row had the same bones, so here's the skeleton.
+This is the default architecture I use for small AI projects: React up front, FastAPI in the middle, SQLite and Redis in the back, Claude behind a service layer, and SSE for progress updates.
 
-> [!side] Not universal architecture advice. This is what I reach for when I am building alone.
+> [!side] Scope: personal tools, prototypes, and single-developer projects.
 
 
 ---
@@ -44,19 +44,19 @@ graph LR
     D --> G
 ```
 
-Five boxes, six connections. Everything I've built recently is a variation on this.
+Recent projects use this shape with small variations.
 
 ---
 
 ## Why FastAPI
 
-I've used Express, Flask, Django. FastAPI wins on three things:
+FastAPI is useful here for three reasons:
 
-**Async by default.** Claude API calls take 3+ seconds. You don't want to block the process while waiting. Every AI-in-the-loop app is basically a bunch of network round trips.
+**Async by default.** Claude API calls take 3+ seconds. The server should not block the process while waiting. AI-in-the-loop apps are mostly network round trips.
 
 **Pydantic models.** Request/response schemas are Python classes. Validation is automatic. The schema *is* the documentation.
 
-**SSE support.** `StreamingResponse` with an async generator. That's it for real-time updates. No WebSocket ceremony.
+**SSE support.** `StreamingResponse` with an async generator covers one-way realtime updates.
 
 ```python
 @app.post("/api/process")
@@ -88,13 +88,13 @@ Claude never touches the database directly. It gets context, returns structured 
 
 ---
 
-## SQLite, Seriously
+## SQLite
 
-Every time I reach for Postgres I ask myself: do I actually need it? The answer keeps being no.
+For these projects, SQLite has been enough.
 
-SQLite in WAL mode handles concurrent reads without contention. Single writer is fine when your write volume is "one user doing things." The database is a single file: no daemon, no connection strings, no Docker container for local dev.
+SQLite in WAL mode handles concurrent reads without contention. Single writer is fine for single-user or low-write-volume workflows. The database is a single file: no daemon, no connection strings, no Docker container for local dev.
 
-> [!side] These are personal tools and prototypes first. If a project outgrows SQLite, that is a good problem.
+> [!side] These are personal tools and prototypes first. If a project outgrows SQLite, the migration path is straightforward.
 
 ```mermaid
 flowchart TD
@@ -105,13 +105,13 @@ flowchart TD
     SNP --> DB
 ```
 
-SQLAlchemy async sessions on top, Alembic for migrations. ~200 lines of boilerplate I copy between projects. If I ever outgrow it, the migration path to Postgres is swapping a connection string.
+SQLAlchemy async sessions on top, Alembic for migrations. The shared database boilerplate is about 200 lines. Moving to Postgres is mostly a connection string change when the schema stays conventional.
 
 ---
 
 ## Background Work & SSE
 
-Some things can't happen in the request cycle: transcription, batch AI analysis, PDF processing. These go to background workers.
+Long-running tasks should not happen in the request cycle: transcription, batch AI analysis, PDF processing. These go to background workers.
 
 ```
 Request comes in → validate → enqueue job → return 202 Accepted
@@ -130,7 +130,7 @@ async def enqueue(job_id: str, coro):
     task.add_done_callback(lambda t: tasks.pop(job_id, None))
 ```
 
-For the real-time side, I use SSE over WebSockets for almost everything:
+SSE is the default for progress updates:
 
 ```
  SSE                           WebSockets
@@ -195,9 +195,9 @@ function useSSE<T>(url: string | null) {
 }
 ```
 
-Four lines of logic. Covers 90% of real-time use cases.
+The wrapper is small and covers most one-way update flows.
 
-Auth is JWT: short-lived access tokens, refresh tokens in httpOnly cookies. For projects that don't need it, I skip it entirely. No auth is better than half-implemented auth.
+Auth is JWT: short-lived access tokens, refresh tokens in httpOnly cookies. For projects that don't need it, I skip auth entirely.
 
 ---
 
@@ -212,12 +212,12 @@ Auth is JWT: short-lived access tokens, refresh tokens in httpOnly cookies. For 
                     GitHub Actions CD    GitHub Actions CD
 ```
 
-One Dockerfile, one nginx config, one GitHub Actions workflow. No Kubernetes. A single EC2 instance handles more concurrent users than any of my projects have ever had.
+One Dockerfile, one nginx config, one GitHub Actions workflow. No Kubernetes. A single EC2 instance is enough for the current project scale.
 
 ---
 
 ## When This Breaks Down
 
-This stack has limits. SQLite's single writer chokes on high write concurrency. SSE holds a connection per client. Python's GIL blocks the event loop on CPU-heavy work. I know where the ceilings are. I just haven't hit them yet.
+This stack has limits. SQLite's single writer becomes a bottleneck under high write concurrency. SSE holds a connection per client. Python's GIL blocks the event loop on CPU-heavy work.
 
 ---

@@ -5,11 +5,11 @@ date: 03/14/2026
 ---
 
 
-I wanted to know what happens between `loss.backward()` and the weights changing. Not conceptually. I mean the actual bytes. Which multiply goes where. How a convolution gradient turns into a transposed convolution. What the chain rule looks like when it's not a diagram in a textbook but 83,000 lines of C++.
+Whitematter is a small deep learning framework written in C++. It implements tensors, autograd, layers, optimizers, CPU kernels, and GPU backends.
 
-> [!side] This is not about beating PyTorch. I wanted to remove the layer between the math and the memory.
+> [!side] The goal was to inspect the implementation path between `loss.backward()` and a weight update.
 
-So I built a deep learning framework from scratch: tensors, autograd, layers, optimizers, SIMD kernels, GPU shaders. Then wrapped it in a web UI.
+The web UI generates C++ training programs, compiles them, runs them, and streams metrics back to the browser.
 
 
 ---
@@ -76,9 +76,9 @@ loss->backward();
 
 `backward()` walks the graph in reverse topological order. Each node calls its stored closure, computes the local gradient, passes it upstream. Matmul backward for `A @ B` produces `grad @ B^T` for A and `A^T @ grad` for B. ReLU masks where input was negative. Convolution backward is a transposed convolution.
 
-Every backward function is written by hand. That's the point.
+Every backward function is written by hand.
 
-> [!side] Hand-writing backward passes is tedious in a useful way. You find out which operations were hiding real complexity.
+> [!side] Hand-written backward passes make the gradient path explicit for each operation.
 
 ```mermaid
 flowchart TD
@@ -143,13 +143,13 @@ Every layer handles its own weight initialization, tracks running stats where ne
 
 ## Making It Fast
 
-Naive matrix multiplication in C++ is slow. Cache misses kill you. Whitematter uses three levels of optimization:
+Naive matrix multiplication in C++ is slow. Whitematter uses three levels of optimization:
 
 **SIMD:** Element-wise ops use vector instructions: AVX2 on Intel (8 floats/instruction), NEON on Apple Silicon (4 floats/instruction). Detected at compile time.
 
 **BLAS:** Matmul dispatches to system BLAS (Apple Accelerate, OpenBLAS). Hand-tuned GEMM routines that exploit cache hierarchy. Roughly 10x over a naive triple loop. Convolutions use **im2col**: unfold receptive fields into columns, multiply by flattened kernels.
 
-**GPU:** Metal compute shaders on macOS, CUDA kernels for NVIDIA. A unified `Device` abstraction: `tensor->to(Device::Metal)` is all it takes.
+**GPU:** Metal compute shaders on macOS, CUDA kernels for NVIDIA. A unified `Device` abstraction moves tensors between backends.
 
 ```mermaid
 flowchart LR
@@ -169,7 +169,7 @@ Compiled with `-O3 -ffast-math -funroll-loops`. Memory allocation uses an object
 
 ## The Training Pipeline
 
-You describe a model in plain English. Claude suggests an architecture. You refine it in a visual node graph. Hit train.
+You describe a model in plain English. Claude suggests an architecture. You refine it in a visual node graph, then start training.
 
 ```mermaid
 flowchart TD
@@ -193,7 +193,7 @@ The code generator maps architecture JSON to a complete C++ training script: inc
 - Early stopping, checkpointing
 - ONNX export
 
-One-click deploy to AWS EC2 provisions an instance, uploads the binary, and exposes a REST inference endpoint.
+The deployment path can provision an AWS EC2 instance, upload the binary, and expose a REST inference endpoint.
 
 ---
 
@@ -205,11 +205,9 @@ All three use only Whitematter's layer primitives. Reading the source shows the 
 
 ---
 
-## Why C++
+## Notes
 
-Because I wanted to understand it.
-
-PyTorch is great. If you're training for production, use PyTorch. I built this because PyTorch hides the parts I wanted to understand. Writing matmul backward by hand teaches you it's just two transposed multiplications. Implementing BatchNorm teaches you why training and eval modes exist. Writing convolution as im2col teaches you that convolutions are matrix multiplies in disguise.
+PyTorch is the better choice for production training. This project is for implementation detail: matmul backward is two transposed multiplications, BatchNorm needs separate training/eval paths, and convolution can be implemented as im2col + GEMM.
 
 The web UI exists so the framework does not require a C++ toolchain to try.
 

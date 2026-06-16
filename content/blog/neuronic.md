@@ -1,6 +1,6 @@
 ---
 title: Neuronic
-excerpt: Notes, studying, and spaced repetition in one place
+excerpt: Study notes with structured review state
 date: 03/02/2026
 ---
 
@@ -8,11 +8,11 @@ date: 03/02/2026
 
 ---
 
-Most study apps are text editors with a flashcard button. They don't know what you're learning, how well you know it, or what you should do next.
+Neuronic treats notes as structured study data instead of plain documents.
 
-I built Neuronic around that problem. Every note gets analyzed for concepts, prerequisites, definitions, and review state. From there, the app can suggest flashcards, quizzes, weak areas, and what to study next.
+Neuronic analyzes each note for concepts, prerequisites, definitions, and review state. From there, it can suggest flashcards, quizzes, weak areas, and what to study next.
 
-> [!side] The important part is that notes become structured data. Flashcards and quizzes are views over the same graph.
+> [!side] Notes become structured data. Flashcards and quizzes are views over the same graph.
 
 | Metric | Value |
 |--------|-------|
@@ -23,7 +23,7 @@ I built Neuronic around that problem. Every note gets analyzed for concepts, pre
 
 ---
 
-## The Seven Pillars
+## Feature Areas
 
 Every major feature maps to one of seven stages:
 
@@ -40,7 +40,7 @@ Every major feature maps to one of seven stages:
 
 **Organize:** Folders, tags, `[[bidirectional links]]`, and a force-directed graph connecting notes and concepts.
 
-**Retain:** The engine. SM-2 spaced repetition on flashcards *and* notes, AI-generated quizzes, Feynman technique with voice-based explanation scoring, and Socratic dialogue where Claude probes your understanding.
+**Retain:** SM-2 spaced repetition on flashcards *and* notes, AI-generated quizzes, Feynman technique with voice-based explanation scoring, and Socratic dialogue where Claude probes your understanding.
 
 **Act:** Study plans parsed from syllabi, todos, Pomodoro timers, focus mode, and an IFTTT-style automation engine.
 
@@ -142,7 +142,7 @@ Steps 3-5 run concurrently. The embedding is computed locally via FastEmbed (BAA
 
 ## Spaced Repetition at Scale
 
-Most apps apply SM-2 to flashcards alone. I apply it to *everything*: flashcards, notes, and concepts.
+SM-2 is applied to flashcards, notes, and concepts.
 
 - **Flashcards**: Classic flip-and-rate. Quality 0-5, explicit user rating.
 - **Notes**: Active recall mode. See the title, try to recall the content, rate your recall 1-4.
@@ -174,7 +174,7 @@ flowchart LR
  └──────┘    └──────┘    └──────┘    └──────┘    └──────┘
 ```
 
-The quiz feedback loop matters. When you take a quiz generated from a note, the score updates that note's SM-2 state. Score below 60%? Interval resets, note resurfaces sooner. Above 80%? Ease factor goes up, note recedes.
+Quiz results update the source note's SM-2 state. Scores below 60% reset the interval so the note resurfaces sooner. Scores above 80% increase the ease factor.
 
 ---
 
@@ -206,7 +206,7 @@ flowchart LR
 
 Gap detection compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard shows that gap and gives you a button to generate a prerequisite note with Claude.
 
-> [!side] This is where AI helps: it notices the prerequisite you skipped.
+> [!side] The model is used to identify prerequisites and gaps, not to replace review.
 
 ---
 
@@ -279,10 +279,6 @@ flowchart LR
 ```
 
 Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff.
-
----
-
-That's Neuronic.
 
 ---
 

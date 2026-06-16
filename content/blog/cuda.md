@@ -1,15 +1,15 @@
 ---
 title: CUDA
-excerpt: GPU Programming Is a Different Language
+excerpt: Notes from adding a CUDA backend
 date: 03/26/2026
 ---
 
 
-I have a working ML framework: tensors, autograd, layers, optimizers. It runs on CPU with SIMD and BLAS and trains MNIST in seconds. Then I thought: how hard can GPU support be?
+The ML framework has tensors, autograd, layers, and optimizers. It runs on CPU with SIMD and BLAS and trains MNIST in seconds. The next backend is CUDA.
 
-Every assumption you have about how computers work is slightly wrong on a GPU. The mistakes stack up fast.
+The main constraint is data movement. Kernel code matters, but keeping tensors on the device matters more.
 
-This is where it is right now. Not a tutorial.
+Current status:
 
 
 ---
@@ -41,7 +41,7 @@ flowchart LR
     CPU["CPU Memory<br/>~50 GB/s"] -- "PCIe 4.0<br/>~16 GB/s" --> GPU["GPU Memory<br/>~900 GB/s"]
 ```
 
-That PCIe bottleneck is 50-60x slower than the GPU's internal bandwidth. Every host-to-device transfer is a toll booth on a highway.
+That PCIe bottleneck is 50-60x slower than the GPU's internal bandwidth. Every host-to-device transfer adds latency outside the kernel.
 
 My first `matmul()`:
 
@@ -71,13 +71,13 @@ The fix is keeping tensors resident on the GPU: allocate once, compute many time
 
 ## Row-Major vs. Column-Major
 
-This one took me a full day to debug.
+Row/column layout was the most common source of incorrect results.
 
 C++ is row-major. cuBLAS expects column-major (Fortran lineage). Pass row-major data to cuBLAS without accounting for this and you get wrong answers. Not errors, just quietly wrong results.
 
-> [!side] This bug is annoying because the code compiles, runs, and returns plausible-looking numbers.
+> [!side] The failure mode is quiet: the code compiles, runs, and returns plausible-looking numbers.
 
-The trick: `B^T @ A^T` in column-major gives you `(A @ B)^T` in column-major, which is `A @ B` in row-major. So you swap the operands:
+`B^T @ A^T` in column-major gives you `(A @ B)^T` in column-major, which is `A @ B` in row-major. The row-major call swaps operands:
 
 ```cpp
 // What you'd expect:
@@ -94,7 +94,7 @@ cublasSgemm(handle,
     d_C, N);
 ```
 
-Easy to forget when adding a new BLAS operation. Batched matmul has the same issue, plus stride calculations.
+The same conversion applies to each new BLAS operation. Batched matmul has the same issue, plus stride calculations.
 
 ---
 
@@ -110,13 +110,13 @@ __global__ void add_kernel(const float* a, const float* b,
 }
 ```
 
-One thread per element. The simple kernels, like activations and element-wise ops, all use this pattern. ReLU is `fmaxf(0.0f, x)`, sigmoid is `1.0f / (1.0f + expf(-x))`, each activation is maybe 10 lines. Trivial.
+One thread per element. The simple kernels, like activations and element-wise ops, all use this pattern. ReLU is `fmaxf(0.0f, x)`, sigmoid is `1.0f / (1.0f + expf(-x))`, and each activation is a small kernel.
 
-The problems start when you need *cooperation between threads*.
+Reductions need cooperation between threads.
 
 ---
 
-## Reductions Are Hard
+## Reductions
 
 Element-wise ops are easy because every element is independent. Reductions are the opposite: combine N values into one, which requires communication.
 
@@ -130,9 +130,9 @@ flowchart TD
     D --> E["Output: 1 float"]
 ```
 
-Softmax is worse. For each row: find the max (numerical stability), subtract and exponentiate, sum the exponentials, divide. Three reductions per row, each depending on the previous.
+Softmax adds dependencies. For each row: find the max (numerical stability), subtract and exponentiate, sum the exponentials, divide. Three reductions per row, each depending on the previous.
 
-**Small rows (≤ 1024 elements):** One block per row. Shared memory for max, sum, normalization. Relatively clean.
+**Small rows (≤ 1024 elements):** One block per row. Shared memory for max, sum, normalization.
 
 **Large rows (> 1024 elements):** Three separate kernel launches. Temporary device buffers for per-row max and sum. Three launches mean three synchronization barriers.
 
@@ -152,7 +152,7 @@ The large-row path allocates temporary buffers on every call. That's `cudaMalloc
 
 ---
 
-## The Synchronization Problem
+## Synchronization Points
 
 GPUs are fast because they're asynchronous. Launch a kernel and the CPU continues immediately. But sometimes you need a result on the CPU before you can continue.
 
@@ -179,7 +179,7 @@ if (norm > max_norm) {
 }
 ```
 
-That `cudaMemcpy` with `DeviceToHost` blocks until the GPU finishes. The whole pipeline stalls for one scalar. The right fix is doing the reduction and comparison on the GPU, but conditional kernel launches add their own mess.
+That `cudaMemcpy` with `DeviceToHost` blocks until the GPU finishes. The pipeline waits on one scalar. The next version should do the reduction and comparison on the GPU.
 
 ---
 
@@ -217,9 +217,9 @@ Buffer goes out of scope, returns to the pool instead of being freed.
 
 ---
 
-## cuDNN: Someone Else's Complexity
+## cuDNN Integration
 
-Convolutions and batch normalization use cuDNN. Writing a fast convolution kernel is a research problem, and I'm not going to beat their team.
+Convolutions and batch normalization use cuDNN. A fast convolution kernel is a separate optimization problem, and cuDNN is the right primitive here.
 
 The integration is straightforward but verbose:
 
@@ -240,7 +240,7 @@ cudnnConvolutionForward(cudnn, &alpha, input_desc, d_input,
                          output_desc, d_output);
 ```
 
-Workspace is pre-allocated at 8 MB. If it's too small, cuDNN falls back to slower algorithms. No error, just worse performance. Silent degradation.
+Workspace is pre-allocated at 8 MB. If it's too small, cuDNN falls back to slower algorithms. No error, just worse performance.
 
 ---
 
@@ -254,10 +254,10 @@ Workspace is pre-allocated at 8 MB. If it's too small, cuDNN falls back to slowe
 
 ---
 
-## What I've Learned
+## Notes
 
-GPU programming is not "write the same code but it runs on more cores." On CPU the bottleneck is computation. On GPU it is usually memory.
+GPU programming is not "write the same code but it runs on more cores." On CPU the bottleneck is often computation. On GPU it is usually memory.
 
-The most important optimization isn't in any kernel. It's keeping the data on the GPU in the first place. I'm not there yet.
+The largest remaining optimization is not in any kernel. It is keeping the data on the GPU in the first place. The persistent tensor rewrite is still in progress.
 
 ---

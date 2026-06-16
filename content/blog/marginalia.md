@@ -5,11 +5,11 @@ date: 04/12/2026
 ---
 
 
-Papers sit in tabs, notes live in separate docs, and every session starts from zero. Search engines like Consensus answer "what does the literature say?" pretty well, but they are mostly one-shot and academic-only. I wanted query #50 to know about the first 49.
+Research context is usually scattered across tabs, notes, and one-off searches. Search engines like Consensus answer "what does the literature say?" well, but they are mostly one-shot and academic-only. Marginalia keeps prior sources in the loop.
 
-> [!side] Persistence is the part I care about. A better one-off answer helps once. Memory changes the next search.
+> [!side] The design goal is persistence: previous searches and ingested sources should affect later retrieval.
 
-Marginalia finds, reads, and connects papers, blog posts, and notes. You describe what you're working on, and it builds a knowledge base you can search later.
+Marginalia finds, reads, and connects papers, blog posts, and notes. A workspace description seeds a knowledge base that later searches can reuse.
 
 | Metric | Value |
 |--------|-------|
@@ -60,9 +60,9 @@ graph LR
     D --> I
 ```
 
-Two model tiers: Haiku handles structured extraction (query decomposition, concept extraction, claim detection), and Sonnet handles user-facing synthesis. I use the cheapest model that is good enough for each subtask. Haiku is fine for decomposition. Sonnet is where answer quality matters.
+Two model tiers: Haiku handles structured extraction (query decomposition, concept extraction, claim detection), and Sonnet handles user-facing synthesis. The system uses the lowest-cost model that is reliable for each subtask. Haiku is fine for decomposition. Sonnet is used where answer quality matters.
 
-> [!side] This split is intentionally boring: cheap model for shape, better model for prose.
+> [!side] Haiku is used for extraction. Sonnet is used where the text is user-facing.
 
 ---
 
@@ -139,7 +139,7 @@ chunk = {
 }
 ```
 
-Why section-aware: retrieval can distinguish abstract claims (high confidence) from discussion speculation. "What's the methodology?" preferentially retrieves `methods` chunks. Sentences at chunk boundaries appear in both chunks.
+Section metadata lets retrieval distinguish abstract claims from discussion speculation. Methodology questions can preferentially retrieve `methods` chunks. Sentences at chunk boundaries appear in both chunks.
 
 ### Unified Extraction
 
@@ -166,7 +166,7 @@ Prompt caching uses Anthropic's `cache_control: ephemeral`. The system prompt is
 
 ## Hybrid Retrieval
 
-Most RAG systems do vector search and call it a day. Marginalia runs three retrieval legs in parallel, then fuses results.
+A vector-only retriever misses exact terms, acronyms, and graph context. Marginalia runs three retrieval legs in parallel, then fuses results.
 
 ```mermaid
 flowchart LR
@@ -197,11 +197,11 @@ expanded_query = original_query + " " + " ".join(related_concepts)
 expanded_embedding = embed(expanded_query)
 ```
 
-> [!side] This is where query #50 should beat query #1: the graph has more context.
+> [!side] Later queries use the graph built by earlier ingestion.
 
 ### Reciprocal Rank Fusion
 
-The three retrieval legs produce scores on completely different scales: cosine similarity (0-1), BM25 (unbounded), concept expansion scores (different scale again). You can't just average them.
+The three retrieval legs produce scores on completely different scales: cosine similarity (0-1), BM25 (unbounded), concept expansion scores (different scale again). A raw average is not stable.
 
 RRF only uses rank positions, not raw scores:
 
@@ -214,7 +214,7 @@ def _rrf_fusion(result_lists, k=60):
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)
 ```
 
-No training data. No tuned weights. k=60 is a constant from the original RRF paper. RRF is scale-invariant and works well across domains. For arbitrary research queries across arbitrary workspaces, stable behavior matters more than squeezing out a small ranking gain.
+No training data. No tuned weights. k=60 is a constant from the original RRF paper. RRF is scale-invariant and works well across domains. For arbitrary research queries across arbitrary workspaces, stable behavior matters more than a small ranking improvement.
 
 ---
 
@@ -276,7 +276,7 @@ matches = await vector_search(claim_embedding, limit=5)
 # Returns: supports | contradicts | qualifies | extends
 ```
 
-Three papers support a claim, one contradicts it. That is hard to see from a single search.
+Three papers support a claim, one contradicts it. The workspace stores that relationship explicitly.
 
 ### Deterministic Edge Generation
 
@@ -299,7 +299,7 @@ strong = shared >= 2 or title_sim > 0.5 or embedding_sim > 0.70
 weak_combined = shared >= 1 and (title_sim > 0.25 or embedding_sim > 0.60)
 ```
 
-No hallucination. No scores shifting between runs. Labels come from the most specific shared concept.
+No model variance. No scores shifting between runs. Labels come from the most specific shared concept.
 
 ---
 
@@ -364,7 +364,7 @@ flowchart TD
     end
 ```
 
-Why ELK.js over d3-force: force-directed layouts usually turn into hairballs. ELK.js gives structured, hierarchical layouts and was originally built for compiler visualization.
+ELK.js is used instead of d3-force because force-directed layouts get noisy quickly. ELK.js gives structured, hierarchical layouts and was originally built for compiler visualization.
 
 The layout identifies connected components, lays each out independently, then arranges clusters in a grid. "transformer efficiency" and "training stability" stay visually separate.
 
@@ -376,7 +376,7 @@ Spacing constants: 80px node-to-node, 140px layer-to-layer, 240px cluster-to-clu
 
 Two-pane layout: PDF on the left (react-pdf), resizable sidebar on the right with notes, highlights, and per-paper Q&A. Text selection on the PDF surfaces a floating toolbar for annotation.
 
-Per-paper Q&A uses only that source's chunks. You can ask a question about a dense paper without leaving the reader.
+Per-paper Q&A uses only that source's chunks, so answers stay scoped to the open paper.
 
 ---
 
@@ -408,7 +408,7 @@ BGE-small-en-v1.5 runs on CPU. Zero per-call cost, no rate limits, no network la
 
 ### SSE over WebSockets
 
-Search progress is server-to-client only. SSE works over standard HTTP, auto-reconnects, and works through any proxy. No WebSocket ceremony. Client needs to send data? Regular POST.
+Search progress is server-to-client only. SSE works over standard HTTP, auto-reconnects, and works through any proxy. Client writes still use regular POST requests.
 
 ### In-memory job tracking
 
@@ -416,7 +416,7 @@ Search progress is server-to-client only. SSE works over standard HTTP, auto-rec
 _jobs: dict[str, JobStatus] = {}  # 1-hour TTL cleanup
 ```
 
-If the server restarts, job state disappears. That's fine for ephemeral search pipelines. Database polling would add latency for no practical benefit at single-server scale.
+If the server restarts, job state disappears. This is acceptable for ephemeral search pipelines. Database polling would add latency for no practical benefit at single-server scale.
 
 ### Determinism over model calls
 
@@ -424,13 +424,11 @@ Edge generation, cluster labeling, and quality scoring are deterministic. LLMs a
 
 ---
 
-## Where It Compounds
+## Persistence
 
-The core bet: persistence.
+The design constraint: persistence.
 
-A workspace with 80 embedded sources and months of graph history is hard to recreate. Every source makes the next query better.
-
-Consensus treats every query as query #1. Marginalia treats it as query #51.
+A workspace with 80 embedded sources has graph history, wiki pages, claims, and source links. Later queries use that state instead of starting from empty context.
 
 ---
 
