@@ -358,11 +358,43 @@ dl {
   line-height: 1.7;
 }
 
+.code-tools {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.code-tools + pre {
+  margin-top: 0;
+}
+
+.code-tools button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.code-tools button[aria-pressed="true"] {
+  color: var(--foreground);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .prose pre code {
   padding: 0;
   background: transparent;
   color: inherit;
   white-space: pre;
+}
+
+.prose pre code.token-view {
+  color: var(--syntax-base);
 }
 
 .prose pre code [data-tone="keyword"] {

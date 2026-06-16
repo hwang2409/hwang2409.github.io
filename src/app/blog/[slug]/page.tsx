@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import MermaidRenderer from '@/components/MermaidRenderer';
 import IframeResizer from '@/components/IframeResizer';
+import CodeTokenInspector from '@/components/CodeTokenInspector';
 
 export async function generateMetadata({
   params,
@@ -49,6 +50,7 @@ export default async function BlogPostPage({
       />
       <MermaidRenderer />
       <IframeResizer />
+      <CodeTokenInspector />
     </article>
   );
 }

@@ -17,14 +17,38 @@ export interface BlogPost {
   content: string;
 }
 
-const syntaxToneRules: Array<[string[], string]> = [
-  [['hljs-comment', 'hljs-meta'], 'comment'],
-  [['hljs-keyword', 'hljs-selector-tag', 'hljs-built_in', 'hljs-name', 'hljs-tag'], 'keyword'],
-  [['hljs-title', 'function_', 'title.class_', 'hljs-type'], 'title'],
-  [['hljs-string', 'hljs-attr', 'hljs-regexp', 'hljs-symbol'], 'string'],
-  [['hljs-number', 'hljs-literal'], 'literal'],
-  [['hljs-variable', 'hljs-template-variable', 'hljs-property', 'hljs-params'], 'identifier'],
-  [['hljs-operator', 'hljs-punctuation'], 'punctuation'],
+type SyntaxClass = {
+  matches: string[];
+  tone: string;
+  token: string;
+};
+
+const syntaxToneRules: SyntaxClass[] = [
+  { matches: ['hljs-comment', 'hljs-meta'], tone: 'comment', token: 'comment' },
+  {
+    matches: ['hljs-keyword', 'hljs-selector-tag', 'hljs-built_in', 'hljs-name', 'hljs-tag'],
+    tone: 'keyword',
+    token: 'keyword',
+  },
+  { matches: ['function_'], tone: 'title', token: 'function' },
+  { matches: ['title.class_', 'hljs-type'], tone: 'title', token: 'type' },
+  { matches: ['hljs-title'], tone: 'title', token: 'symbol' },
+  {
+    matches: ['hljs-string', 'hljs-attr', 'hljs-regexp', 'hljs-symbol'],
+    tone: 'string',
+    token: 'string',
+  },
+  { matches: ['hljs-number', 'hljs-literal'], tone: 'literal', token: 'literal' },
+  {
+    matches: ['hljs-variable', 'hljs-template-variable', 'hljs-property', 'hljs-params'],
+    tone: 'identifier',
+    token: 'identifier',
+  },
+  {
+    matches: ['hljs-operator', 'hljs-punctuation'],
+    tone: 'punctuation',
+    token: 'punctuation',
+  },
 ];
 
 const fallbackKeywords = new Set([
@@ -104,9 +128,9 @@ function getClassNames(node: Element): string[] {
 function classifySyntaxToken(classNames: string[]) {
   const classSet = new Set(classNames);
 
-  for (const [matches, tone] of syntaxToneRules) {
-    if (matches.some((match) => classSet.has(match))) {
-      return tone;
+  for (const rule of syntaxToneRules) {
+    if (rule.matches.some((match) => classSet.has(match))) {
+      return { tone: rule.tone, token: rule.token };
     }
   }
 
@@ -117,11 +141,11 @@ function createText(value: string): Text {
   return { type: 'text', value };
 }
 
-function createSyntaxElement(tone: string, value: string): Element {
+function createSyntaxElement(tone: string, token: string, value: string): Element {
   return {
     type: 'element',
     tagName: 'span',
-    properties: { dataTone: tone },
+    properties: { dataTone: tone, dataToken: token },
     children: [createText(value)],
   };
 }
@@ -163,9 +187,14 @@ function nextNonWhitespace(value: string, start: number) {
   return value[index];
 }
 
-function pushToken(nodes: Array<Text | Element>, tone: string | null, value: string) {
+function pushToken(
+  nodes: Array<Text | Element>,
+  tone: string | null,
+  value: string,
+  token = tone
+) {
   if (value.length === 0) return;
-  nodes.push(tone ? createSyntaxElement(tone, value) : createText(value));
+  nodes.push(tone && token ? createSyntaxElement(tone, token, value) : createText(value));
 }
 
 function tokenizeCode(value: string): Array<Text | Element> {
@@ -236,8 +265,9 @@ function tokenizeCode(value: string): Array<Text | Element> {
           : following === '('
             ? 'title'
             : 'identifier';
+      const token = following === '(' && tone === 'title' ? 'function' : tone;
 
-      pushToken(nodes, tone, word);
+      pushToken(nodes, tone, word, token);
       index = end;
       continue;
     }
@@ -301,12 +331,13 @@ function rehypeMonochromeSyntax() {
         node.children = tokenizeCode(getTextContent(node));
       }
 
-      const tone = classifySyntaxToken(getClassNames(node));
-      if (!tone) return;
+      const syntax = classifySyntaxToken(getClassNames(node));
+      if (!syntax) return;
 
       node.properties = {
         ...node.properties,
-        dataTone: tone,
+        dataTone: syntax.tone,
+        dataToken: syntax.token,
       };
     });
   };
