@@ -7,6 +7,8 @@ date: 03/14/2026
 
 I wanted to know what happens between `loss.backward()` and the weights changing. Not conceptually. I mean the actual bytes. Which multiply goes where. How a convolution gradient turns into a transposed convolution. What the chain rule looks like when it's not a diagram in a textbook but 83,000 lines of C++.
 
+> [!side] The project is less about beating PyTorch and more about removing the magic layer between the math and the memory.
+
 So I built a deep learning framework from scratch: tensors, autograd, layers, optimizers, SIMD kernels, GPU shaders, the whole stack. Then wrapped it in a web platform where you can train models from a browser.
 
 
@@ -75,6 +77,8 @@ loss->backward();
 `backward()` walks the graph in reverse topological order. Each node calls its stored closure, computes the local gradient, passes it upstream. Matmul backward for `A @ B` produces `grad @ B^T` for A and `A^T @ grad` for B. ReLU masks where input was negative. Convolution backward is a transposed convolution.
 
 Every backward function is written by hand. That's the point.
+
+> [!side] Hand-writing backward passes is tedious in exactly the useful way. You find out which operations are simple and which ones were hiding real complexity.
 
 ```mermaid
 flowchart TD

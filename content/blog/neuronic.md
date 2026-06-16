@@ -12,6 +12,8 @@ Most study apps are text editors with a flashcard button. They don't know what y
 
 I built Neuronic around that problem. Every note gets analyzed for concepts, prerequisites, definitions, and review state. That gives the app enough structure to suggest flashcards, quizzes, weak areas, and the next thing to study.
 
+> [!side] The important part is that notes become structured data. Once that exists, flashcards and quizzes are just views over the same graph.
+
 | Metric | Value |
 |--------|-------|
 | Frontend pages | **28** |
@@ -203,6 +205,8 @@ flowchart LR
 ```
 
 Gap detection is the part I like most. It compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard shows that gap and gives you a button to generate a prerequisite note with Claude.
+
+> [!side] This is one of the places where AI feels useful: not replacing studying, just noticing the prerequisite you skipped.
 
 ---
 

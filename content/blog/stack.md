@@ -7,6 +7,8 @@ date: 03/23/2026
 
 Every project I start looks the same. React up front, FastAPI in the middle, SQLite and Redis in the back, Claude somewhere in the loop, SSE pushing data to the browser. Two projects in a row had the same bones, so here's the skeleton.
 
+> [!side] This is not meant to be universal architecture advice. It is the default stack I reach for when I am building alone and want the fewest moving parts.
+
 
 ---
 
@@ -91,6 +93,8 @@ The key decision: Claude never touches the database directly. It receives contex
 Every time I reach for Postgres I ask myself: do I actually need it? The answer keeps being no.
 
 SQLite in WAL mode handles concurrent reads without contention. Single writer is fine when your write volume is "one user doing things." The database is a single file: no daemon, no connection strings, no Docker container for local dev.
+
+> [!side] The constraint matters: these are personal tools and prototypes first. If a project outgrows SQLite, that is usually a good problem.
 
 ```mermaid
 flowchart TD

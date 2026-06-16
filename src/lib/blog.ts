@@ -141,13 +141,21 @@ function createText(value: string): Text {
   return { type: 'text', value };
 }
 
-function createSyntaxElement(tone: string, token: string, value: string): Element {
+function createElement(
+  tagName: string,
+  properties: Element['properties'],
+  children: Element['children'] = []
+): Element {
   return {
     type: 'element',
-    tagName: 'span',
-    properties: { dataTone: tone, dataToken: token },
-    children: [createText(value)],
+    tagName,
+    properties,
+    children,
   };
+}
+
+function createSyntaxElement(tone: string, token: string, value: string): Element {
+  return createElement('span', { dataTone: tone, dataToken: token }, [createText(value)]);
 }
 
 function readQuotedString(value: string, start: number) {
@@ -343,6 +351,146 @@ function rehypeMonochromeSyntax() {
   };
 }
 
+function isElement(node: Root['children'][number] | Element['children'][number]): node is Element {
+  return node.type === 'element';
+}
+
+function isText(node: Element['children'][number]): node is Text {
+  return node.type === 'text';
+}
+
+function findSidenoteMarker(node: Element) {
+  if (node.tagName !== 'blockquote') return null;
+
+  const firstParagraph = node.children.find(
+    (child): child is Element => isElement(child) && child.tagName === 'p'
+  );
+  if (!firstParagraph) return null;
+
+  const firstChild = firstParagraph.children[0];
+  if (!firstChild || !isText(firstChild)) return null;
+
+  const marker = firstChild.value.match(/^\[!(side|aside)\]\s*/i);
+  if (!marker) return null;
+
+  firstChild.value = firstChild.value.slice(marker[0].length);
+  return firstParagraph;
+}
+
+function findPreviousAnchorTarget(
+  children: Array<Root['children'][number] | Element['children'][number]>,
+  index: number
+) {
+  for (let offset = index - 1; offset >= 0; offset -= 1) {
+    const child = children[offset];
+    if (!isElement(child)) continue;
+
+    if (['p', 'h2', 'h3', 'li'].includes(child.tagName)) {
+      return child;
+    }
+  }
+
+  return null;
+}
+
+function ensureElementId(element: Element, id: string) {
+  const existingId = element.properties?.id;
+  if (typeof existingId === 'string') return existingId;
+
+  element.properties = {
+    ...element.properties,
+    id,
+  };
+
+  return id;
+}
+
+function appendSidenoteRef(target: Element, noteId: string, index: number) {
+  target.children.push(
+    createText(' '),
+    createElement(
+      'a',
+      {
+        className: ['sidenote-ref'],
+        href: `#${noteId}`,
+        ariaLabel: `Read side note ${index}`,
+      },
+      [createText(`[${index}]`)]
+    )
+  );
+}
+
+function rehypeSidenotes() {
+  return (tree: Root) => {
+    let noteCount = 0;
+
+    function transform(parent: Root | Element) {
+      const children = parent.children as Array<
+        Root['children'][number] | Element['children'][number]
+      >;
+
+      for (let index = 0; index < children.length; index += 1) {
+        const child = children[index];
+        if (!isElement(child)) continue;
+
+        const markerParagraph = findSidenoteMarker(child);
+
+        if (markerParagraph) {
+          noteCount += 1;
+          const noteId = `sidenote-${noteCount}`;
+          const target = findPreviousAnchorTarget(children, index);
+          let targetId: string | null = null;
+
+          if (target) {
+            targetId = ensureElementId(target, `sidenote-target-${noteCount}`);
+            appendSidenoteRef(target, noteId, noteCount);
+          }
+
+          child.tagName = 'aside';
+          child.properties = {
+            ...child.properties,
+            id: noteId,
+            className: ['sidenote'],
+            ...(targetId
+              ? {
+                  ariaLabelledBy: targetId,
+                }
+              : {}),
+          };
+
+          if (targetId) {
+            child.children.unshift(
+              createElement(
+                'a',
+                {
+                  className: ['sidenote-backref'],
+                  href: `#${targetId}`,
+                  ariaLabel: `Back to side note reference ${noteCount}`,
+                },
+                [createText(`// ${noteCount}`)]
+              )
+            );
+          }
+
+          if (
+            markerParagraph.children.length === 1 &&
+            isText(markerParagraph.children[0]) &&
+            markerParagraph.children[0].value.length === 0
+          ) {
+            child.children = child.children.filter((noteChild) => noteChild !== markerParagraph);
+          }
+
+          continue;
+        }
+
+        transform(child);
+      }
+    }
+
+    transform(tree);
+  };
+}
+
 export function getAllBlogPosts(): BlogPost[] {
   const blogDir = path.join(process.cwd(), 'content', 'blog');
 
@@ -410,6 +558,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeHighlight, { plainText: ['mermaid'] })
     .use(rehypeMonochromeSyntax)
+    .use(rehypeSidenotes)
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();

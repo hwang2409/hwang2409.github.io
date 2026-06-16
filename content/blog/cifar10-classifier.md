@@ -14,6 +14,8 @@ Upload an image. The model classifies it as one of: airplane, automobile, bird, 
 
 This is a ResNet-18 I trained from scratch using [whitematter](/blog/whitematter). 11 million parameters, CUDA-accelerated training on an RTX 2070 SUPER, exported to ONNX, running inference in your browser via ONNX Runtime Web. No server. No API. The entire model loads into your tab.
 
+> [!side] I like this as a website demo because the boundary is clean: train elsewhere, export once, run locally in the browser.
+
 ---
 
 ## The Architecture
@@ -172,6 +174,8 @@ flowchart LR
 The export tool writes all 122 tensors (weights, biases, BatchNorm running statistics) to a flat binary file with named entries. A Python script reads this and constructs the ONNX graph with every conv, batchnorm, and skip connection wired up explicitly.
 
 ONNX Runtime Web loads the 42MB model in your browser, compiles it to WebAssembly, and runs inference in ~50ms per image. The same model that took hours to train on a GPU runs on your phone.
+
+> [!side] This is the satisfying part of ONNX: the training stack can be weird, but the inference artifact is portable.
 
 ---
 

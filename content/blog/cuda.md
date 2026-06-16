@@ -63,6 +63,8 @@ void CUDABackend::matmul(const float* h_A, const float* h_B,
 
 Copy in. Compute. Copy out. For every single operation. Hundreds of ops per forward pass, and the GPU spends most of its time waiting for data over PCIe.
 
+> [!side] This is the first GPU lesson I actually felt in code. A fast kernel does not matter if every op starts with a host-device copy.
+
 The fix is keeping tensors resident on the GPU: allocate once, compute many times, and only copy back when you need to read a value like the loss. But that means rewriting the tensor abstraction so it knows where its data lives, which means touching every operation, every autograd closure, every layer. That rewrite is ongoing.
 
 ---
@@ -72,6 +74,8 @@ The fix is keeping tensors resident on the GPU: allocate once, compute many time
 This one took me a full day to debug.
 
 C++ is row-major. cuBLAS expects column-major (Fortran lineage). Pass row-major data to cuBLAS without accounting for this and you get wrong answers. Not errors, just quietly wrong results.
+
+> [!side] This bug is annoying because the code compiles, runs, and returns plausible-looking numbers.
 
 The trick: `B^T @ A^T` in column-major gives you `(A @ B)^T` in column-major, which is `A @ B` in row-major. So you swap the operands:
 

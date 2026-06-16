@@ -7,6 +7,8 @@ date: 04/12/2026
 
 Research is messy. Papers sit in tabs, notes live in separate docs, and every session starts from zero. Search engines like Consensus answer "what does the literature say?" pretty well, but they are mostly one-shot and academic-only. I wanted a workspace where query #50 knows about the first 49.
 
+> [!side] The bet here is persistence. A better one-off answer is useful, but a workspace that remembers prior work changes what the next search can do.
+
 Marginalia finds, reads, and connects papers, blog posts, and notes. You describe what you're working on, and it builds a persistent knowledge base you can search again later.
 
 | Metric | Value |
@@ -59,6 +61,8 @@ graph LR
 ```
 
 Two model tiers: Haiku handles structured extraction (query decomposition, concept extraction, claim detection), and Sonnet handles user-facing synthesis. I use the cheapest model that is good enough for each subtask. Haiku is fine for decomposition. Sonnet is where answer quality matters.
+
+> [!side] This split is intentionally boring: cheap model for shape, better model for prose.
 
 ---
 
@@ -193,7 +197,7 @@ expanded_query = original_query + " " + " ".join(related_concepts)
 expanded_embedding = embed(expanded_query)
 ```
 
-This is the compounding effect. Query #50 retrieves better results than query #1, because the concept graph has been built up by everything ingested before it.
+> [!side] This is the compounding effect in practice. Query #50 should retrieve better results than query #1 because the graph has more context.
 
 ### Reciprocal Rank Fusion
 
@@ -227,7 +231,9 @@ else:
 
 Raw chunks are noisy. A methods chunk might mention a concept in passing. Wiki pages are structured summaries grounded in the workspace. The 0.75 threshold is deliberately strict: only use wiki when there's a strong match.
 
-Wiki generation runs on every source addition. Load the new source + 10 most similar existing wiki pages, let Claude decide: create 2-5 new pages or update existing ones. Pages are cross-linked via `[[slug]]` syntax and embedded for semantic search. This is the compounding part: the wiki stays current without manual updates.
+Wiki generation runs on every source addition. Load the new source + 10 most similar existing wiki pages, let Claude decide: create 2-5 new pages or update existing ones. Pages are cross-linked via `[[slug]]` syntax and embedded for semantic search.
+
+> [!side] This is why the wiki is generated incrementally instead of as a separate manual step. It stays current while sources come in.
 
 ---
 
