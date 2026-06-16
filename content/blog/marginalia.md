@@ -1,13 +1,13 @@
 ---
 title: Marginalia
-excerpt: Building a Research Workspace That Gets Smarter
+excerpt: A research workspace that remembers what it has read
 date: 04/12/2026
 ---
 
 
-Research workflows are fragmented. Papers scatter across tabs, notes live in separate docs, and every session starts from zero. Search engines like Consensus answer "what does the literature say?" — a one-shot, stateless, academic-only search. I wanted something different: a workspace where query #50 benefits from everything you've already ingested.
+Research is messy. Papers sit in tabs, notes live in separate docs, and every session starts from zero. Search engines like Consensus answer "what does the literature say?" pretty well, but they are mostly one-shot and academic-only. I wanted a workspace where query #50 knows about the first 49.
 
-Marginalia is a research workspace that finds, reads, and connects papers and blog posts — then compounds over time. You describe what you're investigating, and it builds a persistent, queryable knowledge base across academic and informal sources.
+Marginalia finds, reads, and connects papers, blog posts, and notes. You describe what you're working on, and it builds a persistent knowledge base you can search again later.
 
 | Metric | Value |
 |--------|-------|
@@ -58,13 +58,13 @@ graph LR
     D --> I
 ```
 
-Two-tier model cascade: Haiku for structured extraction (query decomposition, concept extraction, claim detection), Sonnet for user-facing synthesis. Cheapest model that produces acceptable quality for each subtask. Decomposition quality difference between Haiku and Sonnet is negligible — synthesis quality matters significantly.
+Two model tiers: Haiku handles structured extraction (query decomposition, concept extraction, claim detection), and Sonnet handles user-facing synthesis. I use the cheapest model that is good enough for each subtask. Haiku is fine for decomposition. Sonnet is where answer quality matters.
 
 ---
 
 ## The Ingestion Pipeline
 
-When you search for something, a cascade of operations turns a query into embedded, structured, cross-linked knowledge. This is the critical path — everything downstream depends on it.
+When you search for something, the query turns into embedded, structured, cross-linked knowledge. This path matters because everything else depends on it.
 
 ```mermaid
 flowchart TD
@@ -86,7 +86,7 @@ flowchart TD
 
 ### Query Decomposition
 
-A single Claude Haiku call analyzes the user's query and returns intent classification ("research" vs "learn"), 2-3 refined search queries covering different facets, and 5-8 seminal paper recommendations. One call instead of three saves ~1-2 seconds on the critical path.
+A single Claude Haiku call analyzes the user's query and returns intent classification ("research" vs "learn"), 2-3 refined search queries covering different facets, and 5-8 seminal paper recommendations. One call instead of three saves ~1-2 seconds in the path users wait on.
 
 ### Multi-Source Parallel Search
 
@@ -101,7 +101,7 @@ Three sources searched simultaneously via `asyncio.gather()`:
  No citation data   Lags on preprints   Noisy results
 ```
 
-Each fills the others' blind spots. arXiv has the freshest content but no citation graph. OpenAlex has comprehensive citation data but lags on preprints. Web search captures blog posts and tutorials that pure academic sources miss.
+Each fills the others' blind spots. arXiv has fresh content but no citation graph. OpenAlex has broad citation data but lags on preprints. Web search catches blog posts and tutorials that pure academic sources miss.
 
 Rate limiting: 1-second delays between API calls per source, 3-concurrent semaphore for PDF downloads (prevents memory spikes from 10-50MB PDFs), 1 pipeline semaphore overall (one ingestion at a time per process).
 
@@ -113,7 +113,7 @@ Before expensive operations, deduplication at three levels:
 
 **Layer 2: Title Jaccard.** Tokenize titles, exclude stop words, compute set overlap. Threshold ≥ 0.5. Catches conference vs journal versions of the same paper.
 
-**Layer 3: Embedding similarity.** For candidates that pass title match — if content similarity ≥ 0.7, it's a duplicate. Catches blog post rewrites of papers.
+**Layer 3: Embedding similarity.** For candidates that pass title match, content similarity ≥ 0.7 means duplicate. Catches blog post rewrites of papers.
 
 No single signal is sufficient. URL matching misses different-host copies, title matching misses rewrites, embedding similarity alone is too expensive to run on everything. The cascade filters cheap-to-expensive.
 
@@ -123,8 +123,8 @@ Papers are not naively split into fixed-length blocks. Regex-based section detec
 
 ```python
 # Chunk parameters
-CHUNK_SIZE = 800    # words — enough semantic content for meaningful embedding
-OVERLAP = 80        # words — 10%, prevents context loss at boundaries
+CHUNK_SIZE = 800    # words, enough semantic content for meaningful embedding
+OVERLAP = 80        # words, 10% overlap to preserve boundary context
 
 # Each chunk carries metadata
 chunk = {
@@ -156,7 +156,7 @@ response = await client.messages.create(
 #          limitations, datasets, contributions, claims, concepts
 ```
 
-Prompt caching via Anthropic's `cache_control: ephemeral` — the system prompt is identical across extraction calls, so it's cached server-side.
+Prompt caching uses Anthropic's `cache_control: ephemeral`. The system prompt is identical across extraction calls, so it can be cached server-side.
 
 ---
 
@@ -177,14 +177,14 @@ flowchart LR
     RRF --> SYN["SYNTHESIS<br/><small>Claude Sonnet</small>"]
 ```
 
-**Vector search** captures semantic meaning — "training instability" matches "loss divergence."
+**Vector search** captures semantic meaning. "training instability" can match "loss divergence."
 
-**BM25 full-text** catches exact terminology — model names, acronyms, equation references. Uses PostgreSQL's built-in `tsvector` with English stemming.
+**BM25 full-text** catches exact terminology: model names, acronyms, equation references. Uses PostgreSQL's built-in `tsvector` with English stemming.
 
 **Concept expansion** is what makes the workspace compound. After ingesting papers on "attention mechanisms," the concept graph knows that "multi-head attention" relates to "scaled dot-product," "query-key-value," etc. When you search for one, the others auto-expand into the search.
 
 ```python
-# Concept expansion: leverage workspace knowledge
+# Concept expansion: use workspace knowledge
 concepts = db.query(Concept).filter(Concept.name.ilike(f"%{term}%"))
 children = db.query(Concept).join(ConceptEdge).filter(
     ConceptEdge.parent_concept_id.in_(concept_ids)
@@ -210,13 +210,13 @@ def _rrf_fusion(result_lists, k=60):
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)
 ```
 
-No training data required. Parameter-free (k=60 is a constant from the original RRF paper). Scale-invariant. Competitive with learned-to-rank models in cross-domain settings — and for arbitrary research queries across arbitrary workspaces, robustness beats marginal accuracy gains.
+No training data. No tuned weights. k=60 is a constant from the original RRF paper. RRF is scale-invariant and works well across domains. For arbitrary research queries across arbitrary workspaces, stable behavior matters more than squeezing out a small ranking gain.
 
 ---
 
 ## Wiki-First RAG
 
-Before going to raw chunks, the system checks its auto-generated wiki. Wiki pages are pre-synthesized by Claude — clean, coherent summaries of topics that evolve incrementally as new sources are added.
+Before going to raw chunks, the system checks its auto-generated wiki. Wiki pages are already synthesized by Claude: short summaries of topics that evolve as new sources are added.
 
 ```python
 if wiki_page.similarity(query) >= 0.75:
@@ -225,9 +225,9 @@ else:
     # Fall back to 10 hybrid-search chunks
 ```
 
-Raw chunks are noisy. A methods chunk might mention a concept tangentially. Wiki pages are structured, grounded summaries. The 0.75 threshold favors precision — only use wiki when there's a strong match.
+Raw chunks are noisy. A methods chunk might mention a concept in passing. Wiki pages are structured summaries grounded in the workspace. The 0.75 threshold is deliberately strict: only use wiki when there's a strong match.
 
-Wiki generation triggers on every source addition. Load the new source + 10 most similar existing wiki pages, let Claude decide: create 2-5 new pages or update existing ones. Pages are cross-linked via `[[slug]]` syntax and embedded for semantic search. "Compound as you go" — the wiki stays current without manual effort.
+Wiki generation runs on every source addition. Load the new source + 10 most similar existing wiki pages, let Claude decide: create 2-5 new pages or update existing ones. Pages are cross-linked via `[[slug]]` syntax and embedded for semantic search. This is the compounding part: the wiki stays current without manual updates.
 
 ---
 
@@ -235,7 +235,7 @@ Wiki generation triggers on every source addition. Load the new source + 10 most
 
 ### Concept Graph
 
-Every source ingested feeds a growing concept graph. Concepts have hierarchical levels — "machine learning" (level 0, foundational) vs "dropout regularization" (level 2, specialized). Edges encode relationships: prerequisite, specialization, related.
+Every source ingested feeds a growing concept graph. Concepts have levels: "machine learning" (level 0, foundational) vs "dropout regularization" (level 2, specialized). Edges encode relationships: prerequisite, specialization, related.
 
 ```mermaid
 flowchart TD
@@ -255,11 +255,11 @@ flowchart TD
     C3 -.- S3["Blog Post C"]
 ```
 
-Levels enable learning path generation (start foundational, build up) and canvas layout (foundational at top, specialized at bottom).
+Levels make learning paths easier to generate (start foundational, build up) and make the canvas layout easier to read (foundational at top, specialized at bottom).
 
 ### Claim Extraction & Evidence Linking
 
-Papers aren't just documents — they're collections of claims. "BERT improves NER by 3.2 F1" is a claim. The system extracts claims from the first 15 chunks of each source (papers front-load important content — last third is references and appendices), then searches the workspace for supporting or contradicting evidence.
+Papers are not just documents. They make claims. "BERT improves NER by 3.2 F1" is a claim. The system extracts claims from the first 15 chunks of each source because papers usually front-load important content. The last third is often references and appendices. Then it searches the workspace for supporting or contradicting evidence.
 
 ```python
 # For each claim, find cross-workspace evidence
@@ -270,11 +270,11 @@ matches = await vector_search(claim_embedding, limit=5)
 # Returns: supports | contradicts | qualifies | extends
 ```
 
-Three papers support a claim, one contradicts it — that's useful information that no single search could surface.
+Three papers support a claim, one contradicts it. That is useful information that no single search would surface.
 
 ### Deterministic Edge Generation
 
-Source-to-source edges are generated without any LLM — entirely deterministic, reproducible, and fast.
+Source-to-source edges are generated without any LLM. It is deterministic, reproducible, and fast.
 
 Three signals:
 
@@ -318,7 +318,7 @@ def _cluster_average_linkage(source_ids, embeddings, threshold=0.78):
     return [c for c in clusters if len(c) >= 2]
 ```
 
-Why average-linkage over single-linkage (union-find): single-linkage causes chain-clustering false positives. Papers A-B similar, B-C similar, but A-C dissimilar — all merged into one cluster. Average-linkage ensures all members have high average similarity to each other. Threshold 0.78 is conservative — prevents merging marginal cases.
+Why average-linkage over single-linkage (union-find): single-linkage causes chain-clustering false positives. Papers A-B similar, B-C similar, but A-C dissimilar, and all three get merged into one cluster. Average-linkage requires members to have high average similarity to each other. Threshold 0.78 is conservative and avoids merging borderline cases.
 
 ---
 
@@ -335,7 +335,7 @@ Every source gets a deterministic quality score blending three signals:
  10000 cites → 90       2006+ → 20              embedding distance
 ```
 
-Authority uses log-scale because citation counts are log-normally distributed. The difference between 10 and 100 cites is meaningful; the difference between 1000 and 1100 is not. Recency uses linear decay — no cliffs at arbitrary 3/5/10-year boundaries. Seminal papers (20+ years old) still score 20, not 0.
+Authority uses log-scale because citation counts are log-normally distributed. The difference between 10 and 100 cites is meaningful; the difference between 1000 and 1100 is not. Recency uses linear decay, so there are no cliffs at arbitrary 3/5/10-year boundaries. Seminal papers (20+ years old) still score 20, not 0.
 
 ---
 
@@ -358,7 +358,7 @@ flowchart TD
     end
 ```
 
-Why ELK.js over d3-force: force-directed layouts produce organic hairballs. ELK.js produces structured, hierarchical layouts — it's industrial-grade, originally built for compiler visualization. Mirrors how researchers think about concept hierarchies.
+Why ELK.js over d3-force: force-directed layouts usually turn into hairballs. ELK.js gives structured, hierarchical layouts and was originally built for compiler visualization. That lines up better with concept hierarchies.
 
 The layout identifies connected components (research threads), lays each out independently, then arranges clusters in a grid. A workspace studying "transformer efficiency" and "training stability" keeps those threads visually separate instead of mashing them together.
 
@@ -370,7 +370,7 @@ Spacing constants: 80px node-to-node, 140px layer-to-layer, 240px cluster-to-clu
 
 Two-pane layout: PDF on the left (react-pdf), resizable sidebar on the right with notes, highlights, and per-paper Q&A. Text selection on the PDF surfaces a floating toolbar for annotation.
 
-Per-paper Q&A is scoped to that source's chunks — ask a question about a dense paper right there, no context-switching. Dense papers are confusing. The fastest resolution is asking right there.
+Per-paper Q&A uses only that source's chunks. You can ask a question about a dense paper without leaving the reader. Dense papers are confusing. The fastest fix is asking the paper a question in place.
 
 ---
 
@@ -386,7 +386,7 @@ total_chars = sum(len(c.content) for c in source.chunks)
 estimated_minutes = max(1, round(total_chars / 5 / 250))
 ```
 
-The concept graph constrains the ordering — you read about attention mechanisms before you read about flash attention. Hierarchical concept levels (foundational → specialized) enforce a natural learning progression.
+The concept graph constrains the ordering. You read about attention mechanisms before you read about flash attention. Hierarchical concept levels (foundational to specialized) give the path a natural progression.
 
 ---
 
@@ -398,11 +398,11 @@ One database, one backup strategy, one connection pool. Vector search combined w
 
 ### Local embeddings over API embeddings
 
-BGE-small-en-v1.5 runs on CPU. Zero per-call cost, no rate limits, no network latency. Slightly lower quality than Voyage AI or Cohere — but at Marginalia's scale, eliminating API dependencies wins.
+BGE-small-en-v1.5 runs on CPU. Zero per-call cost, no rate limits, no network latency. The quality is a bit lower than Voyage AI or Cohere, but at Marginalia's scale, removing API dependencies is worth it.
 
 ### SSE over WebSockets
 
-Search progress is server→client only. SSE works over standard HTTP, auto-reconnects, works through any proxy. No WebSocket ceremony. Client needs to send data? Regular POST.
+Search progress is server-to-client only. SSE works over standard HTTP, auto-reconnects, and works through any proxy. No WebSocket ceremony. Client needs to send data? Regular POST.
 
 ### In-memory job tracking
 
@@ -410,11 +410,11 @@ Search progress is server→client only. SSE works over standard HTTP, auto-reco
 _jobs: dict[str, JobStatus] = {}  # 1-hour TTL cleanup
 ```
 
-Job state lost on server restart — acceptable for ephemeral search pipelines. The alternative (database polling) adds latency for no practical benefit at single-server scale.
+If the server restarts, job state disappears. That's fine for ephemeral search pipelines. Database polling would add latency for no practical benefit at single-server scale.
 
 ### Determinism over LLM magic
 
-Edge generation, cluster labeling, quality scoring — all deterministic. No hallucination, no score drift between runs. LLMs are used only where judgment is required: synthesis, gap analysis, path ranking. Everything else is math.
+Edge generation, cluster labeling, and quality scoring are deterministic. No hallucination, no score drift between runs. LLMs are used only where judgment is required: synthesis, gap analysis, path ranking. Everything else is math.
 
 ---
 
@@ -422,7 +422,7 @@ Edge generation, cluster labeling, quality scoring — all deterministic. No hal
 
 The core bet: persistence creates compounding value.
 
-A workspace with 80 embedded sources and months of concept graph evolution is genuinely hard to recreate. Every source ingested makes the next query better — concept expansion reaches further, wiki pages get richer, claim evidence links get denser, learning paths get more precise.
+A workspace with 80 embedded sources and months of concept graph history is hard to recreate. Every source ingested makes the next query better: concept expansion reaches further, wiki pages get richer, claim evidence links get denser, and learning paths get more precise.
 
 Consensus treats every query as query #1. Marginalia treats it as query #51.
 

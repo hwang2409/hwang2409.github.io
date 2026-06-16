@@ -10,7 +10,7 @@ Upload an image. The model classifies it as one of: airplane, automobile, bird, 
 
 <p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Runs locally via WebAssembly. No data leaves your browser.</p>
 
-<p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Note: this demo is the model at ~20 epochs (~83% accuracy). There are 180 epochs left to train - the full run would push it past 93%. Compute on a single RTX 2070 SUPER is slow. The model will be updated as training progresses.</p>
+<p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Note: this demo is the model at ~20 epochs (~83% accuracy). There are 180 epochs left to train, and the full run should push it past 93%. Compute on a single RTX 2070 SUPER is slow. The model will be updated as training progresses.</p>
 
 This is a ResNet-18 I trained from scratch using [whitematter](/blog/whitematter). 11 million parameters, CUDA-accelerated training on an RTX 2070 SUPER, exported to ONNX, running inference in your browser via ONNX Runtime Web. No server. No API. The entire model loads into your tab.
 
@@ -18,7 +18,7 @@ This is a ResNet-18 I trained from scratch using [whitematter](/blog/whitematter
 
 ## The Architecture
 
-ResNet-18. Four groups of residual blocks, each with two 3x3 convolutions and a skip connection. The skip connection is the whole point - it lets gradients flow directly through the network without vanishing.
+ResNet-18. Four groups of residual blocks, each with two 3x3 convolutions and a skip connection. The skip connection is the whole point: it lets gradients flow directly through the network without vanishing.
 
 ```mermaid
 flowchart TD
@@ -43,11 +43,11 @@ out = bn1.forward(out);           // batch normalize
 out = out->relu();                // activate
 out = conv2.forward(out);         // 3x3 conv
 out = bn2.forward(out);           // batch normalize
-out = out->add(x);                // skip connection - add input directly
+out = out->add(x);                // skip connection: add input directly
 out = out->relu();                // activate
 ```
 
-That `add(x)` is the residual connection. Without it, a 18-layer network is hard to train - gradients attenuate through repeated multiplications. With it, the gradient has a direct path back through the identity mapping. The network only needs to learn the *residual* - the difference from the input.
+That `add(x)` is the residual connection. Without it, a 18-layer network is hard to train because gradients attenuate through repeated multiplications. With it, the gradient has a direct path back through the identity mapping. The network only needs to learn the *residual*, the difference from the input.
 
 When spatial dimensions change (32x32 → 16x16), the skip connection uses a 1x1 convolution to match dimensions:
 
@@ -83,7 +83,7 @@ Output [B*H_out*W_out, C_out]
 Output [B, C_out, H_out, W_out]
 ```
 
-On CPU, the GEMM dispatches to OpenBLAS. On GPU, it dispatches to cuDNN which fuses im2col + GEMM into a single optimized kernel. That fusion is the main reason GPU training is faster - it eliminates the intermediate column matrix entirely.
+On CPU, the GEMM dispatches to OpenBLAS. On GPU, it dispatches to cuDNN which fuses im2col + GEMM into a single optimized kernel. That fusion is the main reason GPU training is faster: it eliminates the intermediate column matrix entirely.
 
 ```cpp
 // cuDNN replaces ~200 lines of im2col + GEMM with:
@@ -150,7 +150,7 @@ flowchart LR
 | 50 | 0.18 | 91% |
 | 200 | 0.04 | 93%+ |
 
-Weight decay penalizes large weights (`grad += 0.0005 * weight`). Without it the network overfits - train accuracy hits 99% while test accuracy plateaus at 85%.
+Weight decay penalizes large weights (`grad += 0.0005 * weight`). Without it the network overfits: train accuracy hits 99% while test accuracy plateaus at 85%.
 
 ---
 
@@ -169,7 +169,7 @@ flowchart LR
     style W fill:#1a1a1a,stroke:#555,color:#c0c0c0
 ```
 
-The export tool writes all 122 tensors (weights, biases, BatchNorm running statistics) to a flat binary file with named entries. A Python script reads this and constructs the ONNX graph - every conv, every batchnorm, every skip connection wired up explicitly.
+The export tool writes all 122 tensors (weights, biases, BatchNorm running statistics) to a flat binary file with named entries. A Python script reads this and constructs the ONNX graph with every conv, batchnorm, and skip connection wired up explicitly.
 
 ONNX Runtime Web loads the 42MB model in your browser, compiles it to WebAssembly, and runs inference in ~50ms per image. The same model that took hours to train on a GPU runs on your phone.
 
@@ -177,7 +177,7 @@ ONNX Runtime Web loads the 42MB model in your browser, compiles it to WebAssembl
 
 ## What I'd Do Differently
 
-CIFAR-10 images are 32x32 pixels. That's tiny. The model works well on CIFAR-10 test images but struggles with real photos because they're much higher resolution with different distributions. A model trained on ImageNet (224x224, 1000 classes) would generalize better, but would need significantly more compute.
+CIFAR-10 images are 32x32 pixels. That's tiny. The model works well on CIFAR-10 test images but struggles with real photos because they're much higher resolution and come from a different distribution. A model trained on ImageNet (224x224, 1000 classes) would generalize better, but would need a lot more compute.
 
 The cuDNN integration on different versions (8 vs 9) caused days of debugging. The batchnorm API behaves subtly differently. If I were starting over, I'd test against PyTorch's output tensor-by-tensor from day one.
 
@@ -185,9 +185,9 @@ The cuDNN integration on different versions (8 vs 9) caused days of debugging. T
 
 ## What's Next
 
-This is the first model. The framework supports the full stack - transformers, recurrent networks, attention mechanisms - so training more models is mostly a matter of compute and time.
+This is the first model. The framework supports transformers, recurrent networks, and attention mechanisms, so training more models is mostly a matter of compute and time.
 
-Next up is a small language model. whitematter already has MultiHeadAttention, RoPE, RMSNorm, and a GPT training script that generates Shakespeare. The plan is to train something small but real, export it to ONNX, and embed it somewhere on this site - maybe a chatbot that writes in iambic pentameter, maybe an autocomplete that suggests code. Something you can interact with directly.
+Next up is a small language model. whitematter already has MultiHeadAttention, RoPE, RMSNorm, and a GPT training script that generates Shakespeare. The plan is to train something small but real, export it to ONNX, and embed it somewhere on this site. Maybe a chatbot that writes in iambic pentameter, maybe an autocomplete that suggests code. Something you can interact with directly.
 
 Beyond that, I want to train models that are useful beyond demos. Object detection, style transfer, maybe a tiny speech recognizer. Each one trains in the same C++ framework, exports to the same ONNX pipeline, and runs in the same browser runtime. The infrastructure is built. Now it's just models and GPU hours.
 

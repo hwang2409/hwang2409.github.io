@@ -1,6 +1,6 @@
 ---
 title: Neuronic
-excerpt: Mastering Research
+excerpt: Notes, studying, and spaced repetition in one place
 date: 03/02/2026
 ---
 
@@ -8,9 +8,9 @@ date: 03/02/2026
 
 ---
 
-Most study apps are glorified text editors with a flashcard button bolted on. No understanding of *what* you're learning, no sense of *how well* you know it, nothing about *what to do next*.
+Most study apps are text editors with a flashcard button. They don't know what you're learning, how well you know it, or what you should do next.
 
-I built Neuronic to fix that. It's an AI study platform where every note feeds into a living model of your knowledge - extracting concepts, tracking mastery, detecting gaps, and driving you toward real understanding through active recall, spaced repetition, and targeted practice.
+I built Neuronic around that problem. Every note gets analyzed for concepts, prerequisites, definitions, and review state. That gives the app enough structure to suggest flashcards, quizzes, weak areas, and the next thing to study.
 
 | Metric | Value |
 |--------|-------|
@@ -23,7 +23,7 @@ I built Neuronic to fix that. It's an AI study platform where every note feeds i
 
 ## The Seven Pillars
 
-Every feature in Neuronic maps to one of seven stages in a learning lifecycle. This isn't marketing - it's an engineering constraint. Every line of code serves one of these:
+Every feature in Neuronic maps to one of seven stages in a learning lifecycle. This is less branding than constraint: every major feature has to serve one of these.
 
 ```
 ┌─────────┐ ┌────────────┐ ┌──────────┐ ┌────────┐ ┌──────┐ ┌───────┐ ┌─────────────┐
@@ -32,19 +32,19 @@ Every feature in Neuronic maps to one of seven stages in a learning lifecycle. T
 └─────────┘ └────────────┘ └──────────┘ └────────┘ └──────┘ └───────┘ └─────────────┘
 ```
 
-**Capture** - Multi-modal input: markdown, Excalidraw canvas, moodboards, PDF/PPTX uploads, YouTube transcript imports, arXiv ingestion, Whisper voice transcription, and a Chrome extension for web clipping.
+**Capture:** Multi-modal input: markdown, Excalidraw canvas, moodboards, PDF/PPTX uploads, YouTube transcript imports, arXiv ingestion, Whisper voice transcription, and a Chrome extension for web clipping.
 
-**Understand** - AI analysis via Claude. Every note gets its concepts, definitions, formulas, prerequisites, and summaries extracted. This feeds the knowledge graph and concept mastery system.
+**Understand:** AI analysis via Claude. Every note gets its concepts, definitions, formulas, prerequisites, and summaries extracted. This feeds the knowledge graph and concept mastery system.
 
-**Organize** - Folders, tags, `[[bidirectional links]]`, and a force-directed knowledge graph visualizing connections between notes and concepts.
+**Organize:** Folders, tags, `[[bidirectional links]]`, and a force-directed knowledge graph visualizing connections between notes and concepts.
 
-**Retain** - The engine. SM-2 spaced repetition on flashcards *and* notes, AI-generated quizzes, Feynman technique with voice-based explanation scoring, and Socratic dialogue where Claude probes your understanding.
+**Retain:** The engine. SM-2 spaced repetition on flashcards *and* notes, AI-generated quizzes, Feynman technique with voice-based explanation scoring, and Socratic dialogue where Claude probes your understanding.
 
-**Act** - Study plans parsed from syllabi, todos, Pomodoro timers, focus mode, and an IFTTT-style automation engine.
+**Act:** Study plans parsed from syllabi, todos, Pomodoro timers, focus mode, and an IFTTT-style automation engine.
 
-**Track** - Dashboard with activity heatmaps, weak area detection, performance trends, knowledge gap visualization, and smart nudges.
+**Track:** Dashboard with activity heatmaps, weak area detection, performance trends, knowledge gap visualization, and smart nudges.
 
-**Collaborate** - Study groups with shared notes, Q&A forum with voting and bounties, synchronized Pomodoro rooms, and friend activity feeds.
+**Collaborate:** Study groups with shared notes, Q&A forum with voting and bounties, synchronized Pomodoro rooms, and friend activity feeds.
 
 ---
 
@@ -99,15 +99,15 @@ graph LR
     F --> K
 ```
 
-Deliberately simple. SQLite in WAL mode handles concurrent reads without contention. Async FastAPI means long-running AI calls don't block the event loop. Redis caches hot paths (note lists, dashboard data), Celery handles background jobs like audio transcription and batch analysis.
+The backend is deliberately simple. SQLite in WAL mode handles concurrent reads without contention. Async FastAPI keeps long-running AI calls from blocking the event loop. Redis caches hot paths like note lists and dashboard data. Celery handles background jobs like audio transcription and batch analysis.
 
-API keys are encrypted at rest with Fernet symmetric encryption. Users can bring their own Anthropic keys - they're never stored in plaintext. The server falls back to its own key pool when none is provided.
+API keys are encrypted at rest with Fernet symmetric encryption. Users can bring their own Anthropic keys, and they are never stored in plaintext. The server falls back to its own key pool when none is provided.
 
 ---
 
 ## The Note Analysis Pipeline
 
-When you save a note, a cascade of background processing turns raw text into structured knowledge. This pipeline is the backbone of everything else - concept mastery, knowledge gaps, smart search, and study recommendations all depend on it.
+When you save a note, background jobs turn raw text into structured knowledge. Concept mastery, knowledge gaps, search, and study recommendations all depend on this pipeline.
 
 ```mermaid
 flowchart TD
@@ -134,13 +134,13 @@ flowchart TD
     style I fill:#1a1a1a,stroke:#58a6ff,color:#58a6ff
 ```
 
-Steps 3-5 run concurrently. The embedding is computed locally via FastEmbed (BAAI/bge-small-en-v1.5, 384 dimensions) - no external API call needed. Claude analysis runs in parallel and fans out to four downstream consumers: concept sync, analysis storage, review scheduling, and the automation event bus.
+Steps 3-5 run concurrently. The embedding is computed locally via FastEmbed (BAAI/bge-small-en-v1.5, 384 dimensions), so there is no external API call. Claude analysis runs in parallel and fans out to four consumers: concept sync, analysis storage, review scheduling, and the automation event bus.
 
 ---
 
 ## Spaced Repetition at Scale
 
-Most apps apply SM-2 to flashcards alone. I apply it to *everything* - flashcards, notes, and concepts.
+Most apps apply SM-2 to flashcards alone. I apply it to *everything*: flashcards, notes, and concepts.
 
 - **Flashcards**: Classic flip-and-rate. Quality 0-5, explicit user rating.
 - **Notes**: Active recall mode. See the title, try to recall the content, rate your recall 1-4.
@@ -202,7 +202,7 @@ flowchart LR
     style GAP fill:#1a1a1a,stroke:#f47068,color:#f47068
 ```
 
-Gap detection is probably my favorite part. It compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard surfaces that gap with a one-click button to auto-generate a prerequisite note via Claude.
+Gap detection is the part I like most. It compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard shows that gap and gives you a button to generate a prerequisite note with Claude.
 
 ---
 
@@ -259,7 +259,7 @@ Pomodoro timers, subject lock-in, distraction blocking, and streak tracking.
 
 ## The Automation Engine
 
-The automation engine bridges passive capture and active learning. You define if-this-then-that rules: triggers fire on events like "PDF uploaded" or "quiz score below 60%", and actions execute asynchronously - generating flashcards, creating todos, posting to forums, or sending notifications.
+The automation engine connects capture to studying. You define if-this-then-that rules: triggers fire on events like "PDF uploaded" or "quiz score below 60%", and actions run asynchronously. They can generate flashcards, create todos, post to forums, or send notifications.
 
 ```mermaid
 flowchart LR
@@ -274,11 +274,11 @@ flowchart LR
     style EXEC fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
 ```
 
-Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff. So you can set up something like "whenever I upload a PDF, generate 10 flashcards and create a review todo for next week" - and never think about it again.
+Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff. You can set up something like "whenever I upload a PDF, generate 10 flashcards and create a review todo for next week" and leave it alone.
 
 ---
 
-That's Neuronic. Studying should be intelligent, not just diligent.
+That's Neuronic. The point is to make studying feel less manual.
 
 ---
 
