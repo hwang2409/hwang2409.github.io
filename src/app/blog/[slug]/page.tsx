@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import MermaidRenderer from '@/components/MermaidRenderer';
 import IframeResizer from '@/components/IframeResizer';
 import CodeTokenInspector from '@/components/CodeTokenInspector';
+import BlogCaseToggle from '@/components/BlogCaseToggle';
 
 export async function generateMetadata({
   params,
@@ -32,16 +33,19 @@ export default async function BlogPostPage({
   const htmlContent = await markdownToHtml(post.content);
 
   return (
-    <article>
+    <article className="post-article">
       <header className="post-header">
         <h1 className="post-title">{post.title}</h1>
-        <p className="post-date">
-          {new Date(post.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
+        <div className="post-tools">
+          <p className="post-date">
+            {new Date(post.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+          <BlogCaseToggle />
+        </div>
       </header>
 
       <div

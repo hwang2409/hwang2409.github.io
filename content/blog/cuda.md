@@ -9,7 +9,7 @@ I have a working ML framework: tensors, autograd, layers, optimizers. It runs on
 
 Every assumption you have about how computers work is slightly wrong on a GPU. The mistakes stack up fast.
 
-This is where I'm at right now. Not a tutorial. A dispatch from the middle.
+This is where it is right now. Not a tutorial.
 
 
 ---
@@ -63,7 +63,7 @@ void CUDABackend::matmul(const float* h_A, const float* h_B,
 
 Copy in. Compute. Copy out. For every single operation. Hundreds of ops per forward pass, and the GPU spends most of its time waiting for data over PCIe.
 
-> [!side] This is the first GPU lesson I actually felt in code. A fast kernel does not matter if every op starts with a host-device copy.
+> [!side] A fast kernel does not matter if every op starts with a host-device copy.
 
 The fix is keeping tensors resident on the GPU: allocate once, compute many times, and only copy back when you need to read a value like the loss. But that means rewriting the tensor abstraction so it knows where its data lives, which means touching every operation, every autograd closure, every layer. That rewrite is ongoing.
 
@@ -94,7 +94,7 @@ cublasSgemm(handle,
     d_C, N);
 ```
 
-Footgun that fires every time you add a new BLAS operation and forget the swap. Batched matmul has the same issue but with stride calculations layered on top.
+Easy to forget when adding a new BLAS operation. Batched matmul has the same issue, plus stride calculations.
 
 ---
 
@@ -118,7 +118,7 @@ The problems start when you need *cooperation between threads*.
 
 ## Reductions Are Hard
 
-Element-wise ops are embarrassingly parallel because every element is independent. Reductions are the opposite: combine N values into one, which inherently requires communication.
+Element-wise ops are easy because every element is independent. Reductions are the opposite: combine N values into one, which requires communication.
 
 Sum reduction uses a two-phase approach:
 
@@ -179,7 +179,7 @@ if (norm > max_norm) {
 }
 ```
 
-That `cudaMemcpy` with `DeviceToHost` blocks until the GPU finishes. The whole pipeline stalls for one scalar. The right fix is doing the reduction and comparison entirely on the GPU, but conditional kernel launches add their own mess.
+That `cudaMemcpy` with `DeviceToHost` blocks until the GPU finishes. The whole pipeline stalls for one scalar. The right fix is doing the reduction and comparison on the GPU, but conditional kernel launches add their own mess.
 
 ---
 
@@ -213,7 +213,7 @@ std::shared_ptr<float> acquire_shared(size_t n) {
 }
 ```
 
-Buffer goes out of scope, returns to pool instead of being freed. Works well for temp buffers in autograd closures.
+Buffer goes out of scope, returns to the pool instead of being freed.
 
 ---
 
@@ -256,7 +256,7 @@ Workspace is pre-allocated at 8 MB. If it's too small, cuDNN falls back to slowe
 
 ## What I've Learned
 
-GPU programming is not "write the same code but it runs on more cores." On CPU the bottleneck is computation. On GPU it's almost always memory.
+GPU programming is not "write the same code but it runs on more cores." On CPU the bottleneck is computation. On GPU it is usually memory.
 
 The most important optimization isn't in any kernel. It's keeping the data on the GPU in the first place. I'm not there yet.
 

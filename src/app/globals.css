@@ -241,6 +241,34 @@ dl {
   margin-bottom: 2.5rem;
 }
 
+.post-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.case-toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.case-toggle[aria-pressed="true"] {
+  color: var(--foreground);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.case-toggle:hover,
+.case-toggle:focus-visible {
+  color: var(--background);
+}
+
 .resume-header {
   display: flex;
   align-items: baseline;
@@ -509,6 +537,28 @@ dl {
   width: 100%;
   border: 1px solid var(--border) !important;
   background: var(--surface);
+}
+
+:root[data-blog-case="lower"] .post-article .post-title,
+:root[data-blog-case="lower"] .post-article .post-date,
+:root[data-blog-case="lower"] .post-article .prose p,
+:root[data-blog-case="lower"] .post-article .prose li,
+:root[data-blog-case="lower"] .post-article .prose h1,
+:root[data-blog-case="lower"] .post-article .prose h2,
+:root[data-blog-case="lower"] .post-article .prose h3,
+:root[data-blog-case="lower"] .post-article .prose th,
+:root[data-blog-case="lower"] .post-article .prose td,
+:root[data-blog-case="lower"] .post-article .prose blockquote,
+:root[data-blog-case="lower"] .post-article .prose .sidenote {
+  text-transform: lowercase;
+}
+
+:root[data-blog-case="lower"] .post-article .prose pre,
+:root[data-blog-case="lower"] .post-article .prose code,
+:root[data-blog-case="lower"] .post-article .prose iframe,
+:root[data-blog-case="lower"] .post-article .mermaid-diagram,
+:root[data-blog-case="lower"] .post-article .mermaid-diagram * {
+  text-transform: none;
 }
 
 .mermaid-diagram {

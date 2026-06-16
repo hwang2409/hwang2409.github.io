@@ -10,9 +10,9 @@ date: 03/02/2026
 
 Most study apps are text editors with a flashcard button. They don't know what you're learning, how well you know it, or what you should do next.
 
-I built Neuronic around that problem. Every note gets analyzed for concepts, prerequisites, definitions, and review state. That gives the app enough structure to suggest flashcards, quizzes, weak areas, and the next thing to study.
+I built Neuronic around that problem. Every note gets analyzed for concepts, prerequisites, definitions, and review state. From there, the app can suggest flashcards, quizzes, weak areas, and what to study next.
 
-> [!side] The important part is that notes become structured data. Once that exists, flashcards and quizzes are just views over the same graph.
+> [!side] The important part is that notes become structured data. Flashcards and quizzes are views over the same graph.
 
 | Metric | Value |
 |--------|-------|
@@ -25,7 +25,7 @@ I built Neuronic around that problem. Every note gets analyzed for concepts, pre
 
 ## The Seven Pillars
 
-Every feature in Neuronic maps to one of seven stages in a learning lifecycle. This is less branding than constraint: every major feature has to serve one of these.
+Every major feature maps to one of seven stages:
 
 ```
 ┌─────────┐ ┌────────────┐ ┌──────────┐ ┌────────┐ ┌──────┐ ┌───────┐ ┌─────────────┐
@@ -38,13 +38,13 @@ Every feature in Neuronic maps to one of seven stages in a learning lifecycle. T
 
 **Understand:** AI analysis via Claude. Every note gets its concepts, definitions, formulas, prerequisites, and summaries extracted. This feeds the knowledge graph and concept mastery system.
 
-**Organize:** Folders, tags, `[[bidirectional links]]`, and a force-directed knowledge graph visualizing connections between notes and concepts.
+**Organize:** Folders, tags, `[[bidirectional links]]`, and a force-directed graph connecting notes and concepts.
 
 **Retain:** The engine. SM-2 spaced repetition on flashcards *and* notes, AI-generated quizzes, Feynman technique with voice-based explanation scoring, and Socratic dialogue where Claude probes your understanding.
 
 **Act:** Study plans parsed from syllabi, todos, Pomodoro timers, focus mode, and an IFTTT-style automation engine.
 
-**Track:** Dashboard with activity heatmaps, weak area detection, performance trends, knowledge gap visualization, and smart nudges.
+**Track:** Dashboard with activity heatmaps, weak areas, trends, knowledge gaps, and reminders.
 
 **Collaborate:** Study groups with shared notes, Q&A forum with voting and bounties, synchronized Pomodoro rooms, and friend activity feeds.
 
@@ -101,7 +101,7 @@ graph LR
     F --> K
 ```
 
-The backend is deliberately simple. SQLite in WAL mode handles concurrent reads without contention. Async FastAPI keeps long-running AI calls from blocking the event loop. Redis caches hot paths like note lists and dashboard data. Celery handles background jobs like audio transcription and batch analysis.
+The backend is simple. SQLite in WAL mode handles concurrent reads. Async FastAPI keeps long-running AI calls from blocking the event loop. Redis caches hot paths like note lists and dashboard data. Celery handles background jobs like audio transcription and batch analysis.
 
 API keys are encrypted at rest with Fernet symmetric encryption. Users can bring their own Anthropic keys, and they are never stored in plaintext. The server falls back to its own key pool when none is provided.
 
@@ -174,13 +174,13 @@ flowchart LR
  └──────┘    └──────┘    └──────┘    └──────┘    └──────┘
 ```
 
-The interesting part is the quiz feedback loop. When you take a quiz generated from a note, the score updates that note's SM-2 state. Score below 60%? Interval resets, note resurfaces sooner. Above 80%? Ease factor goes up, note recedes. Turns out this creates spaced repetition that works even if you never explicitly review notes.
+The quiz feedback loop matters. When you take a quiz generated from a note, the score updates that note's SM-2 state. Score below 60%? Interval resets, note resurfaces sooner. Above 80%? Ease factor goes up, note recedes.
 
 ---
 
 ## Knowledge Graph & Concept Mastery
 
-This is where everything converges. Every concept extracted from every note becomes a node. Edges form when two concepts co-occur in the same document. Mastery is a weighted blend of flashcard performance, quiz scores, and Feynman technique assessments.
+Every concept extracted from every note becomes a node. Edges form when two concepts co-occur in the same document. Mastery is a weighted blend of flashcard performance, quiz scores, and Feynman technique assessments.
 
 ```mermaid
 flowchart LR
@@ -204,9 +204,9 @@ flowchart LR
     style GAP fill:#1a1a1a,stroke:#f47068,color:#f47068
 ```
 
-Gap detection is the part I like most. It compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard shows that gap and gives you a button to generate a prerequisite note with Claude.
+Gap detection compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard shows that gap and gives you a button to generate a prerequisite note with Claude.
 
-> [!side] This is one of the places where AI feels useful: not replacing studying, just noticing the prerequisite you skipped.
+> [!side] This is where AI helps: it notices the prerequisite you skipped.
 
 ---
 
@@ -263,7 +263,7 @@ Pomodoro timers, subject lock-in, distraction blocking, and streak tracking.
 
 ## The Automation Engine
 
-The automation engine connects capture to studying. You define if-this-then-that rules: triggers fire on events like "PDF uploaded" or "quiz score below 60%", and actions run asynchronously. They can generate flashcards, create todos, post to forums, or send notifications.
+The automation engine connects capture to studying. You define if-this-then-that rules: "PDF uploaded" can generate flashcards, create todos, post to forums, or send notifications.
 
 ```mermaid
 flowchart LR
@@ -278,11 +278,11 @@ flowchart LR
     style EXEC fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
 ```
 
-Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff. You can set up something like "whenever I upload a PDF, generate 10 flashcards and create a review todo for next week" and leave it alone.
+Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff.
 
 ---
 
-That's Neuronic. The point is to make studying feel less manual.
+That's Neuronic.
 
 ---
 

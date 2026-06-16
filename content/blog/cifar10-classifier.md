@@ -14,7 +14,7 @@ Upload an image. The model classifies it as one of: airplane, automobile, bird, 
 
 This is a ResNet-18 I trained from scratch using [whitematter](/blog/whitematter). 11 million parameters, CUDA-accelerated training on an RTX 2070 SUPER, exported to ONNX, running inference in your browser via ONNX Runtime Web. No server. No API. The entire model loads into your tab.
 
-> [!side] I like this as a website demo because the boundary is clean: train elsewhere, export once, run locally in the browser.
+> [!side] The boundary is clean: train elsewhere, export once, run locally in the browser.
 
 ---
 
@@ -110,7 +110,7 @@ y = gamma * (x - mean) / sqrt(var + eps) + beta
 
 `gamma` and `beta` are learnable. `mean` and `var` are computed per-channel across the batch during training, then frozen as running averages during inference.
 
-Why it matters: without it, the distribution of activations shifts every time you update weights (internal covariate shift). BatchNorm keeps things stable, lets you use higher learning rates, and acts as a mild regularizer.
+Without it, the distribution of activations shifts every time you update weights. BatchNorm keeps things stable, lets you use higher learning rates, and acts as a mild regularizer.
 
 The backward pass is the ugly part. Three separate gradients (input, gamma, beta), each requiring the saved mean and inverse standard deviation from the forward pass:
 
@@ -175,7 +175,7 @@ The export tool writes all 122 tensors (weights, biases, BatchNorm running stati
 
 ONNX Runtime Web loads the 42MB model in your browser, compiles it to WebAssembly, and runs inference in ~50ms per image. The same model that took hours to train on a GPU runs on your phone.
 
-> [!side] This is the satisfying part of ONNX: the training stack can be weird, but the inference artifact is portable.
+> [!side] The training stack can be weird, but the inference artifact is portable.
 
 ---
 
@@ -193,6 +193,6 @@ This is the first model. The framework supports transformers, recurrent networks
 
 Next up is a small language model. whitematter already has MultiHeadAttention, RoPE, RMSNorm, and a GPT training script that generates Shakespeare. The plan is to train something small but real, export it to ONNX, and embed it somewhere on this site. Maybe a chatbot that writes in iambic pentameter, maybe an autocomplete that suggests code. Something you can interact with directly.
 
-Beyond that, I want to train models that are useful beyond demos. Object detection, style transfer, maybe a tiny speech recognizer. Each one trains in the same C++ framework, exports to the same ONNX pipeline, and runs in the same browser runtime. The infrastructure is built. Now it's just models and GPU hours.
+Beyond that: object detection, style transfer, maybe a tiny speech recognizer. Same C++ framework, same ONNX export, same browser runtime.
 
-More to come.
+More soon.

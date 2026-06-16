@@ -7,7 +7,7 @@ date: 03/23/2026
 
 Every project I start looks the same. React up front, FastAPI in the middle, SQLite and Redis in the back, Claude somewhere in the loop, SSE pushing data to the browser. Two projects in a row had the same bones, so here's the skeleton.
 
-> [!side] This is not meant to be universal architecture advice. It is the default stack I reach for when I am building alone and want the fewest moving parts.
+> [!side] Not universal architecture advice. This is what I reach for when I am building alone.
 
 
 ---
@@ -82,9 +82,9 @@ flowchart LR
     V --> R
 ```
 
-The service handles prompt templates (Jinja2 or f-strings), structured output validation against Pydantic models (retry once on malformed JSON), and streaming chunks back as SSE events.
+The service handles prompt templates, Pydantic validation, one retry on malformed JSON, and SSE chunks.
 
-The key decision: Claude never touches the database directly. It receives context, produces structured output, and the business logic layer decides what to do with it. Stateless and testable.
+Claude never touches the database directly. It gets context, returns structured output, and the business logic layer decides what to do.
 
 ---
 
@@ -94,7 +94,7 @@ Every time I reach for Postgres I ask myself: do I actually need it? The answer 
 
 SQLite in WAL mode handles concurrent reads without contention. Single writer is fine when your write volume is "one user doing things." The database is a single file: no daemon, no connection strings, no Docker container for local dev.
 
-> [!side] The constraint matters: these are personal tools and prototypes first. If a project outgrows SQLite, that is usually a good problem.
+> [!side] These are personal tools and prototypes first. If a project outgrows SQLite, that is a good problem.
 
 ```mermaid
 flowchart TD
@@ -142,7 +142,7 @@ For the real-time side, I use SSE over WebSockets for almost everything:
  ~10 lines of code             ~50 lines + heartbeat
 ```
 
-Client needs to send data? Regular POST. Server pushes updates over SSE. This covers every "real-time" feature I've built.
+Client sends data with regular POST. Server pushes updates over SSE.
 
 ```mermaid
 sequenceDiagram
@@ -218,6 +218,6 @@ One Dockerfile, one nginx config, one GitHub Actions workflow. No Kubernetes. A 
 
 ## When This Breaks Down
 
-This stack has limits. SQLite's single writer chokes on high write concurrency. SSE holds a connection per client, which stops scaling at thousands. Python's GIL blocks the event loop on CPU-heavy work. I know where the ceilings are. I just haven't hit them yet, and most projects never will. The ones that do have already proven they're worth the migration effort.
+This stack has limits. SQLite's single writer chokes on high write concurrency. SSE holds a connection per client. Python's GIL blocks the event loop on CPU-heavy work. I know where the ceilings are. I just haven't hit them yet.
 
 ---

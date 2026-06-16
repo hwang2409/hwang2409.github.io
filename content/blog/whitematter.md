@@ -7,9 +7,9 @@ date: 03/14/2026
 
 I wanted to know what happens between `loss.backward()` and the weights changing. Not conceptually. I mean the actual bytes. Which multiply goes where. How a convolution gradient turns into a transposed convolution. What the chain rule looks like when it's not a diagram in a textbook but 83,000 lines of C++.
 
-> [!side] The project is less about beating PyTorch and more about removing the magic layer between the math and the memory.
+> [!side] This is not about beating PyTorch. I wanted to remove the layer between the math and the memory.
 
-So I built a deep learning framework from scratch: tensors, autograd, layers, optimizers, SIMD kernels, GPU shaders, the whole stack. Then wrapped it in a web platform where you can train models from a browser.
+So I built a deep learning framework from scratch: tensors, autograd, layers, optimizers, SIMD kernels, GPU shaders. Then wrapped it in a web UI.
 
 
 ---
@@ -78,7 +78,7 @@ loss->backward();
 
 Every backward function is written by hand. That's the point.
 
-> [!side] Hand-writing backward passes is tedious in exactly the useful way. You find out which operations are simple and which ones were hiding real complexity.
+> [!side] Hand-writing backward passes is tedious in a useful way. You find out which operations were hiding real complexity.
 
 ```mermaid
 flowchart TD
@@ -143,7 +143,7 @@ Every layer handles its own weight initialization, tracks running stats where ne
 
 ## Making It Fast
 
-Naive matrix multiplication in C++ is slow. Cache misses kill you. Whitematter stacks three levels of optimization:
+Naive matrix multiplication in C++ is slow. Cache misses kill you. Whitematter uses three levels of optimization:
 
 **SIMD:** Element-wise ops use vector instructions: AVX2 on Intel (8 floats/instruction), NEON on Apple Silicon (4 floats/instruction). Detected at compile time.
 
@@ -201,7 +201,7 @@ One-click deploy to AWS EC2 provisions an instance, uploads the binary, and expo
 
 The model zoo ships with full implementations: **ResNet-18** (residual blocks, BatchNorm, adaptive pooling), **MobileNetV2** (inverted residuals, depthwise separable convolutions), and a **GPT** decoder (causal multi-head attention, positional encoding, autoregressive generation, trained on Shakespeare as proof-of-concept).
 
-All three use only Whitematter's layer primitives. Reading the source is how you learn what these architectures actually are: not abstractions over abstractions, but the literal matrix operations.
+All three use only Whitematter's layer primitives. Reading the source shows the matrix operations directly.
 
 ---
 
@@ -211,6 +211,6 @@ Because I wanted to understand it.
 
 PyTorch is great. If you're training for production, use PyTorch. I built this because PyTorch hides the parts I wanted to understand. Writing matmul backward by hand teaches you it's just two transposed multiplications. Implementing BatchNorm teaches you why training and eval modes exist. Writing convolution as im2col teaches you that convolutions are matrix multiplies in disguise.
 
-The web platform exists so the framework doesn't require a C++ toolchain to use. But the framework exists because the learning is in the implementation.
+The web UI exists so the framework does not require a C++ toolchain to try.
 
 ---

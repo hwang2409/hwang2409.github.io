@@ -18,6 +18,10 @@ try {
   if (theme === 'dark' || theme === 'light') {
     document.documentElement.dataset.theme = theme;
   }
+  var blogCase = window.localStorage.getItem('blog-case');
+  if (blogCase === 'lower') {
+    document.documentElement.dataset.blogCase = blogCase;
+  }
 } catch (_) {}
 `;
 
