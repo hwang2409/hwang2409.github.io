@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
+import ThemeToggle from '@/components/ThemeToggle';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -68,6 +69,9 @@ export default function RootLayout({
               >
                 x
               </a>
+            </div>
+            <div className="site-theme">
+              <ThemeToggle />
             </div>
           </footer>
         </div>

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import ThemeToggle from '@/components/ThemeToggle';
 
 const links = [
   { href: '/blog', label: 'blog' },
@@ -37,7 +36,6 @@ export default function SiteNav() {
           </Link>
         );
       })}
-      <ThemeToggle />
     </nav>
   );
 }
