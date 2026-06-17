@@ -5,33 +5,8 @@ export const metadata = {
 const nowEntries = [
   {
     date: 'june 17, 2026',
-    category: 'site',
-    body: 'turning /now into an append-only log instead of a fixed status page.',
-  },
-  {
-    date: 'june 2026',
-    category: 'lab',
-    body: 'keeping the site mostly static, with small local experiments attached where they make sense.',
-  },
-  {
-    date: 'may 2026',
-    category: 'models',
-    body: 'thinking about browser-side models, local-first tools, and demos that avoid external API calls.',
-  },
-  {
-    date: 'april 2026',
-    category: 'writing',
-    body: 'editing posts down into technical notes, with margin comments for the parts that need extra context.',
-  },
-  {
-    date: 'march 2026',
-    category: 'systems',
-    body: 'working through cuda, ml training loops, and small pieces of infrastructure I can explain clearly.',
-  },
-  {
-    date: 'spring 2026',
-    category: 'offline',
-    body: 'snowboarding when possible, music, and keeping personal tools small.',
+    category: 'personal',
+    body: 'ive recently found the time to start working on personal projects again. cool things incoming!'
   },
 ];
 
