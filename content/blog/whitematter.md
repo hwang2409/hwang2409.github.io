@@ -2,6 +2,7 @@
 title: Whitematter
 excerpt: Neural Networks from Scratch
 date: 03/14/2026
+kind: writeup
 ---
 
 

@@ -14,6 +14,8 @@ export interface BlogPost {
   title: string;
   date: string;
   excerpt: string;
+  kind: string;
+  readingMinutes: number;
   content: string;
 }
 
@@ -419,7 +421,7 @@ function appendSidenoteRef(target: Element, noteId: string, index: number) {
         href: `#${noteId}`,
         ariaLabel: `Read side note ${index}`,
       },
-      [createText(`[${index}]`)]
+      [createText('+')]
     )
   );
 }
@@ -573,11 +575,15 @@ export function getBlogPost(slug: string): BlogPost | null {
         ? dateValue.toISOString().split('T')[0]
         : String(dateValue || '');
 
+    const words = content.trim().split(/\s+/).filter(Boolean).length;
+
     return {
       slug,
       title: data.title || '',
       date: dateStr,
       excerpt: data.excerpt || '',
+      kind: data.kind || 'note',
+      readingMinutes: Math.max(1, Math.round(words / 220)),
       content: content.trim(),
     };
   } catch (error) {

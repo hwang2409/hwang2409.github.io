@@ -2,6 +2,7 @@
 title: Marginalia
 excerpt: A research workspace that remembers what it has read
 date: 04/12/2026
+kind: project
 ---
 
 

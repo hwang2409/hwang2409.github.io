@@ -28,6 +28,11 @@ export default function Blog() {
                 </span>
               </span>
               <span className="post-excerpt">{post.excerpt}</span>
+              <span className="post-meta">
+                <span>{post.kind}</span>
+                <span>{post.readingMinutes} min</span>
+                <span>markdown</span>
+              </span>
             </Link>
           </li>
         ))}

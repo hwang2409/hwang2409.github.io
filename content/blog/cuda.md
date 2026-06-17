@@ -2,6 +2,7 @@
 title: CUDA
 excerpt: Notes from adding a CUDA backend
 date: 03/26/2026
+kind: note
 ---
 
 

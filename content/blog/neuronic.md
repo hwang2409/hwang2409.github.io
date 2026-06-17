@@ -2,6 +2,7 @@
 title: Neuronic
 excerpt: Study notes with structured review state
 date: 03/02/2026
+kind: project
 ---
 
 

@@ -2,6 +2,7 @@
 title: CIFAR-10 Classifier
 excerpt: ResNet-18 image classification running in your browser
 date: 03/28/2026
+kind: demo
 ---
 
 Upload an image. The model classifies it as one of: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, or truck.

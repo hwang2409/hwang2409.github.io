@@ -2,6 +2,7 @@
 title: The Stack
 excerpt: Default architecture for small AI projects
 date: 03/23/2026
+kind: note
 ---
 
 

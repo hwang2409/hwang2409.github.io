@@ -367,6 +367,33 @@ dl {
   line-height: 1.35;
 }
 
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-0.15rem);
+  transition: max-height 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+.post-meta span::before {
+  content: "/";
+  margin-right: 0.35rem;
+  color: var(--border);
+}
+
+.post-link:hover .post-meta,
+.post-link:focus-visible .post-meta {
+  max-height: 1.4rem;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .post-header {
   margin-bottom: 4rem;
 }
@@ -578,6 +605,10 @@ dl {
 .prose ul,
 .prose ol {
   margin-bottom: 1rem;
+}
+
+.prose [id^="sidenote-target-"] {
+  position: relative;
 }
 
 .prose img {
@@ -1292,11 +1323,25 @@ dl {
 }
 
 .sidenote-ref {
+  position: absolute;
+  left: -1.35rem;
+  top: 0.12rem;
+  display: inline-grid;
+  width: 0.85rem;
+  height: 0.85rem;
+  place-items: center;
   color: var(--muted);
-  font-size: 0.72em;
+  font-size: 0.82rem;
   font-weight: 400;
+  line-height: 1;
   text-decoration: none;
-  vertical-align: super;
+}
+
+.sidenote-ref:hover,
+.sidenote-ref:focus-visible {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .sidenote-backref {
@@ -1395,6 +1440,10 @@ dl {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .post-meta {
+    transition: none;
+  }
+
   .prediction-meter span {
     transition: none;
   }
@@ -1493,6 +1542,22 @@ dl {
     white-space: normal;
   }
 
+  .post-meta {
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+    transform: none;
+  }
+
+  .sidenote-ref {
+    position: static;
+    display: inline;
+    width: auto;
+    height: auto;
+    margin-left: 0.25rem;
+    vertical-align: super;
+  }
+
   .lab-workbench-heading {
     align-items: flex-start;
     flex-direction: column;
@@ -1537,5 +1602,14 @@ dl {
 
   .browser-model-result strong {
     justify-self: start;
+  }
+}
+
+@media (hover: none) {
+  .post-meta {
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+    transform: none;
   }
 }
