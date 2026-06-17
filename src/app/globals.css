@@ -405,7 +405,7 @@ dl {
 
 .lab-status-strip {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   gap: 0.7rem;
   align-items: baseline;
   padding: 0.55rem 0;
@@ -899,8 +899,7 @@ dl {
     grid-template-columns: auto auto minmax(0, 1fr);
   }
 
-  .lab-status-strip span:nth-of-type(3),
-  .lab-status-strip span:nth-of-type(4) {
+  .lab-status-strip span:nth-of-type(3) {
     display: none;
   }
 

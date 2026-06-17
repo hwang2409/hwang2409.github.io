@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 const DEFAULT_API_URL = 'https://hwang2409githubio-production.up.railway.app';
 const LAB_API_URL = process.env.NEXT_PUBLIC_LAB_API_URL || DEFAULT_API_URL;
@@ -48,7 +48,6 @@ export default function LabConsole() {
   const [tokenResult, setTokenResult] = useState<NextTokenResponse | null>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
 
-  const displayUrl = useMemo(() => LAB_API_URL.replace(/^https?:\/\//, ''), []);
   const topPrediction = tokenResult?.predictions[0] ?? null;
   const matchedContext =
     tokenResult?.matched_context && tokenResult.matched_context.length > 0
@@ -124,7 +123,6 @@ export default function LabConsole() {
       <div className="lab-status-strip" aria-labelledby="api-status">
         <h2 id="api-status">runtime</h2>
         <span className={`lab-state lab-state-${healthState}`}>{healthState}</span>
-        <span>{displayUrl}</span>
         <span>{health ? `${health.service} ${health.version}` : '-'}</span>
         <span>{health?.env || '-'}</span>
       </div>
