@@ -17,6 +17,10 @@ export interface BlogPost {
   content: string;
 }
 
+type MarkdownSource = {
+  slug: string;
+};
+
 type SyntaxClass = {
   matches: string[];
   tone: string;
@@ -491,6 +495,37 @@ function rehypeSidenotes() {
   };
 }
 
+function sourceKindForTag(tagName: string) {
+  if (/^h[1-6]$/.test(tagName)) return 'heading';
+  if (tagName === 'pre') return 'code';
+  if (tagName === 'table') return 'table';
+  if (tagName === 'blockquote') return 'note';
+  if (tagName === 'li') return 'list';
+  return 'text';
+}
+
+function rehypeSourceMap(source?: MarkdownSource) {
+  return (tree: Root) => {
+    if (!source) return;
+
+    visitElements(tree, (node) => {
+      if (!['p', 'h2', 'h3', 'li', 'pre', 'table', 'blockquote'].includes(node.tagName)) {
+        return;
+      }
+
+      const position = node.position;
+      const line = position?.start.line;
+      if (!line) return;
+
+      node.properties = {
+        ...node.properties,
+        dataSource: `content/blog/${source.slug}.md:${line}`,
+        dataSourceKind: sourceKindForTag(node.tagName),
+      };
+    });
+  };
+}
+
 export function getAllBlogPosts(): BlogPost[] {
   const blogDir = path.join(process.cwd(), 'content', 'blog');
 
@@ -551,7 +586,10 @@ export function getBlogPost(slug: string): BlogPost | null {
   }
 }
 
-export async function markdownToHtml(markdown: string): Promise<string> {
+export async function markdownToHtml(
+  markdown: string,
+  source?: MarkdownSource
+): Promise<string> {
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -559,6 +597,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
     .use(rehypeHighlight, { plainText: ['mermaid'] })
     .use(rehypeMonochromeSyntax)
     .use(rehypeSidenotes)
+    .use(rehypeSourceMap, source)
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();

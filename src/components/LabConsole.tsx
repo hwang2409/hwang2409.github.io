@@ -1,6 +1,9 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import BrowserModelPanel from '@/components/BrowserModelPanel';
+import LocalSearchPanel from '@/components/LocalSearchPanel';
+import type { SearchDocument } from '@/lib/siteIndex';
 
 const DEFAULT_API_URL = 'https://hwang2409githubio-production.up.railway.app';
 const LAB_API_URL = process.env.NEXT_PUBLIC_LAB_API_URL || DEFAULT_API_URL;
@@ -32,6 +35,12 @@ type NextTokenResponse = {
   note: string;
 };
 
+type TraceStep = {
+  label: string;
+  durationMs: number;
+  detail: string;
+};
+
 const EXAMPLE_CONTEXTS = [
   'The CUDA kernel',
   'A static site can still',
@@ -39,7 +48,7 @@ const EXAMPLE_CONTEXTS = [
   'Local n gram model',
 ];
 
-export default function LabConsole() {
+export default function LabConsole({ searchDocuments }: { searchDocuments: SearchDocument[] }) {
   const [healthState, setHealthState] = useState<ApiState>('idle');
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [healthError, setHealthError] = useState<string | null>(null);
@@ -47,6 +56,7 @@ export default function LabConsole() {
   const [tokenState, setTokenState] = useState<ApiState>('idle');
   const [tokenResult, setTokenResult] = useState<NextTokenResponse | null>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
+  const [traceSteps, setTraceSteps] = useState<TraceStep[]>([]);
 
   const topPrediction = tokenResult?.predictions[0] ?? null;
   const matchedContext =
@@ -92,31 +102,72 @@ export default function LabConsole() {
 
   async function submitTokenProbe(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const started = performance.now();
     setTokenState('loading');
     setTokenError(null);
+    setTraceSteps([]);
 
     try {
+      const body = JSON.stringify({ context, top_k: 5 });
+      const serializedAt = performance.now();
       const response = await fetch(`${LAB_API_URL}/token/next`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ context, top_k: 5 }),
+        body,
       });
+      const responseAt = performance.now();
 
       if (!response.ok) {
         throw new Error(`token probe returned ${response.status}`);
       }
 
       const data = (await response.json()) as NextTokenResponse;
+      const decodedAt = performance.now();
+      const backendMs = data.latency_ms;
+      const fetchMs = responseAt - serializedAt;
+      const networkMs = Math.max(0, fetchMs - backendMs);
+
       setTokenResult(data);
+      setTraceSteps([
+        {
+          label: 'serialize',
+          durationMs: serializedAt - started,
+          detail: `${body.length} bytes`,
+        },
+        {
+          label: 'network',
+          durationMs: networkMs,
+          detail: `status ${response.status}`,
+        },
+        {
+          label: 'backend',
+          durationMs: backendMs,
+          detail: data.model,
+        },
+        {
+          label: 'decode',
+          durationMs: decodedAt - responseAt,
+          detail: `${data.predictions.length} predictions`,
+        },
+      ]);
       setTokenState('ok');
     } catch (error) {
       setTokenState('error');
       setTokenError(error instanceof Error ? error.message : 'request failed');
+      setTraceSteps([
+        {
+          label: 'failed',
+          durationMs: performance.now() - started,
+          detail: error instanceof Error ? error.message : 'request failed',
+        },
+      ]);
     }
   }
+
+  const maxTraceDuration = Math.max(...traceSteps.map((step) => step.durationMs), 1);
 
   return (
     <div className="lab-console">
@@ -229,6 +280,28 @@ export default function LabConsole() {
                 </dl>
 
                 <p className="lab-note">{tokenResult.note}</p>
+
+                {traceSteps.length > 0 ? (
+                  <div className="request-trace" aria-label="Request trace">
+                    {traceSteps.map((step) => (
+                      <div key={step.label}>
+                        <span>{step.label}</span>
+                        <span className="request-trace-meter" aria-hidden="true">
+                          <span
+                            style={{
+                              transform: `scaleX(${Math.max(
+                                0.03,
+                                step.durationMs / maxTraceDuration
+                              )})`,
+                            }}
+                          />
+                        </span>
+                        <span>{step.durationMs.toFixed(2)} ms</span>
+                        <span>{step.detail}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </>
             ) : (
               <div className="lab-empty">
@@ -239,6 +312,11 @@ export default function LabConsole() {
           </div>
         </div>
       </section>
+
+      <div className="lab-panel-grid">
+        <LocalSearchPanel documents={searchDocuments} />
+        <BrowserModelPanel />
+      </div>
     </div>
   );
 }

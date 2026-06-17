@@ -6,6 +6,9 @@ import MermaidRenderer from '@/components/MermaidRenderer';
 import IframeResizer from '@/components/IframeResizer';
 import CodeTokenInspector from '@/components/CodeTokenInspector';
 import BlogCaseToggle from '@/components/BlogCaseToggle';
+import SourceMapToggle from '@/components/SourceMapToggle';
+import BlogTokenGhost from '@/components/BlogTokenGhost';
+import { getClientNGramModel } from '@/lib/siteData';
 
 export async function generateMetadata({
   params,
@@ -30,7 +33,8 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const htmlContent = await markdownToHtml(post.content);
+  const htmlContent = await markdownToHtml(post.content, { slug: post.slug });
+  const tokenModel = getClientNGramModel();
 
   return (
     <article className="post-article">
@@ -45,6 +49,8 @@ export default async function BlogPostPage({
             })}
           </p>
           <BlogCaseToggle />
+          <SourceMapToggle />
+          <BlogTokenGhost model={tokenModel} />
         </div>
       </header>
 
