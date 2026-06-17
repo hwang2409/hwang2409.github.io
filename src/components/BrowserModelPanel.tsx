@@ -92,8 +92,8 @@ export default function BrowserModelPanel() {
     <section className="lab-panel" aria-labelledby="browser-model">
       <div className="lab-panel-heading">
         <div>
-          <h2 id="browser-model">browser model check</h2>
-          <p>runs a tiny WebAssembly scorer inside this tab</p>
+          <h2 id="browser-model">browser wasm</h2>
+          <p>run a tiny scorer without touching the backend</p>
         </div>
         <span className={`lab-state lab-state-${state === 'ready' ? 'ok' : state}`}>{state}</span>
       </div>
@@ -109,14 +109,14 @@ export default function BrowserModelPanel() {
 
       {result ? (
         <div className="browser-model-result">
-          <span>score</span>
+          <span>score from this tab</span>
           <strong>{result.probability.toFixed(3)}</strong>
           <span>{result.latencyMs.toFixed(3)} ms</span>
         </div>
       ) : null}
 
       <details className="lab-details">
-        <summary>model details</summary>
+        <summary>what ran</summary>
         <dl className="lab-metrics lab-metrics-wide">
           <div>
             <dt>runtime</dt>

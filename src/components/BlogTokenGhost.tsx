@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { predictNextToken } from '@/lib/localNgram';
 import type { ClientNGramModel } from '@/lib/localNgram';
 
@@ -9,8 +9,6 @@ type GhostState = {
   y: number;
   token: string;
   score: number;
-  matched: string;
-  entropy: number;
 };
 
 type DocumentWithCaret = Document & {
@@ -62,33 +60,14 @@ function textBeforePoint(root: HTMLElement, x: number, y: number) {
 export default function BlogTokenGhost({ model }: { model: ClientNGramModel }) {
   const [ghost, setGhost] = useState<GhostState | null>(null);
   const [armed, setArmed] = useState(false);
-  const altDown = useRef(false);
 
   useEffect(() => {
     function hideGhost() {
       setGhost(null);
     }
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Alt' || event.altKey) {
-        altDown.current = true;
-      }
-    }
-
-    function handleKeyUp(event: KeyboardEvent) {
-      if (event.key === 'Alt') {
-        altDown.current = false;
-        hideGhost();
-      }
-    }
-
     function handlePointerMove(event: PointerEvent) {
-      const active =
-        event.altKey ||
-        altDown.current ||
-        armed ||
-        document.documentElement.dataset.tokenGhostArmed === 'true';
-      if (!active) {
+      if (!armed) {
         hideGhost();
         return;
       }
@@ -124,20 +103,14 @@ export default function BlogTokenGhost({ model }: { model: ClientNGramModel }) {
         y: event.clientY + 14,
         token: prediction.token,
         score: prediction.score,
-        matched: result.matchedContext.join(' ') || 'unigram',
-        entropy: result.entropyBits,
       });
     }
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
     document.addEventListener('pointermove', handlePointerMove);
     document.addEventListener('pointerleave', hideGhost);
     window.addEventListener('blur', hideGhost);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerleave', hideGhost);
       window.removeEventListener('blur', hideGhost);
@@ -150,10 +123,10 @@ export default function BlogTokenGhost({ model }: { model: ClientNGramModel }) {
         type="button"
         className="token-ghost-hint"
         aria-pressed={armed}
-        aria-label={armed ? 'Disable token ghosting' : 'Enable token ghosting'}
+        aria-label={armed ? 'Disable word guessing' : 'Enable word guessing'}
         onClick={() => setArmed((current) => !current)}
       >
-        {armed ? 'prediction on' : 'predict hover'}
+        {armed ? 'hover words' : 'word guess'}
       </button>
       {ghost ? (
         <div
@@ -161,11 +134,9 @@ export default function BlogTokenGhost({ model }: { model: ClientNGramModel }) {
           style={{ left: `${ghost.x}px`, top: `${ghost.y}px` }}
           role="status"
         >
-          <span>next</span>
+          <span>next word</span>
           <strong>{ghost.token}</strong>
-          <span>{ghost.score.toFixed(2)}</span>
-          <span>match {ghost.matched}</span>
-          <span>entropy {ghost.entropy.toFixed(2)}</span>
+          <span>{Math.round(ghost.score * 100)}%</span>
         </div>
       ) : null}
     </>

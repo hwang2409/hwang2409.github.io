@@ -7,15 +7,14 @@ import type { SearchDocument } from '@/lib/siteIndex';
 
 const DEFAULT_API_URL = 'https://hwang2409githubio-production.up.railway.app';
 const LAB_API_URL = process.env.NEXT_PUBLIC_LAB_API_URL || DEFAULT_API_URL;
+const LAB_MODES = [
+  ['token', 'predict text', 'backend model'] as const,
+  ['search', 'search posts', 'browser index'] as const,
+  ['browser', 'run wasm', 'in this tab'] as const,
+];
 
 type ApiState = 'idle' | 'loading' | 'ok' | 'error';
-
-type HealthResponse = {
-  ok: boolean;
-  service: string;
-  version: string;
-  env: string;
-};
+type LabMode = (typeof LAB_MODES)[number][0];
 
 type Prediction = {
   token: string;
@@ -49,8 +48,8 @@ const EXAMPLE_CONTEXTS = [
 ];
 
 export default function LabConsole({ searchDocuments }: { searchDocuments: SearchDocument[] }) {
+  const [activeMode, setActiveMode] = useState<LabMode>('token');
   const [healthState, setHealthState] = useState<ApiState>('idle');
-  const [health, setHealth] = useState<HealthResponse | null>(null);
   const [healthError, setHealthError] = useState<string | null>(null);
   const [context, setContext] = useState('The CUDA kernel');
   const [tokenState, setTokenState] = useState<ApiState>('idle');
@@ -63,6 +62,25 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
     tokenResult?.matched_context && tokenResult.matched_context.length > 0
       ? tokenResult.matched_context.join(' ')
       : '-';
+  const backendState =
+    tokenState === 'loading'
+      ? 'loading'
+      : tokenState === 'error' || healthState === 'error'
+        ? 'error'
+        : healthState === 'ok'
+          ? 'ok'
+          : healthState;
+  const backendLabel =
+    tokenState === 'loading'
+      ? 'running'
+      : healthState === 'ok'
+        ? 'backend ready'
+        : healthState === 'loading'
+          ? 'checking'
+          : healthState === 'error'
+            ? 'backend offline'
+            : 'idle';
+  const showBackendState = backendState !== 'ok';
 
   useEffect(() => {
     let cancelled = false;
@@ -80,9 +98,8 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
           throw new Error(`health returned ${response.status}`);
         }
 
-        const data = (await response.json()) as HealthResponse;
+        await response.json();
         if (!cancelled) {
-          setHealth(data);
           setHealthState('ok');
         }
       } catch (error) {
@@ -171,29 +188,38 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
 
   return (
     <div className="lab-console">
-      <div className="lab-status-strip" aria-labelledby="api-status">
-        <h2 id="api-status">backend</h2>
-        <span className={`lab-state lab-state-${healthState}`}>{healthState}</span>
-        <span>{health ? `api ${health.version}` : '-'}</span>
-        <span>{health?.env || '-'}</span>
+      <div className="lab-switcher" aria-label="Lab experiments">
+        {LAB_MODES.map(([mode, label, detail]) => (
+          <button
+            key={mode}
+            type="button"
+            aria-pressed={activeMode === mode}
+            onClick={() => setActiveMode(mode)}
+          >
+            {label}
+            <span>{detail}</span>
+          </button>
+        ))}
       </div>
 
-      {healthError ? <p className="lab-error">{healthError}</p> : null}
-
-      <section className="lab-workbench" aria-labelledby="token-probe">
+      {activeMode === 'token' ? (
+        <section className="lab-workbench" aria-labelledby="token-probe">
         <div className="lab-workbench-heading">
           <div>
             <h2 id="token-probe">next token</h2>
-            <p>send context to the backend; it scores a local n-gram model</p>
+            <p>type a phrase and the backend guesses the next word</p>
           </div>
-          <span className={`lab-state lab-state-${tokenState}`}>{tokenState}</span>
+          {showBackendState ? (
+            <span className={`lab-state lab-state-${backendState}`}>{backendLabel}</span>
+          ) : null}
         </div>
+
+        {healthError ? <p className="lab-error lab-error-inline">{healthError}</p> : null}
 
         <div className="lab-workbench-grid">
           <form className="lab-form" onSubmit={submitTokenProbe}>
             <div className="lab-input-row">
               <label htmlFor="token-context">context</label>
-              <span>{context.length.toLocaleString()} / 4,000</span>
             </div>
             <textarea
               id="token-context"
@@ -204,18 +230,21 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
               spellCheck={false}
             />
 
-            <div className="lab-example-row" aria-label="Example contexts">
-              {EXAMPLE_CONTEXTS.map((example) => (
-                <button
-                  key={example}
-                  type="button"
-                  onClick={() => setContext(example)}
-                  aria-pressed={context === example}
-                >
-                  {example}
-                </button>
-              ))}
-            </div>
+            <details className="lab-examples">
+              <summary>examples</summary>
+              <div className="lab-example-row" aria-label="Example contexts">
+                {EXAMPLE_CONTEXTS.map((example) => (
+                  <button
+                    key={example}
+                    type="button"
+                    onClick={() => setContext(example)}
+                    aria-pressed={context === example}
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
+            </details>
 
             <button
               className="lab-run-button"
@@ -232,44 +261,43 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
             {tokenResult ? (
               <>
                 <div className="lab-completion">
-                  <span>{context.trim() || '-'}</span>
+                  <span>next word</span>
                   <strong>{topPrediction ? topPrediction.token : '-'}</strong>
+                  <p>
+                    after <span>{context.trim() || '-'}</span>
+                  </p>
                 </div>
 
-                <ol className="prediction-list">
-                  {tokenResult.predictions.map((prediction) => (
+                <ol className="prediction-list prediction-list-simple">
+                  {tokenResult.predictions.slice(0, 3).map((prediction) => (
                     <li key={prediction.token}>
                       <span className="prediction-token">{prediction.token}</span>
-                      <span className="prediction-meter" aria-hidden="true">
-                        <span style={{ transform: `scaleX(${prediction.score})` }} />
+                      <span className="prediction-score">
+                        {Math.round(prediction.score * 100)}%
                       </span>
-                      <span className="prediction-score">{prediction.score.toFixed(2)}</span>
                     </li>
                   ))}
                 </ol>
 
-                <dl className="lab-metrics lab-metrics-compact">
-                  <div>
-                    <dt>match</dt>
-                    <dd>{matchedContext}</dd>
-                  </div>
-                  <div>
-                    <dt>latency</dt>
-                    <dd>{tokenResult.latency_ms.toFixed(3)} ms</dd>
-                  </div>
-                  <div>
-                    <dt>training</dt>
-                    <dd>
-                      {typeof tokenResult.training_tokens === 'number'
-                        ? `${tokenResult.training_tokens.toLocaleString()} tokens`
-                        : '-'}
-                    </dd>
-                  </div>
-                </dl>
-
                 <details className="lab-details">
-                  <summary>model and request details</summary>
+                  <summary>how it ran</summary>
                   <dl className="lab-metrics">
+                    <div>
+                      <dt>match</dt>
+                      <dd>{matchedContext}</dd>
+                    </div>
+                    <div>
+                      <dt>latency</dt>
+                      <dd>{tokenResult.latency_ms.toFixed(3)} ms</dd>
+                    </div>
+                    <div>
+                      <dt>training</dt>
+                      <dd>
+                        {typeof tokenResult.training_tokens === 'number'
+                          ? `${tokenResult.training_tokens.toLocaleString()} tokens`
+                          : '-'}
+                      </dd>
+                    </div>
                     <div>
                       <dt>model</dt>
                       <dd>{tokenResult.model}</dd>
@@ -314,17 +342,19 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
             ) : (
               <div className="lab-empty">
                 <span>enter context, then predict</span>
-                <span>the backend returns likely next tokens and a small timing report</span>
+                <span>you will see the top three guesses here</span>
               </div>
             )}
           </div>
         </div>
-      </section>
+        </section>
+      ) : null}
 
-      <div className="lab-panel-grid">
+      {activeMode === 'search' ? (
         <LocalSearchPanel documents={searchDocuments} />
-        <BrowserModelPanel />
-      </div>
+      ) : null}
+
+      {activeMode === 'browser' ? <BrowserModelPanel /> : null}
     </div>
   );
 }

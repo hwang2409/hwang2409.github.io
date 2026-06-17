@@ -21,10 +21,10 @@ export default function SourceMapToggle() {
       type="button"
       className="case-toggle"
       aria-pressed={active}
-      aria-label={active ? 'Hide source map' : 'Show source map'}
+      aria-label={active ? 'Hide post sources' : 'Show post sources'}
       onClick={() => setActive((current) => !current)}
     >
-      {active ? 'hide refs' : 'line refs'}
+      {active ? 'hide sources' : 'sources'}
     </button>
   );
 }

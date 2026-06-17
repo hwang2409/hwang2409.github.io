@@ -38,22 +38,22 @@ function scoreDocument(document: SearchDocument, terms: string[]): SearchHit | n
 
     if (titleHits > 0) {
       score += titleHits * 8;
-      reasons.push(`title +${titleHits * 8}`);
+      reasons.push('title');
     }
 
     if (headingHits > 0) {
       score += headingHits * 5;
-      reasons.push(`heading +${headingHits * 5}`);
+      reasons.push('heading');
     }
 
     if (excerptHits > 0) {
       score += excerptHits * 4;
-      reasons.push(`excerpt +${excerptHits * 4}`);
+      reasons.push('excerpt');
     }
 
     if (bodyHits > 0) {
       score += bodyHits;
-      reasons.push(`body +${bodyHits}`);
+      reasons.push('body');
     }
   });
 
@@ -84,7 +84,7 @@ export default function LocalSearchPanel({ documents }: { documents: SearchDocum
       <div className="lab-panel-heading">
         <div>
           <h2 id="local-search">search posts</h2>
-          <p>runs in the browser; each result shows why it matched</p>
+          <p>type a phrase and the browser searches the local blog index</p>
         </div>
         <span>{documents.length} docs</span>
       </div>
@@ -105,13 +105,15 @@ export default function LocalSearchPanel({ documents }: { documents: SearchDocum
           hits.map((hit) => (
             <li key={hit.document.slug}>
               <Link href={hit.document.href}>{hit.document.title}</Link>
-              <span>{hit.score.toFixed(0)}</span>
               <p>{hit.document.excerpt}</p>
-              <div>{hit.reasons.slice(0, 5).join('  ')}</div>
+              <details className="search-hit-detail">
+                <summary>why this matched</summary>
+                <div>{Array.from(new Set(hit.reasons)).join(', ')}</div>
+              </details>
             </li>
           ))
         ) : (
-          <li className="search-empty">no local matches</li>
+          <li className="search-empty">no matches yet</li>
         )}
       </ol>
     </section>
