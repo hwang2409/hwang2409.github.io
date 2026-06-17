@@ -24,7 +24,14 @@ export default function Home() {
             <a href="https://fish.audio" target="_blank" rel="noopener noreferrer">
               fish.audio
             </a>
-            , NationGraph
+            ,{' '}
+            <a
+              href="https://www.nationgraph.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              nationgraph
+            </a>
           </dd>
         </div>
 
