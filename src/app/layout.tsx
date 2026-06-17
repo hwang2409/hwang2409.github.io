@@ -37,7 +37,7 @@ export default function RootLayout({
         <div className="site-shell">
           <header className="site-header">
             <Link href="/" className="site-name">
-              Henry Wang
+              hw
             </Link>
             <SiteNav />
           </header>
@@ -45,7 +45,6 @@ export default function RootLayout({
           <main className="site-main">{children}</main>
 
           <footer className="site-footer">
-            <span>hw</span>
             <div className="site-links">
               <a href="mailto:h352wang@uwaterloo.ca">email</a>
               <a

@@ -184,6 +184,10 @@ dl {
   color: var(--muted);
 }
 
+.site-footer .site-links {
+  margin-left: auto;
+}
+
 .site-footer a:hover,
 .site-footer a:focus-visible {
   color: var(--foreground);
@@ -1459,6 +1463,10 @@ dl {
   .site-nav,
   .site-links {
     justify-content: flex-start;
+  }
+
+  .site-footer .site-links {
+    margin-left: 0;
   }
 
   .details div,
