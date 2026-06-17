@@ -272,41 +272,70 @@ dl {
 }
 
 .post-list {
+  position: relative;
   display: grid;
-  gap: 0;
-  margin-top: 2.25rem;
-  margin-left: clamp(0rem, 4vw, 1.75rem);
+  gap: 1rem;
+  margin-top: 2.3rem;
   padding: 0;
+  padding-left: 2rem;
   list-style: none;
+}
+
+.post-list::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  left: 0.5rem;
+  border-left: 1px solid var(--border);
 }
 
 .post-list li {
   position: relative;
-  border-top: 1px solid var(--border);
 }
 
-.post-list li:last-child {
-  border-bottom: 1px solid var(--border);
+.post-list li::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  left: -1.65rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--foreground);
 }
 
 .post-link {
   display: grid;
-  gap: 0.25rem;
-  padding: 0.75rem 0;
+  gap: 0.45rem;
+  padding: 0.65rem 0.8rem;
   text-decoration: none;
+}
+
+.post-list li:nth-child(3n + 1) .post-link {
+  border: 1px solid var(--foreground);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--foreground);
+}
+
+.post-list li:nth-child(3n + 2) .post-link {
+  border: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .post-link:hover,
 .post-link:focus-visible {
-  background: transparent;
+  background: var(--surface);
   text-decoration: none;
 }
 
-.post-link:hover .post-link-title,
-.post-link:focus-visible .post-link-title {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25rem;
+.post-list li:nth-child(3n + 1) .post-link:hover,
+.post-list li:nth-child(3n + 1) .post-link:focus-visible {
+  box-shadow: 5px 5px 0 var(--foreground);
+}
+
+.post-list li:nth-child(3n + 2) .post-link:hover,
+.post-list li:nth-child(3n + 2) .post-link:focus-visible {
+  border-color: var(--foreground);
 }
 
 .post-link-row {
