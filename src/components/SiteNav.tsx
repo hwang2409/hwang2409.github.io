@@ -6,12 +6,16 @@ import ThemeToggle from '@/components/ThemeToggle';
 
 const links = [
   { href: '/blog', label: 'blog' },
-  { href: '/lab', label: 'lab' },
+  { href: '/lab', label: 'lab', aliases: ['/labs'] },
   { href: '/resume', label: 'resume' },
 ];
 
-function isActivePath(pathname: string, href: string) {
+function pathMatches(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function isActivePath(pathname: string, link: (typeof links)[number]) {
+  return [link.href, ...(link.aliases || [])].some((href) => pathMatches(pathname, href));
 }
 
 export default function SiteNav() {
@@ -20,7 +24,7 @@ export default function SiteNav() {
   return (
     <nav className="site-nav" aria-label="Main">
       {links.map((link) => {
-        const active = isActivePath(pathname, link.href);
+        const active = isActivePath(pathname, link);
 
         return (
           <Link

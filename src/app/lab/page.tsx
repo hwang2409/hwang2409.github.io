@@ -6,9 +6,11 @@ export const metadata = {
 
 export default function LabPage() {
   return (
-    <section>
-      <h1 className="page-title">lab</h1>
-      <p className="page-note">small live systems attached to the static site</p>
+    <section className="lab-page">
+      <div className="lab-page-header">
+        <h1 className="page-title">lab</h1>
+        <p className="page-note">small live systems attached to the static site</p>
+      </div>
       <LabConsole />
     </section>
   );
