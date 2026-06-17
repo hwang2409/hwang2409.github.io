@@ -120,7 +120,7 @@ dl {
   display: flex;
   align-items: baseline;
   justify-content: flex-start;
-  gap: clamp(3rem, 11vw, 9rem);
+  gap: 1rem;
   padding: 3rem 0 1.5rem;
 }
 
@@ -142,7 +142,8 @@ dl {
 }
 
 .site-nav {
-  justify-content: flex-start;
+  margin-left: auto;
+  justify-content: flex-end;
 }
 
 .site-nav a,
@@ -1463,6 +1464,10 @@ dl {
   .site-nav,
   .site-links {
     justify-content: flex-start;
+  }
+
+  .site-nav {
+    margin-left: 0;
   }
 
   .site-footer .site-links {
