@@ -34,5 +34,5 @@ Set these service variables:
 
 ```txt
 ENV=production
-ALLOWED_ORIGINS=https://hwang2409.github.io,https://phoebe.work,http://localhost:3000
+ALLOWED_ORIGINS=https://hwng.ca,https://www.hwng.ca,https://hwang2409.github.io,https://phoebe.work,http://localhost:3000
 ```

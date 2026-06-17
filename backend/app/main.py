@@ -11,13 +11,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.1"
 TOKEN_PATTERN = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?|\d+(?:\.\d+)?|[^\w\s]")
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://hwang2409.github.io",
+    "https://hwng.ca",
+    "https://www.hwng.ca",
+    "https://phoebe.work",
+]
 
 
-def _csv_env(name: str, fallback: str) -> list[str]:
-    raw = os.getenv(name, fallback)
-    return [part.strip() for part in raw.split(",") if part.strip()]
+def _allowed_origins() -> list[str]:
+    raw = os.getenv("ALLOWED_ORIGINS", "")
+    configured = [part.strip() for part in raw.split(",") if part.strip()]
+    return sorted({*DEFAULT_ALLOWED_ORIGINS, *configured})
 
 
 def _token_kind(value: str) -> Literal["word", "number", "punct"]:
@@ -97,10 +106,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_csv_env(
-        "ALLOWED_ORIGINS",
-        "http://localhost:3000,http://127.0.0.1:3000,https://hwang2409.github.io,https://phoebe.work",
-    ),
+    allow_origins=_allowed_origins(),
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
