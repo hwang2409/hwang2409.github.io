@@ -394,6 +394,132 @@ dl {
   font-size: 0.85rem;
 }
 
+.lab-console {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.lab-section {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.lab-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.lab-section-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.lab-state {
+  color: var(--muted);
+}
+
+.lab-state-ok {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.lab-state-error {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lab-readout {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.lab-readout div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.lab-readout dt {
+  color: var(--muted);
+}
+
+.lab-readout dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.lab-form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lab-form label {
+  color: var(--muted);
+}
+
+.lab-form textarea {
+  width: 100%;
+  min-height: 6rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--foreground);
+  resize: vertical;
+}
+
+.lab-form button {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lab-form button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.lab-result {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.prediction-list {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 24rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prediction-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.lab-error {
+  margin: 1rem 0 0;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .code-tools + pre {
   margin-top: 0;
 }
