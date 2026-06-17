@@ -24,7 +24,7 @@ export default function SourceMapToggle() {
       aria-label={active ? 'Hide source map' : 'Show source map'}
       onClick={() => setActive((current) => !current)}
     >
-      {active ? 'hide sources' : 'sources'}
+      {active ? 'hide refs' : 'line refs'}
     </button>
   );
 }

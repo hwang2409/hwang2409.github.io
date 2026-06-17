@@ -172,9 +172,9 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
   return (
     <div className="lab-console">
       <div className="lab-status-strip" aria-labelledby="api-status">
-        <h2 id="api-status">runtime</h2>
+        <h2 id="api-status">backend</h2>
         <span className={`lab-state lab-state-${healthState}`}>{healthState}</span>
-        <span>{health ? `${health.service} ${health.version}` : '-'}</span>
+        <span>{health ? `api ${health.version}` : '-'}</span>
         <span>{health?.env || '-'}</span>
       </div>
 
@@ -183,8 +183,8 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
       <section className="lab-workbench" aria-labelledby="token-probe">
         <div className="lab-workbench-heading">
           <div>
-            <h2 id="token-probe">token probe</h2>
-            <p>local n-gram model over a small site corpus</p>
+            <h2 id="token-probe">next token</h2>
+            <p>send context to the backend; it scores a local n-gram model</p>
           </div>
           <span className={`lab-state lab-state-${tokenState}`}>{tokenState}</span>
         </div>
@@ -222,7 +222,7 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
               type="submit"
               disabled={tokenState === 'loading' || context.trim().length === 0}
             >
-              {tokenState === 'loading' ? 'running' : 'run probe'}
+              {tokenState === 'loading' ? 'predicting' : 'predict next token'}
             </button>
           </form>
 
@@ -248,22 +248,10 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
                   ))}
                 </ol>
 
-                <dl className="lab-metrics">
+                <dl className="lab-metrics lab-metrics-compact">
                   <div>
-                    <dt>model</dt>
-                    <dd>{tokenResult.model}</dd>
-                  </div>
-                  <div>
-                    <dt>matched</dt>
+                    <dt>match</dt>
                     <dd>{matchedContext}</dd>
-                  </div>
-                  <div>
-                    <dt>order</dt>
-                    <dd>{tokenResult.order ?? '-'}</dd>
-                  </div>
-                  <div>
-                    <dt>entropy</dt>
-                    <dd>{tokenResult.entropy_bits.toFixed(3)} bits</dd>
                   </div>
                   <div>
                     <dt>latency</dt>
@@ -279,34 +267,54 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
                   </div>
                 </dl>
 
-                <p className="lab-note">{tokenResult.note}</p>
+                <details className="lab-details">
+                  <summary>model and request details</summary>
+                  <dl className="lab-metrics">
+                    <div>
+                      <dt>model</dt>
+                      <dd>{tokenResult.model}</dd>
+                    </div>
+                    <div>
+                      <dt>order</dt>
+                      <dd>{tokenResult.order ?? '-'}</dd>
+                    </div>
+                    <div>
+                      <dt>entropy</dt>
+                      <dd>{tokenResult.entropy_bits.toFixed(3)} bits</dd>
+                    </div>
+                    <div>
+                      <dt>note</dt>
+                      <dd>{tokenResult.note}</dd>
+                    </div>
+                  </dl>
 
-                {traceSteps.length > 0 ? (
-                  <div className="request-trace" aria-label="Request trace">
-                    {traceSteps.map((step) => (
-                      <div key={step.label}>
-                        <span>{step.label}</span>
-                        <span className="request-trace-meter" aria-hidden="true">
-                          <span
-                            style={{
-                              transform: `scaleX(${Math.max(
-                                0.03,
-                                step.durationMs / maxTraceDuration
-                              )})`,
-                            }}
-                          />
-                        </span>
-                        <span>{step.durationMs.toFixed(2)} ms</span>
-                        <span>{step.detail}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
+                  {traceSteps.length > 0 ? (
+                    <div className="request-trace" aria-label="Request trace">
+                      {traceSteps.map((step) => (
+                        <div key={step.label}>
+                          <span>{step.label}</span>
+                          <span className="request-trace-meter" aria-hidden="true">
+                            <span
+                              style={{
+                                transform: `scaleX(${Math.max(
+                                  0.03,
+                                  step.durationMs / maxTraceDuration
+                                )})`,
+                              }}
+                            />
+                          </span>
+                          <span>{step.durationMs.toFixed(2)} ms</span>
+                          <span>{step.detail}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </details>
               </>
             ) : (
               <div className="lab-empty">
-                <span>waiting for probe</span>
-                <span>top tokens and backing context will appear here</span>
+                <span>enter context, then predict</span>
+                <span>the backend returns likely next tokens and a small timing report</span>
               </div>
             )}
           </div>

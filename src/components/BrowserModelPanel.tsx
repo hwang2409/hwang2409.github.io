@@ -92,30 +92,11 @@ export default function BrowserModelPanel() {
     <section className="lab-panel" aria-labelledby="browser-model">
       <div className="lab-panel-heading">
         <div>
-          <h2 id="browser-model">browser model</h2>
-          <p>local WebAssembly inference, no provider call</p>
+          <h2 id="browser-model">browser model check</h2>
+          <p>runs a tiny WebAssembly scorer inside this tab</p>
         </div>
         <span className={`lab-state lab-state-${state === 'ready' ? 'ok' : state}`}>{state}</span>
       </div>
-
-      <dl className="lab-metrics lab-metrics-wide">
-        <div>
-          <dt>runtime</dt>
-          <dd>WebAssembly</dd>
-        </div>
-        <div>
-          <dt>vector</dt>
-          <dd>{vectorText}</dd>
-        </div>
-        <div>
-          <dt>artifact</dt>
-          <dd>/resnet18.onnx</dd>
-        </div>
-        <div>
-          <dt>size</dt>
-          <dd>{formatBytes(artifactBytes)}</dd>
-        </div>
-      </dl>
 
       <button
         className="lab-run-button"
@@ -123,16 +104,42 @@ export default function BrowserModelPanel() {
         onClick={runModel}
         disabled={state === 'loading'}
       >
-        {state === 'loading' ? 'running' : 'run browser model'}
+        {state === 'loading' ? 'running' : 'run in browser'}
       </button>
 
       {result ? (
         <div className="browser-model-result">
-          <span>logit {result.logit.toFixed(3)}</span>
+          <span>score</span>
           <strong>{result.probability.toFixed(3)}</strong>
           <span>{result.latencyMs.toFixed(3)} ms</span>
         </div>
       ) : null}
+
+      <details className="lab-details">
+        <summary>model details</summary>
+        <dl className="lab-metrics lab-metrics-wide">
+          <div>
+            <dt>runtime</dt>
+            <dd>WebAssembly</dd>
+          </div>
+          <div>
+            <dt>input</dt>
+            <dd>{vectorText}</dd>
+          </div>
+          <div>
+            <dt>artifact</dt>
+            <dd>/resnet18.onnx</dd>
+          </div>
+          <div>
+            <dt>size</dt>
+            <dd>{formatBytes(artifactBytes)}</dd>
+          </div>
+          <div>
+            <dt>logit</dt>
+            <dd>{result ? result.logit.toFixed(3) : '-'}</dd>
+          </div>
+        </dl>
+      </details>
 
       {error ? <p className="lab-error">{error}</p> : null}
     </section>

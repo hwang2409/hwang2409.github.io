@@ -729,6 +729,10 @@ dl {
   overflow-wrap: anywhere;
 }
 
+.lab-metrics-compact {
+  grid-template-columns: 1fr;
+}
+
 .lab-note,
 .lab-empty {
   margin: 0;
@@ -754,9 +758,41 @@ dl {
   text-underline-offset: 2px;
 }
 
+.lab-details {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.lab-details summary {
+  color: var(--muted);
+  cursor: pointer;
+  width: fit-content;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lab-details summary:hover,
+.lab-details summary:focus-visible {
+  color: var(--foreground);
+}
+
+.lab-details[open] summary {
+  margin-bottom: 0.75rem;
+  color: var(--foreground);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lab-details .lab-metrics {
+  margin-top: 0;
+}
+
 .request-trace {
   display: grid;
   gap: 0.35rem;
+  margin-top: 0.85rem;
   padding-top: 0.85rem;
   border-top: 1px solid var(--border);
   font-size: 0.85rem;
@@ -1138,6 +1174,10 @@ dl {
   }
 
   .lab-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-metrics-compact {
     grid-template-columns: 1fr;
   }
 

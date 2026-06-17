@@ -500,8 +500,8 @@ function sourceKindForTag(tagName: string) {
   if (tagName === 'pre') return 'code';
   if (tagName === 'table') return 'table';
   if (tagName === 'blockquote') return 'note';
-  if (tagName === 'li') return 'list';
-  return 'text';
+  if (tagName === 'li') return 'item';
+  return 'paragraph';
 }
 
 function rehypeSourceMap(source?: MarkdownSource) {
@@ -519,7 +519,7 @@ function rehypeSourceMap(source?: MarkdownSource) {
 
       node.properties = {
         ...node.properties,
-        dataSource: `content/blog/${source.slug}.md:${line}`,
+        dataSource: `${source.slug}.md:${line}`,
         dataSourceKind: sourceKindForTag(node.tagName),
       };
     });

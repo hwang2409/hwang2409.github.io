@@ -83,8 +83,8 @@ export default function LocalSearchPanel({ documents }: { documents: SearchDocum
     <section className="lab-panel" aria-labelledby="local-search">
       <div className="lab-panel-heading">
         <div>
-          <h2 id="local-search">site search</h2>
-          <p>client-side ranking with visible score reasons</p>
+          <h2 id="local-search">search posts</h2>
+          <p>runs in the browser; each result shows why it matched</p>
         </div>
         <span>{documents.length} docs</span>
       </div>
@@ -107,7 +107,7 @@ export default function LocalSearchPanel({ documents }: { documents: SearchDocum
               <Link href={hit.document.href}>{hit.document.title}</Link>
               <span>{hit.score.toFixed(0)}</span>
               <p>{hit.document.excerpt}</p>
-              <div>{hit.reasons.slice(0, 5).join(' / ')}</div>
+              <div>{hit.reasons.slice(0, 5).join('  ')}</div>
             </li>
           ))
         ) : (

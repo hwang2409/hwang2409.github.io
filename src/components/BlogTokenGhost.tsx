@@ -153,7 +153,7 @@ export default function BlogTokenGhost({ model }: { model: ClientNGramModel }) {
         aria-label={armed ? 'Disable token ghosting' : 'Enable token ghosting'}
         onClick={() => setArmed((current) => !current)}
       >
-        {armed ? 'ghost on' : 'alt hover'}
+        {armed ? 'prediction on' : 'predict hover'}
       </button>
       {ghost ? (
         <div
@@ -165,7 +165,7 @@ export default function BlogTokenGhost({ model }: { model: ClientNGramModel }) {
           <strong>{ghost.token}</strong>
           <span>{ghost.score.toFixed(2)}</span>
           <span>match {ghost.matched}</span>
-          <span>h {ghost.entropy.toFixed(2)}</span>
+          <span>entropy {ghost.entropy.toFixed(2)}</span>
         </div>
       ) : null}
     </>
