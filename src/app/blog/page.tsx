@@ -17,8 +17,17 @@ export default function Blog() {
         {blogPosts.map((post) => (
           <li key={post.slug}>
             <Link href={`/blog/${post.slug}`} className="post-link">
-              <span>{post.title}</span>
-              <span className="post-date">{post.date}</span>
+              <span className="post-link-row">
+                <span className="post-link-title">{post.title}</span>
+                <span className="post-date">
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+              </span>
+              <span className="post-excerpt">{post.excerpt}</span>
             </Link>
           </li>
         ))}

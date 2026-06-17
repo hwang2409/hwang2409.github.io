@@ -21,6 +21,8 @@
   --border: #d9d9d9;
   --surface: #ffffff;
   --code: #f2f2f2;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: Georgia, "Times New Roman", Times, serif;
   --syntax-strong: #000000;
   --syntax-base: #222222;
   --syntax-muted: #555555;
@@ -51,8 +53,8 @@
 html {
   background: var(--background);
   color: var(--foreground);
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 15.5px;
+  font-family: var(--font-mono);
+  font-size: 14px;
 }
 
 body {
@@ -60,7 +62,7 @@ body {
   min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  line-height: 1.65;
+  line-height: 1.43;
 }
 
 button,
@@ -80,9 +82,9 @@ a:hover,
 a:focus-visible,
 button:hover,
 button:focus-visible {
-  background: var(--foreground);
-  color: var(--background);
-  text-decoration-color: transparent;
+  background: transparent;
+  color: var(--foreground);
+  text-decoration-thickness: 2px;
 }
 
 ::selection {
@@ -109,22 +111,25 @@ dl {
 .site-shell {
   display: flex;
   flex-direction: column;
-  width: min(820px, calc(100% - 32px));
+  width: min(760px, calc(100% - 32px));
   min-height: 100vh;
-  margin: 0 auto;
+  margin: 0 auto 0 clamp(1rem, 4vw, 3rem);
 }
 
 .site-header {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 2rem 0 1.25rem;
-  border-bottom: 1px solid var(--border);
+  justify-content: flex-start;
+  gap: clamp(3rem, 11vw, 9rem);
+  padding: 3rem 0 1.5rem;
 }
 
 .site-name {
-  font-weight: 700;
+  color: var(--foreground);
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  font-weight: 400;
+  line-height: 1.15;
   text-decoration: none;
 }
 
@@ -133,17 +138,24 @@ dl {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
 .site-nav {
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+
+.site-nav a,
+.theme-toggle {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.65rem;
 }
 
 .nav-active {
   color: var(--foreground);
-  font-weight: 700;
-  text-decoration: none;
+  font-weight: 400;
+  text-decoration-thickness: 2px;
 }
 
 .theme-toggle {
@@ -152,13 +164,11 @@ dl {
   background: transparent;
   color: var(--foreground);
   cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
 }
 
 .site-main {
   flex: 1;
-  padding: 3rem 0;
+  padding: 1.75rem 0 4rem;
 }
 
 .site-footer {
@@ -166,8 +176,7 @@ dl {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.25rem 0 2rem;
-  border-top: 1px solid var(--border);
+  padding: 2rem 0 3rem;
   color: var(--muted);
 }
 
@@ -177,19 +186,33 @@ dl {
 
 .site-footer a:hover,
 .site-footer a:focus-visible {
-  color: var(--background);
+  color: var(--foreground);
 }
 
 .intro {
-  max-width: 560px;
+  max-width: 540px;
+}
+
+.intro-statement {
+  max-width: 540px;
+  margin: 2rem 0 0;
 }
 
 .intro h1,
 .page-title,
 .post-title {
-  margin-bottom: 0.35rem;
-  font-size: 1.35rem;
-  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.post-title {
+  max-width: 10ch;
+  margin-bottom: 1.1rem;
+  font-size: clamp(2.75rem, 8vw, 4.75rem);
+  line-height: 1.05;
 }
 
 .intro-summary,
@@ -201,15 +224,38 @@ dl {
 }
 
 .details {
+  position: relative;
   display: grid;
-  gap: 0.6rem;
-  margin: 2rem 0 0;
+  gap: 0;
+  margin: 2.3rem 0 0;
+  padding-left: 2rem;
 }
 
 .details div {
+  position: relative;
   display: grid;
-  grid-template-columns: 9rem 1fr;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
   gap: 1rem;
+  padding: 0.55rem 0.75rem;
+}
+
+.details::before {
+  content: "";
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: 0.5rem;
+  border-left: 1px solid var(--border);
+}
+
+.details div::before {
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: -1.65rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--foreground);
 }
 
 .details dt {
@@ -221,24 +267,99 @@ dl {
 }
 
 .post-list {
+  position: relative;
   display: grid;
-  gap: 0.75rem;
+  gap: 1rem;
+  margin-top: 2.3rem;
   padding: 0;
+  padding-left: 2rem;
   list-style: none;
+}
+
+.post-list::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  left: 0.5rem;
+  border-left: 1px solid var(--border);
+}
+
+.post-list li {
+  position: relative;
+}
+
+.post-list li::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  left: -1.65rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--foreground);
 }
 
 .post-link {
   display: grid;
-  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+  padding: 0.65rem 0.8rem;
+  text-decoration: none;
+}
+
+.post-list li:nth-child(3n + 1) .post-link {
+  border: 1px solid var(--foreground);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--foreground);
+}
+
+.post-list li:nth-child(3n + 2) .post-link {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.post-link:hover,
+.post-link:focus-visible {
+  background: var(--surface);
+  text-decoration: none;
+}
+
+.post-list li:nth-child(3n + 1) .post-link:hover,
+.post-list li:nth-child(3n + 1) .post-link:focus-visible {
+  box-shadow: 5px 5px 0 var(--foreground);
+}
+
+.post-list li:nth-child(3n + 2) .post-link:hover,
+.post-list li:nth-child(3n + 2) .post-link:focus-visible {
+  border-color: var(--foreground);
+}
+
+.post-link-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 1rem;
+  align-items: baseline;
+}
+
+.post-link-title {
+  min-width: 0;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .post-date {
   white-space: nowrap;
 }
 
+.post-excerpt {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
 .post-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 4rem;
 }
 
 .post-tools {
@@ -266,7 +387,7 @@ dl {
 
 .case-toggle:hover,
 .case-toggle:focus-visible {
-  color: var(--background);
+  color: var(--foreground);
 }
 
 .token-ghost-hint {
@@ -288,7 +409,7 @@ dl {
 
 .token-ghost-hint:hover,
 .token-ghost-hint:focus-visible {
-  color: var(--background);
+  color: var(--foreground);
 }
 
 .token-ghost {
@@ -353,24 +474,39 @@ dl {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.75rem;
 }
 
 .resume-section {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.75rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
 }
 
 .resume-section h2 {
-  margin-bottom: 0.9rem;
+  margin-bottom: 1rem;
   font-size: 1rem;
+  line-height: 1.43;
 }
 
 .entry {
-  margin-bottom: 1.7rem;
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid transparent;
 }
 
 .entry:last-child {
   margin-bottom: 0;
+}
+
+.resume-section .entry:nth-of-type(odd) {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.resume-section .entry:nth-of-type(3n + 1) {
+  border-color: var(--foreground);
+  box-shadow: 3px 3px 0 var(--foreground);
 }
 
 .entry-heading,
@@ -399,7 +535,7 @@ dl {
 }
 
 .entry li {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
 .skill-lines p {
@@ -520,7 +656,7 @@ dl {
 
 .lab-switcher button:hover span,
 .lab-switcher button:focus-visible span {
-  color: var(--background);
+  color: var(--foreground);
 }
 
 .lab-status-strip {

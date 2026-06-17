@@ -1,8 +1,10 @@
 export default function Home() {
   return (
     <section className="intro">
-      <h1>Henry Wang</h1>
-      <p className="intro-summary">swe @ uwaterloo</p>
+      <p className="intro-statement">
+        software engineer at uwaterloo, interested in ML systems, computer graphics,
+        and small technical tools.
+      </p>
 
       <dl className="details">
         <div>

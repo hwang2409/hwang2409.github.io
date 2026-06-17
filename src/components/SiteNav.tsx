@@ -33,7 +33,7 @@ export default function SiteNav() {
             className={active ? 'nav-active' : undefined}
             aria-current={active ? 'page' : undefined}
           >
-            {active ? `[${link.label}]` : link.label}
+            {link.label}
           </Link>
         );
       })}
