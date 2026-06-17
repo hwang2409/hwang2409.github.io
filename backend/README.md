@@ -2,6 +2,9 @@
 
 Small FastAPI backend for technical experiments on the static site.
 
+`/token/next` uses a checked-in local n-gram model trained from `data/site_corpus.txt`.
+It does not call Anthropic, OpenAI, or any external model provider.
+
 ## Local development
 
 ```bash

@@ -26,6 +26,9 @@ type NextTokenResponse = {
   latency_ms: number;
   context_chars: number;
   last_token: string | null;
+  matched_context?: string[];
+  order?: number;
+  training_tokens?: number;
   note: string;
 };
 
@@ -172,8 +175,32 @@ export default function LabConsole() {
                 <dd>{tokenResult.entropy_bits.toFixed(3)} bits</dd>
               </div>
               <div>
+                <dt>order</dt>
+                <dd>{tokenResult.order ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>matched</dt>
+                <dd>
+                  {tokenResult.matched_context && tokenResult.matched_context.length > 0
+                    ? tokenResult.matched_context.join(' ')
+                    : '-'}
+                </dd>
+              </div>
+              <div>
+                <dt>training</dt>
+                <dd>
+                  {typeof tokenResult.training_tokens === 'number'
+                    ? `${tokenResult.training_tokens.toLocaleString()} tokens`
+                    : '-'}
+                </dd>
+              </div>
+              <div>
                 <dt>latency</dt>
                 <dd>{tokenResult.latency_ms.toFixed(3)} ms</dd>
+              </div>
+              <div>
+                <dt>note</dt>
+                <dd>{tokenResult.note}</dd>
               </div>
             </dl>
 

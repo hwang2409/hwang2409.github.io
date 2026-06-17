@@ -3,16 +3,19 @@ from __future__ import annotations
 import os
 import re
 import time
-from math import log2
+from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from app.site_ngram import NGramModel
 
-APP_VERSION = "0.1.1"
+
+APP_VERSION = "0.2.0"
 TOKEN_PATTERN = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?|\d+(?:\.\d+)?|[^\w\s]")
+CORPUS_PATH = Path(__file__).resolve().parent.parent / "data" / "site_corpus.txt"
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -44,8 +47,8 @@ def _tokenize(text: str) -> list["Token"]:
     ]
 
 
-def _entropy(scores: list[float]) -> float:
-    return -sum(score * log2(score) for score in scores if score > 0)
+def _load_local_model() -> NGramModel:
+    return NGramModel(CORPUS_PATH.read_text(encoding="utf-8"))
 
 
 class HealthResponse(BaseModel):
@@ -95,8 +98,13 @@ class NextTokenResponse(BaseModel):
     latency_ms: float
     context_chars: int
     last_token: str | None
+    matched_context: list[str]
+    order: int
+    training_tokens: int
     note: str
 
+
+local_model = _load_local_model()
 
 app = FastAPI(
     title="Website Lab API",
@@ -149,25 +157,22 @@ def next_token(request: NextTokenRequest) -> NextTokenResponse:
     started = time.perf_counter()
     tokens = _tokenize(request.context)
     last = tokens[-1].value.lower() if tokens else None
-
-    if last in {"cuda", "gpu", "kernel", "kernels"}:
-        base = [("memory", 0.31), ("transfer", 0.22), ("launch", 0.17), ("latency", 0.12), ("tensor", 0.08)]
-    elif last in {"model", "models", "inference"}:
-        base = [("weights", 0.29), ("runtime", 0.21), ("export", 0.16), ("browser", 0.12), ("latency", 0.09)]
-    elif last in {"sqlite", "database", "db"}:
-        base = [("wal", 0.28), ("migration", 0.19), ("query", 0.17), ("connection", 0.12), ("backup", 0.1)]
-    else:
-        base = [("system", 0.24), ("context", 0.2), ("state", 0.16), ("model", 0.12), ("data", 0.1)]
-
-    predictions = [TokenPrediction(token=token, score=score) for token, score in base[: request.top_k]]
+    result = local_model.predict(request.context, request.top_k)
+    predictions = [
+        TokenPrediction(token=prediction.token, score=prediction.score)
+        for prediction in result.predictions
+    ]
     latency_ms = (time.perf_counter() - started) * 1_000
 
     return NextTokenResponse(
-        model="local-placeholder-v0",
+        model="site-ngram-v1",
         predictions=predictions,
-        entropy_bits=round(_entropy([prediction.score for prediction in predictions]), 3),
+        entropy_bits=round(result.entropy_bits, 3),
         latency_ms=round(latency_ms, 3),
         context_chars=len(request.context),
         last_token=last,
-        note="Infrastructure stub. Replace with a real local model or provider-backed scorer later.",
+        matched_context=list(result.matched_context),
+        order=result.order,
+        training_tokens=local_model.training_tokens,
+        note="Local n-gram model trained from checked-in site corpus. No external model API calls.",
     )
