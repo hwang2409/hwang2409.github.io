@@ -111,27 +111,17 @@ dl {
 .site-shell {
   display: flex;
   flex-direction: column;
-  width: min(840px, calc(100% - 32px));
+  width: min(760px, calc(100% - 32px));
   min-height: 100vh;
-  margin: 0 auto 0 clamp(1rem, 4vw, 3rem);
+  margin: 0 auto;
 }
 
 .site-header {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  display: flex;
   align-items: baseline;
-  gap: 3.5rem;
-  padding: 3rem 0 2.5rem;
-}
-
-.site-header::after {
-  content: "index / notes / lab";
-  position: absolute;
-  left: 0;
-  bottom: 0.8rem;
-  color: var(--muted);
-  font-size: 0.78rem;
+  justify-content: flex-start;
+  gap: clamp(3rem, 11vw, 9rem);
+  padding: 3rem 0 1.5rem;
 }
 
 .site-name {
@@ -178,7 +168,7 @@ dl {
 
 .site-main {
   flex: 1;
-  padding: 1.4rem 0 4rem;
+  padding: 1.75rem 0 4rem;
 }
 
 .site-footer {
@@ -186,7 +176,6 @@ dl {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  width: min(760px, 100%);
   padding: 2rem 0 3rem;
   color: var(--muted);
 }
@@ -201,28 +190,12 @@ dl {
 }
 
 .intro {
-  max-width: 620px;
+  max-width: 540px;
 }
 
 .intro-statement {
-  position: relative;
-  max-width: 620px;
-  margin: 1.6rem 0 0;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--foreground);
-  background: var(--surface);
-  box-shadow: 4px 4px 0 var(--foreground);
-}
-
-.intro-statement::before {
-  content: "current note";
-  position: absolute;
-  top: -0.7rem;
-  left: 0.7rem;
-  padding: 0 0.35rem;
-  background: var(--background);
-  color: var(--muted);
-  font-size: 0.78rem;
+  max-width: 540px;
+  margin: 2rem 0 0;
 }
 
 .intro h1,
@@ -251,29 +224,38 @@ dl {
 }
 
 .details {
-  counter-reset: detail;
+  position: relative;
   display: grid;
-  gap: 0.6rem;
-  max-width: 620px;
-  margin: 2rem 0 0;
-  padding-left: 0;
+  gap: 0;
+  margin: 2.3rem 0 0;
+  padding-left: 2rem;
 }
 
 .details div {
-  counter-increment: detail;
   position: relative;
   display: grid;
-  grid-template-columns: 2.8rem 7rem minmax(0, 1fr);
+  grid-template-columns: 7.5rem minmax(0, 1fr);
   gap: 1rem;
-  padding: 0.45rem 0;
-  border-top: 1px solid var(--border);
+  padding: 0.55rem 0.75rem;
+}
+
+.details::before {
+  content: "";
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: 0.5rem;
+  border-left: 1px solid var(--border);
 }
 
 .details div::before {
-  content: "[" counter(detail, decimal-leading-zero) "]";
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.8;
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: -1.65rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--foreground);
 }
 
 .details dt {
@@ -285,59 +267,54 @@ dl {
 }
 
 .post-list {
-  counter-reset: post;
+  position: relative;
   display: grid;
-  gap: 0.85rem;
-  width: min(760px, 100%);
-  margin-top: 2rem;
+  gap: 1rem;
+  margin-top: 2.3rem;
   padding: 0;
+  padding-left: 2rem;
   list-style: none;
 }
 
+.post-list::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  left: 0.5rem;
+  border-left: 1px solid var(--border);
+}
+
 .post-list li {
-  counter-increment: post;
   position: relative;
 }
 
-.post-list li::after {
+.post-list li::before {
   content: "";
   position: absolute;
-  right: -0.35rem;
-  bottom: -0.35rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-right: 1px solid var(--foreground);
-  border-bottom: 1px solid var(--foreground);
-  opacity: 0;
-  pointer-events: none;
+  top: 1rem;
+  left: -1.65rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--foreground);
 }
 
 .post-link {
   display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr);
   gap: 0.45rem;
-  padding: 0.65rem 0.8rem 0.65rem 0;
-  border-top: 1px solid var(--border);
+  padding: 0.65rem 0.8rem;
   text-decoration: none;
 }
 
-.post-link::before {
-  content: counter(post, decimal-leading-zero);
-  grid-row: 1 / span 2;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.8;
-}
-
-.post-list li:nth-child(4n + 1) .post-link,
-.post-list li:nth-child(4n + 3) .post-link {
-  padding-right: 0.8rem;
+.post-list li:nth-child(3n + 1) .post-link {
   border: 1px solid var(--foreground);
   background: var(--surface);
+  box-shadow: 3px 3px 0 var(--foreground);
 }
 
-.post-list li:nth-child(4n + 3) .post-link {
-  border-color: var(--border);
+.post-list li:nth-child(3n + 2) .post-link {
+  border: 1px solid var(--border);
+  background: var(--surface);
 }
 
 .post-link:hover,
@@ -346,14 +323,14 @@ dl {
   text-decoration: none;
 }
 
-.post-link:hover,
-.post-link:focus-visible {
-  border-color: var(--foreground);
+.post-list li:nth-child(3n + 1) .post-link:hover,
+.post-list li:nth-child(3n + 1) .post-link:focus-visible {
+  box-shadow: 5px 5px 0 var(--foreground);
 }
 
-.post-list li:hover::after,
-.post-list li:focus-within::after {
-  opacity: 1;
+.post-list li:nth-child(3n + 2) .post-link:hover,
+.post-list li:nth-child(3n + 2) .post-link:focus-visible {
+  border-color: var(--foreground);
 }
 
 .post-link-row {
@@ -513,10 +490,9 @@ dl {
 }
 
 .entry {
-  position: relative;
   margin-bottom: 1rem;
-  padding: 0.7rem 0;
-  border-top: 1px solid var(--border);
+  padding: 0.65rem 0.8rem;
+  border: 1px solid transparent;
 }
 
 .entry:last-child {
@@ -524,24 +500,13 @@ dl {
 }
 
 .resume-section .entry:nth-of-type(odd) {
-  padding-right: 0.8rem;
-  padding-left: 0.8rem;
-  border: 1px solid var(--border);
+  border-color: var(--border);
+  background: var(--surface);
 }
 
 .resume-section .entry:nth-of-type(3n + 1) {
   border-color: var(--foreground);
-}
-
-.resume-section .entry:nth-of-type(3n + 1)::after {
-  content: "";
-  position: absolute;
-  right: -0.35rem;
-  bottom: -0.35rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-right: 1px solid var(--foreground);
-  border-bottom: 1px solid var(--foreground);
+  box-shadow: 3px 3px 0 var(--foreground);
 }
 
 .entry-heading,
@@ -1482,11 +1447,6 @@ dl {
 }
 
 @media (max-width: 560px) {
-  .site-header {
-    grid-template-columns: 1fr;
-    gap: 1.4rem;
-  }
-
   .site-header,
   .site-footer,
   .resume-header,
@@ -1501,33 +1461,10 @@ dl {
     justify-content: flex-start;
   }
 
-  .details div {
-    grid-template-columns: 2.7rem minmax(0, 1fr);
-    gap: 0.2rem 0.8rem;
-  }
-
-  .details dd {
-    grid-column: 2;
-  }
-
+  .details div,
   .post-link {
-    grid-template-columns: 2.4rem minmax(0, 1fr);
-    gap: 0.15rem 0.55rem;
-    padding-left: 0.8rem;
-  }
-
-  .post-link::before {
-    grid-row: 1 / span 2;
-  }
-
-  .post-link-row {
-    grid-column: 2;
     grid-template-columns: 1fr;
-    gap: 0.1rem;
-  }
-
-  .post-excerpt {
-    grid-column: 2;
+    gap: 0.15rem;
   }
 
   .post-date {
