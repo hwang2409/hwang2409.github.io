@@ -344,6 +344,18 @@ dl {
   color: var(--muted);
 }
 
+.now-body p,
+.now-body ul,
+.now-body ol {
+  margin-bottom: 0.55rem;
+}
+
+.now-body p:last-child,
+.now-body ul:last-child,
+.now-body ol:last-child {
+  margin-bottom: 0;
+}
+
 .post-list {
   position: relative;
   display: grid;
