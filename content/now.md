@@ -9,7 +9,7 @@ Format: ## date / category
 
 ## june 23, 2026 / work
 
-@devin
+@devin slowly becoming @phoebe
 
 ## june 19, 2026 / work
 
