@@ -7,6 +7,10 @@ Add newest entries at the top.
 Format: ## date / category
 -->
 
+## june 23, 2026 / work
+
+@devin
+
 ## june 19, 2026 / work
 
 learning more about agent harnesses and subagent architecture
