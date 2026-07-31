@@ -10,8 +10,10 @@ FRONTEND_PORT ?= 3000
 BACKEND_VENV := backend/.venv
 BACKEND_PYTHON := $(BACKEND_VENV)/bin/python
 BACKEND_UVICORN := $(BACKEND_VENV)/bin/uvicorn
+BACKEND_ENV := backend/.env
 NODE_MODULES := node_modules/.package-lock.json
 LOCAL_API_URL ?= http://$(BACKEND_HOST):$(BACKEND_PORT)
+LOAD_BACKEND_ENV := set -a; [ ! -f $(BACKEND_ENV) ] || source $(BACKEND_ENV); set +a;
 
 .PHONY: help dev backend frontend backend-install frontend-install install clean-backend
 
@@ -34,6 +36,7 @@ dev: backend-install frontend-install
 		wait 2>/dev/null || true; \
 	}; \
 	trap cleanup INT TERM EXIT; \
+	$(LOAD_BACKEND_ENV) \
 	$(BACKEND_UVICORN) app.main:app --app-dir backend --reload --host $(BACKEND_HOST) --port $(BACKEND_PORT) & \
 	backend_pid=$$!; \
 	NEXT_PUBLIC_LAB_API_URL=$(LOCAL_API_URL) npm run dev -- --port $(FRONTEND_PORT) & \
@@ -45,7 +48,7 @@ dev: backend-install frontend-install
 	exit 1
 
 backend: backend-install
-	$(BACKEND_UVICORN) app.main:app --app-dir backend --reload --host $(BACKEND_HOST) --port $(BACKEND_PORT)
+	$(LOAD_BACKEND_ENV) $(BACKEND_UVICORN) app.main:app --app-dir backend --reload --host $(BACKEND_HOST) --port $(BACKEND_PORT)
 
 frontend:
 	NEXT_PUBLIC_LAB_API_URL=$(LOCAL_API_URL) npm run dev -- --port $(FRONTEND_PORT)

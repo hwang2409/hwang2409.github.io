@@ -1,24 +1,30 @@
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 import os
 import re
 import time
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from app.site_ngram import NGramModel
+from app.spotify import router as spotify_router
 
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.3.0"
 TOKEN_PATTERN = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?|\d+(?:\.\d+)?|[^\w\s]")
 CORPUS_PATH = Path(__file__).resolve().parent.parent / "data" / "site_corpus.txt"
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:3010",
+    "http://localhost:3012",
     "http://127.0.0.1:3000",
+    "http://127.0.0.1:3010",
+    "http://127.0.0.1:3012",
     "https://hwang2409.github.io",
     "https://hwng.ca",
     "https://www.hwng.ca",
@@ -119,6 +125,20 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
+
+
+@app.middleware("http")
+async def allow_private_network_access(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
+    response = await call_next(request)
+    if request.headers.get("access-control-request-private-network") == "true":
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+    return response
+
+
+app.include_router(spotify_router)
 
 
 @app.get("/", response_model=HealthResponse)
