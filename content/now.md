@@ -7,6 +7,10 @@ Add newest entries at the top.
 Format: ## date / category
 -->
 
+## july 31, 2026 / personal
+
+been working on my own harness recently. life is mostly work right now.
+
 ## june 23, 2026 / work
 
 @devin slowly becoming @phoebe
