@@ -1,10 +1,21 @@
+import PixelMascot from '@/components/PixelMascot';
 import SpotifyNow from '@/components/SpotifyNow';
-import styles from '@/components/SpotifyStats.module.css';
 
 export default function Home() {
   return (
-    <section className={styles.homePage}>
-      <div className={styles.homeAbout}>
+    <>
+      <section className="hero">
+        <p className="hero-statement">
+          henry wang <em>— software engineer</em>
+        </p>
+        <PixelMascot />
+      </section>
+
+      <section className="home-section" aria-labelledby="about-title">
+        <h2 className="page-title" id="about-title">
+          about
+        </h2>
+
         <p className="intro-statement">
           software engineer at uwaterloo, interested in ML systems, computer graphics,
           and small technical tools.
@@ -49,9 +60,11 @@ export default function Home() {
             <dd>snowboarding, music</dd>
           </div>
         </dl>
-      </div>
+      </section>
 
-      <SpotifyNow />
-    </section>
+      <div className="home-section">
+        <SpotifyNow />
+      </div>
+    </>
   );
 }

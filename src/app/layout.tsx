@@ -35,14 +35,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Link href="/" className="site-name">
+          hw
+        </Link>
+        <header className="site-header">
+          <SiteNav />
+          <ThemeToggle />
+        </header>
         <div className="site-shell">
-          <header className="site-header">
-            <Link href="/" className="site-name">
-              hw
-            </Link>
-            <SiteNav />
-          </header>
-
           <main className="site-main">{children}</main>
 
           <footer className="site-footer">
@@ -70,9 +70,7 @@ export default function RootLayout({
                 x
               </a>
             </div>
-            <div className="site-theme">
-              <ThemeToggle />
-            </div>
+            <span className="site-copyright">© 2026 henry wang</span>
           </footer>
         </div>
       </body>

@@ -2,7 +2,7 @@
 
 ## 1. Atmosphere & Identity
 
-A sparse technical notebook with a personal pulse. The signature is a mono-first rail of small facts: text stays compact, dividers do the structure, and interactive pieces look like terminal output made readable for the web.
+A quiet, mostly-empty page in the spirit of small hand-made personal sites. One narrow text column sits left of center on a flat off-white canvas. Type is tiny, lowercase, and unadorned; structure comes from thin dashed rules, not boxes. A single cyan accent carries all interactivity, and a small pixel snowboarder on the home page is the only ornament.
 
 ## 2. Color
 
@@ -10,130 +10,106 @@ A sparse technical notebook with a personal pulse. The signature is a mono-first
 
 | Role | Token | Light | Dark | Usage |
 |------|-------|-------|------|-------|
-| Surface/primary | `--background` | `#FBFBFB` | `#111111` | Page background |
-| Surface/secondary | `--surface` | `#FFFFFF` | `#181818` | Bordered panels and list items |
-| Surface/code | `--code` | `#F2F2F2` | `#242424` | Code and compact highlighted text |
-| Text/primary | `--foreground` | `#111111` | `#EEEEEE` | Body, headings, active controls |
-| Text/secondary | `--muted` | `#666666` | `#AAAAAA` | Labels, captions, secondary links |
-| Border/default | `--border` | `#D9D9D9` | `#444444` | Dividers, timelines, panel borders |
-| Syntax/strong | `--syntax-strong` | `#000000` | `#FFFFFF` | Code keywords and strong tokens |
-| Syntax/base | `--syntax-base` | `#222222` | `#EEEEEE` | Code body |
-| Syntax/muted | `--syntax-muted` | `#555555` | `#B8B8B8` | Code identifiers |
-| Syntax/faint | `--syntax-faint` | `#858585` | `#777777` | Code comments and punctuation |
-| Syntax/mark | `--syntax-mark` | `#777777` | `#AAAAAA` | Code underlines and marks |
+| Canvas | `--background` | `#F4F4F4` | `#111111` | The only surface; no panels |
+| Text/primary | `--foreground` | `#1C1C1C` | `#E8E8E8` | Body, headings, nav |
+| Text/secondary | `--muted` | `#8A8A8A` | `#7D7D7D` | Notes, dates, metadata, footer |
+| Rule | `--border` | `#C6C6C6` | `#3A3A3A` | 1px dashed rules, image borders |
+| Accent | `--accent` | `#0A7F8A` | `#4FD6E3` | Links, active nav, meters, mascot board |
+| Code block | `--code` | `#EAEAEA` | `#1D1D1D` | Code backgrounds, image fallbacks |
+| Surface alias | `--surface` | `#F4F4F4` | `#111111` | Legacy alias of the canvas; kept for iframes |
+
+Syntax tones (`--syntax-*`) are unchanged monochrome ramps used inside code blocks.
 
 ### Rules
 
-- Use the existing CSS variables for all new UI. Do not introduce raw colors outside this file.
-- Depth comes from borders, inverted text chips, and occasional hard offset shadows already present in lists.
-- Accent color is intentionally absent; links and controls use text treatment instead.
+- One accent. Every interactive or highlighted element uses `--accent`; no second hue.
+- No cards, panels, gradients, radii, or shadows. Structure is dashed 1px rules only.
+- Solid 1px `--border` is reserved for functional edges: images, inputs, meter frames, tables.
+- Text selection is accent-on-canvas.
 
 ## 3. Typography
 
 ### Scale
 
-| Level | Size | Weight | Line Height | Tracking | Usage |
-|-------|------|--------|-------------|----------|-------|
-| Display | `clamp(2.75rem, 8vw, 4.75rem)` | 400 | 1.05 | 0 | Blog post titles |
-| H1 | `2.4rem` | 400 | 1.12 | 0 | Page titles |
-| H2 | `1.25rem` | 400-700 | 1.35 | 0 | Prose section headings |
-| H3 | `1rem` | 700 | 1.43 | 0 | Panel headings, labels |
-| Body | `14px` | 400 | 1.43 | 0 | Site-wide default |
-| Body/sm | `0.85rem` | 400 | 1.45-1.55 | 0 | Notes, metadata, compact UI |
-| Caption | `0.72rem` | 400 | 1.35 | 0 | Revealed metadata |
+| Level | Size | Weight | Usage |
+|-------|------|--------|-------|
+| Base | `13px` (1rem) | 400 | Everything: body, headings, nav, hero |
+| Bold | `1rem` | 700 | Post titles, entry titles, emphasis |
+| Small | `0.92rem` | 400 | Nav links, page notes, chips |
+| Meta | `0.85rem` | 400 | Dates, excerpts, labels, footer links |
+| Tiny | `0.77rem` | 400 | Copyright, ranks, tooltips, cover captions |
 
 ### Font Stack
 
-- Primary: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`
-- Display: `Georgia, "Times New Roman", Times, serif`
+- Primary: `Verdana, "DejaVu Sans", Geneva, Tahoma, sans-serif`
+- Code: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, ... monospace` (self-hosted Consolas woff2)
 
 ### Rules
 
-- Keep the mono voice as the default. Use the serif display stack only for the site name, page titles, and long-form title moments.
-- Body text stays at or above 14px.
-- Letter spacing remains 0 unless existing metadata patterns already define it.
+- There is no display type. Hierarchy comes from position, rules, and whitespace, not size.
+- Headings and nav are lowercase (`text-transform: lowercase`). Prose body keeps its own case.
+- Monospace appears only inside code fragments and code blocks.
+- Line height is 1.7 sitewide.
 
 ## 4. Spacing & Layout
 
-### Base Unit
-
-All spacing derives from a base of 4px.
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-1` | 4px | Tight inline separations |
-| `--space-2` | 8px | Compact row padding |
-| `--space-3` | 12px | Small panel gaps |
-| `--space-4` | 16px | Default panel padding |
-| `--space-6` | 24px | Header/footer rhythm |
-| `--space-8` | 32px | Major homepage blocks |
-| `--space-12` | 48px | Page section separation |
-| `--space-16` | 64px | Large page endings |
-
 ### Grid
 
-- Max content width: `min(760px, calc(100% - 32px))`
-- Main content offset: `clamp(0rem, 2vw, 1.25rem)` left padding
-- Mobile breakpoint: `560px`
-- Tablet breakpoint: `760px`
+- Content column: `min(640px, calc(100vw - clamp(1.5rem, 15vw, 17rem) - 7rem))`
+- Column offset: `margin-left: clamp(1.5rem, 15vw, 17rem)` — left of center, never centered
+- Page top: `--page-top: clamp(6rem, 18vh, 11rem)` (13rem under 560px to clear the fixed nav)
+- Breakpoints: `560px` (stack), `760px` (lab/table adjustments), `1240px` (blog sidenotes float)
+
+### Rhythm
+
+| Amount | Usage |
+|--------|-------|
+| `42vh` | Between home sections (`.home-section`) |
+| `24vh` | Above the footer |
+| `3.5rem` | Between sections on content pages |
+| `2rem` | Between list items (blog) |
+| `1rem` and below | Inside components |
 
 ### Rules
 
-- Prefer single-column layouts and narrow grids. Dense information should scan vertically.
-- Labels usually sit left of values on desktop and stack on mobile.
-- New spacing must use existing rem values that map to the base-4 rhythm.
+- The page should feel mostly empty. When in doubt, add vertical space, not chrome.
+- Everything is a single column. No sidebars, no multi-column dashboards.
+- The first screen of the home page holds only the hero statement, the mascot, and the nav.
 
 ## 5. Components
 
-### Site Shell
-- **Structure**: centered `.site-shell` with header, main, and footer.
-- **Spacing**: header `3rem 0 1.5rem`, main bottom `4rem`, footer `2rem 0 3rem`.
-- **States**: links use underline thickness and focus outlines, not colored backgrounds.
-- **Accessibility**: header and footer links remain plain anchors with visible focus.
+### Shell
+- **Nav**: fixed top-right, vertically stacked, right-aligned, tiny lowercase links. Active link is accent. Theme toggle sits under it in muted tiny type.
+- **Site mark**: fixed top-left `hw`, muted, accent on hover.
+- **Footer**: one muted tiny line — social links left, `© year henry wang` right.
 
-### Detail Timeline
-- **Structure**: `dl` rows with muted `dt`, value `dd`, left rail, square pins.
-- **Spacing**: rows use compact padding and a 7.5rem label column on desktop.
-- **States**: inline links inherit site link treatment.
-- **Accessibility**: preserve semantic `dl`, `dt`, and `dd`.
+### Section heading
+Lowercase heading with a dashed rule filling the rest of the line (`display: flex` + `::after` rule). Used for page titles, resume sections, prose h1/h2, and music panel headers.
 
-### Lab Panel
-- **Structure**: bordered surface with heading, form/input area, and output area.
-- **Spacing**: `1rem` internal padding, 1px dividers.
-- **States**: loading/error states appear as bracketed or underlined text.
-- **Accessibility**: live output regions use `aria-live` where results update.
+### Hero + mascot
+Full-viewport first screen with the statement `henry wang — software engineer`. Below it, an original pixel snowboarder (box-shadow pixel art, two frames) carves along a dashed slope: frame swap at ~0.7s, full traverse ~17s. `prefers-reduced-motion` pins it to a static frame at rest.
 
-### Spotify Stats
-- **Structure**: compact section with header metadata, one featured track, ranked tracks/artists, and genre chips.
-- **Spacing**: section margin follows homepage details; rows use base-4 multiples.
-- **States**: loading, not configured, error, and ready states all render without layout shift.
-- **Accessibility**: album/artist imagery has explicit dimensions and descriptive alt text.
+### Lists
+Bare text lines. Blog: accent title + muted date and excerpt, no markers, no boxes. Resume and plain lists: no bullets, muted body. The now page: dashed rules between entries, muted dates in a left column.
+
+### Data widgets (lab, music)
+Keep their functional grids but drop all chrome: dashed dividers between regions, accent for actions/active states, meters as 1px-bordered tracks with accent fill, album art with plain 1px borders.
 
 ## 6. Motion & Interaction
 
-### Timing
-
-| Type | Duration | Easing | Usage |
-|------|----------|--------|-------|
-| Micro | 120-160ms | ease | Metadata reveals and meters |
-| Standard | 200ms | ease | Hover border or shadow changes |
+| Type | Duration | Usage |
+|------|----------|-------|
+| Micro | 120-160ms ease | Metadata reveals, meter fills |
+| Mascot frames | 0.7s square-wave | Two-frame sprite swap |
+| Mascot traverse | 17s linear loop | Carve across the column |
 
 ### Rules
 
-- Animate only opacity and transform. Existing meter scaling uses `transform`.
-- Respect `prefers-reduced-motion`; any new transition must have a reduced-motion fallback if it is more than decorative.
-- Interactive elements must have hover and focus-visible states.
+- Links: accent color, underline only on hover/focus. Nav and quiet controls shift to accent instead.
+- Focus is always visible: 1px accent outline, offset 3px.
+- Animate only opacity and transform (the mascot's `left` traverse is the one sanctioned exception).
+- Every animation must have a `prefers-reduced-motion` fallback; the mascot freezes to a static frame.
 
 ## 7. Depth & Surface
 
-### Strategy
-
-Borders-first with occasional hard mono offset shadows.
-
-| Type | Value | Usage |
-|------|-------|-------|
-| Default border | `1px solid var(--border)` | Panels, dividers, media |
-| Strong border | `1px solid var(--foreground)` | Featured list items |
-| Hard offset | `3px 3px 0 var(--foreground)` | Selected repeated items |
-
-New homepage experiment surfaces should use default borders first and reserve hard offsets for emphasis.
+There is no depth. The canvas is the only surface; nothing floats above it except the fixed nav and the token-ghost tooltip, both of which sit on plain canvas with a dashed border at most. Do not reintroduce shadows, radii, gradients, or filled panels.

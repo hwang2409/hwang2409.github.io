@@ -29,9 +29,9 @@ src/
 ## CONVENTIONS
 
 - Use `@/*` imports for `src/*`.
-- New UI must follow `../DESIGN.md`: mono-first, compact, border-led, no new raw color palette.
-- Keep body text at or above 14px and preserve visible focus states.
-- Prefer single-column layouts and dense but readable diagnostic panels.
+- New UI must follow `../DESIGN.md`: tiny lowercase sans, flat canvas, dashed rules, single accent, no boxes or shadows.
+- Base type is 13px; preserve visible focus states.
+- Everything is one narrow left-offset column; structure with whitespace and dashed rules, not panels.
 - Client components start with `'use client'`; keep server route files thin when possible.
 - The site is static-exported. Browser-only behavior must tolerate build-time rendering and hydration.
 - `next/image` is configured unoptimized. External images must still specify dimensions.
