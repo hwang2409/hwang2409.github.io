@@ -47,3 +47,6 @@ backend/data/spotify_history.sqlite3*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# worktrees
+.worktrees/
