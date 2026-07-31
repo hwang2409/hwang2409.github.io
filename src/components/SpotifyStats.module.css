@@ -1,0 +1,481 @@
+.spotify {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.spotify .header h2 {
+  font-weight: 400;
+}
+
+.musicPage {
+  display: grid;
+  gap: 0;
+}
+
+.musicPageIntro {
+  margin-bottom: 0;
+}
+
+.musicPageIntro h1,
+.musicPageIntro p {
+  margin-bottom: 0;
+}
+
+.musicPageIntro p {
+  margin-bottom: 3.5rem;
+}
+
+.music {
+  display: grid;
+  gap: 3.5rem;
+}
+
+.musicHeader {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.musicDashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3.5rem;
+}
+
+.musicMainColumn,
+.musicMetricRail,
+.musicHeroGrid,
+.musicPrimaryShelves {
+  display: grid;
+  gap: 3.5rem;
+  min-width: 0;
+}
+
+.musicMetricsBand {
+  min-width: 0;
+}
+
+.musicSection {
+  display: grid;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.playbackPanel,
+.statusPanel,
+.tracksPanel,
+.artistsPanel,
+.genresPanel,
+.localPanel,
+.realCountsPanel,
+.skipPanel,
+.timelinePanel {
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  text-transform: lowercase;
+}
+
+.header::after {
+  content: "";
+  flex: 1;
+  order: 1;
+  border-top: 1px dashed var(--border);
+}
+
+.header span {
+  order: 2;
+}
+
+.header span,
+.meta,
+.note,
+.empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.feature {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.feature:hover .title,
+.feature:focus-visible .title {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.playbackPanel .feature {
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+}
+
+.art {
+  display: grid;
+  width: 4rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: var(--code);
+  color: var(--foreground);
+  font-size: 0.77rem;
+  overflow: hidden;
+}
+
+.playbackPanel .art {
+  width: 7.5rem;
+}
+
+.art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.featureCopy {
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.title {
+  display: block;
+  min-width: 0;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  color: var(--accent);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.note,
+.empty {
+  margin: 0;
+}
+
+.musicLink {
+  justify-self: start;
+  font-size: 0.85rem;
+}
+
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.9rem 1.2rem;
+  margin: 0;
+}
+
+.statusGrid div {
+  min-width: 0;
+}
+
+.statusGrid dt {
+  color: var(--muted);
+  font-size: 0.77rem;
+  line-height: 1.5;
+}
+
+.statusGrid dd {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.localPanel .statusGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.localPanel .statusGrid div:last-child {
+  grid-column: span 2;
+}
+
+.coverShelf {
+  display: grid;
+  gap: 1rem;
+}
+
+.coverShelfWall {
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+}
+
+.coverShelfCompact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.coverTile {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.coverTile:hover,
+.coverTile:focus-visible {
+  outline: 0;
+  text-decoration: none;
+}
+
+.coverTile:hover .coverArt,
+.coverTile:focus-visible .coverArt {
+  border-color: var(--accent);
+}
+
+.coverTile:hover .coverCaption strong,
+.coverTile:focus-visible .coverCaption strong {
+  color: var(--accent);
+}
+
+.coverTile:focus-visible .coverArt {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.coverArt {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  background: var(--code);
+}
+
+.coverArt img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverFallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--foreground);
+}
+
+.coverRank {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 1.35rem;
+  padding: 0 0.25rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.77rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.coverCaption {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.coverCaption strong,
+.coverCaption span,
+.coverCaption em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coverCaption strong {
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.coverCaption span,
+.coverCaption em {
+  color: var(--muted);
+  font-size: 0.77rem;
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.timelineBlock {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.timelineTitle,
+.timelineLegend {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.timelineTitle span:first-child {
+  color: var(--foreground);
+}
+
+.timelineStrip {
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 2px;
+  height: 5.5rem;
+  align-items: end;
+  padding: 0 0 1px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.timelineBucket {
+  position: relative;
+  display: grid;
+  align-items: end;
+  height: 100%;
+  min-width: 0;
+}
+
+.listenBar,
+.skipBar {
+  display: block;
+  align-self: end;
+  width: 100%;
+  background: var(--accent);
+}
+
+.skipBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: var(--muted);
+  opacity: 0.55;
+}
+
+.metricSections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3.5rem;
+}
+
+.musicMetricsBand .metricSections {
+  align-items: start;
+}
+
+.metricSection {
+  display: grid;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.metricSection h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  text-transform: lowercase;
+}
+
+.metricSection h3::after {
+  content: "";
+  flex: 1;
+  border-top: 1px dashed var(--border);
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.9rem 1.2rem;
+  margin: 0;
+}
+
+.metricGrid div {
+  min-width: 0;
+}
+
+.metricGrid dt {
+  color: var(--muted);
+  font-size: 0.77rem;
+  line-height: 1.5;
+}
+
+.metricGrid dd {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricGrid p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.77rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .coverShelfWall,
+  .coverShelfCompact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .playbackPanel .feature {
+    grid-template-columns: 1fr;
+  }
+
+  .playbackPanel .art {
+    width: min(12rem, 100%);
+  }
+
+  .statusGrid,
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timelineLegend,
+  .timelineTitle {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}

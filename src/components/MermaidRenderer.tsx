@@ -11,6 +11,17 @@ function getTheme(): SiteTheme {
 
 function configureMermaid(theme: SiteTheme) {
   const isDark = theme === 'dark';
+  // Colors come from the globals.css tokens so diagrams follow the site theme.
+  // render() re-runs on site-theme-change, so tokens are re-read after a toggle.
+  const styles = getComputedStyle(document.documentElement);
+  const token = (name: string) => styles.getPropertyValue(name).trim();
+
+  // Tokens come from globals.css; fail soft without duplicating palette values.
+  const background = token('--background') || 'transparent';
+  const foreground = token('--foreground') || 'currentColor';
+  const muted = token('--muted') || 'currentColor';
+  const border = token('--border') || 'currentColor';
+  const code = token('--code') || 'transparent';
 
   mermaid.initialize({
     startOnLoad: false,
@@ -25,18 +36,18 @@ function configureMermaid(theme: SiteTheme) {
     },
     themeVariables: {
       darkMode: isDark,
-      background: isDark ? '#181818' : '#ffffff',
-      primaryColor: isDark ? '#242424' : '#ffffff',
-      primaryTextColor: isDark ? '#eeeeee' : '#111111',
-      primaryBorderColor: isDark ? '#777777' : '#777777',
-      lineColor: isDark ? '#aaaaaa' : '#555555',
-      secondaryColor: isDark ? '#181818' : '#f7f7f7',
-      tertiaryColor: isDark ? '#242424' : '#f2f2f2',
-      noteBkgColor: isDark ? '#242424' : '#f7f7f7',
-      noteTextColor: isDark ? '#eeeeee' : '#111111',
-      clusterBkg: isDark ? '#181818' : '#ffffff',
-      clusterBorder: isDark ? '#777777' : '#999999',
-      edgeLabelBackground: isDark ? '#181818' : '#ffffff',
+      background,
+      primaryColor: code,
+      primaryTextColor: foreground,
+      primaryBorderColor: muted,
+      lineColor: muted,
+      secondaryColor: code,
+      tertiaryColor: code,
+      noteBkgColor: code,
+      noteTextColor: foreground,
+      clusterBkg: background,
+      clusterBorder: border,
+      edgeLabelBackground: background,
       fontFamily: 'Consolas, "Courier New", monospace',
       fontSize: '12px',
     },
