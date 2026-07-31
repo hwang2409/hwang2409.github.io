@@ -132,7 +132,7 @@
   place-items: center;
   border: 1px solid var(--border);
   background: var(--code);
-  color: var(--muted);
+  color: var(--foreground);
   font-size: 0.77rem;
   overflow: hidden;
 }
@@ -292,7 +292,7 @@
   width: 100%;
   height: 100%;
   place-items: center;
-  color: var(--muted);
+  color: var(--foreground);
 }
 
 .coverRank {

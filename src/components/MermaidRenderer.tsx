@@ -14,14 +14,14 @@ function configureMermaid(theme: SiteTheme) {
   // Colors come from the globals.css tokens so diagrams follow the site theme.
   // render() re-runs on site-theme-change, so tokens are re-read after a toggle.
   const styles = getComputedStyle(document.documentElement);
-  const token = (name: string, fallback: string) =>
-    styles.getPropertyValue(name).trim() || fallback;
+  const token = (name: string) => styles.getPropertyValue(name).trim();
 
-  const background = token('--background', isDark ? '#111111' : '#f4f4f4');
-  const foreground = token('--foreground', isDark ? '#e8e8e8' : '#1c1c1c');
-  const muted = token('--muted', isDark ? '#828282' : '#6b6b6b');
-  const border = token('--border', isDark ? '#3a3a3a' : '#c6c6c6');
-  const code = token('--code', isDark ? '#1d1d1d' : '#eaeaea');
+  // Tokens come from globals.css; fail soft without duplicating palette values.
+  const background = token('--background') || 'transparent';
+  const foreground = token('--foreground') || 'currentColor';
+  const muted = token('--muted') || 'currentColor';
+  const border = token('--border') || 'currentColor';
+  const code = token('--code') || 'transparent';
 
   mermaid.initialize({
     startOnLoad: false,

@@ -18,7 +18,7 @@ A quiet, mostly-empty page in the spirit of small hand-made personal sites. One 
 | Code block | `--code` | `#EAEAEA` | `#1D1D1D` | Code backgrounds, image fallbacks |
 | Surface alias | `--surface` | `#F4F4F4` | `#111111` | Legacy alias of the canvas; kept for iframes |
 
-Syntax tones (`--syntax-*`) are unchanged monochrome ramps used inside code blocks.
+Syntax tones (`--syntax-*`) are monochrome ramps used inside code blocks; every tone clears WCAG AA (4.5:1) against `--code` in both themes.
 
 ### Rules
 
