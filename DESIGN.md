@@ -12,9 +12,9 @@ A quiet, mostly-empty page in the spirit of small hand-made personal sites. One 
 |------|-------|-------|------|-------|
 | Canvas | `--background` | `#F4F4F4` | `#111111` | The only surface; no panels |
 | Text/primary | `--foreground` | `#1C1C1C` | `#E8E8E8` | Body, headings, nav |
-| Text/secondary | `--muted` | `#8A8A8A` | `#7D7D7D` | Notes, dates, metadata, footer |
+| Text/secondary | `--muted` | `#6B6B6B` | `#828282` | Notes, dates, metadata, footer |
 | Rule | `--border` | `#C6C6C6` | `#3A3A3A` | 1px dashed rules, image borders |
-| Accent | `--accent` | `#0A7F8A` | `#4FD6E3` | Links, active nav, meters, mascot board |
+| Accent | `--accent` | `#0A7580` | `#4FD6E3` | Links, active nav, meters, mascot board |
 | Code block | `--code` | `#EAEAEA` | `#1D1D1D` | Code backgrounds, image fallbacks |
 | Surface alias | `--surface` | `#F4F4F4` | `#111111` | Legacy alias of the canvas; kept for iframes |
 

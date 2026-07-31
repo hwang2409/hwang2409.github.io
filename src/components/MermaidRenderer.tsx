@@ -11,6 +11,17 @@ function getTheme(): SiteTheme {
 
 function configureMermaid(theme: SiteTheme) {
   const isDark = theme === 'dark';
+  // Colors come from the globals.css tokens so diagrams follow the site theme.
+  // render() re-runs on site-theme-change, so tokens are re-read after a toggle.
+  const styles = getComputedStyle(document.documentElement);
+  const token = (name: string, fallback: string) =>
+    styles.getPropertyValue(name).trim() || fallback;
+
+  const background = token('--background', isDark ? '#111111' : '#f4f4f4');
+  const foreground = token('--foreground', isDark ? '#e8e8e8' : '#1c1c1c');
+  const muted = token('--muted', isDark ? '#828282' : '#6b6b6b');
+  const border = token('--border', isDark ? '#3a3a3a' : '#c6c6c6');
+  const code = token('--code', isDark ? '#1d1d1d' : '#eaeaea');
 
   mermaid.initialize({
     startOnLoad: false,
@@ -25,18 +36,18 @@ function configureMermaid(theme: SiteTheme) {
     },
     themeVariables: {
       darkMode: isDark,
-      background: isDark ? '#181818' : '#ffffff',
-      primaryColor: isDark ? '#242424' : '#ffffff',
-      primaryTextColor: isDark ? '#eeeeee' : '#111111',
-      primaryBorderColor: isDark ? '#777777' : '#777777',
-      lineColor: isDark ? '#aaaaaa' : '#555555',
-      secondaryColor: isDark ? '#181818' : '#f7f7f7',
-      tertiaryColor: isDark ? '#242424' : '#f2f2f2',
-      noteBkgColor: isDark ? '#242424' : '#f7f7f7',
-      noteTextColor: isDark ? '#eeeeee' : '#111111',
-      clusterBkg: isDark ? '#181818' : '#ffffff',
-      clusterBorder: isDark ? '#777777' : '#999999',
-      edgeLabelBackground: isDark ? '#181818' : '#ffffff',
+      background,
+      primaryColor: code,
+      primaryTextColor: foreground,
+      primaryBorderColor: muted,
+      lineColor: muted,
+      secondaryColor: code,
+      tertiaryColor: code,
+      noteBkgColor: code,
+      noteTextColor: foreground,
+      clusterBkg: background,
+      clusterBorder: border,
+      edgeLabelBackground: background,
       fontFamily: 'Consolas, "Courier New", monospace',
       fontSize: '12px',
     },
