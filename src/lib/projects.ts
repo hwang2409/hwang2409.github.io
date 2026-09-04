@@ -77,18 +77,11 @@ function readProject(slug: string): Project | null {
   const excerpt = parseRequiredText(data.excerpt, 'excerpt', filePath);
   const date = parseDate(data.date, filePath);
 
-  if (
-    data.order === undefined ||
-    data.order === null ||
-    (typeof data.order === 'string' && data.order.trim() === '')
-  ) {
+  if (typeof data.order !== 'number' || !Number.isFinite(data.order)) {
     invalidMetadata(filePath, 'order must be a finite number');
   }
 
-  const order = Number(data.order);
-  if (!Number.isFinite(order)) {
-    invalidMetadata(filePath, 'order must be a finite number');
-  }
+  const order = data.order;
 
   return {
     slug,
