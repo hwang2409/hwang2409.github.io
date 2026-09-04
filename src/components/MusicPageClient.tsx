@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import ManualChrome from '@/components/ManualChrome';
 import MusicStats from '@/components/MusicStats';
-import StatusLine from '@/components/StatusLine';
 import styles from '@/components/SpotifyStats.module.css';
 import type { SpotifyNow } from '@/lib/spotify';
 
@@ -19,12 +19,7 @@ export default function MusicPageClient() {
 
   return (
     <>
-      <div className="man-header" aria-label="HENRY-MUSIC(7) manual page">
-        <span>HENRY-MUSIC(7)</span>
-        <span className="man-header-title">Miscellaneous Manual</span>
-        <span className="man-header-right">HENRY-MUSIC(7)</span>
-      </div>
-      <StatusLine label={statusLabel(now)} />
+      <ManualChrome name="HENRY-MUSIC(7)" title="Miscellaneous Manual" status={statusLabel(now)} />
       <section className={`${styles.musicPage} page-section`}>
         <header className={styles.musicPageIntro}>
           <h1 className="page-title">music</h1>
