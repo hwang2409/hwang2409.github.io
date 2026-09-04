@@ -1,0 +1,104 @@
+<!-- midnight-slopes: night riding — deep blue-black canvas, drifting snow, a single moonlit ridge line under the name. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — midnight slopes</title>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --ink: #dfe6f2;
+    --muted: #7b869c;
+    --line: #232b3d;
+    --moon: #9db8e8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Avenir, "Avenir Next", Futura, "Gill Sans", sans-serif;
+    font-size: 15px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .flake {
+    position: absolute; top: -2vh;
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(223, 230, 242, 0.5);
+    animation: fall linear infinite;
+  }
+  .flake:nth-child(1) { left: 8%;  animation-duration: 14s; }
+  .flake:nth-child(2) { left: 21%; animation-duration: 19s; animation-delay: -6s; width: 2px; height: 2px; }
+  .flake:nth-child(3) { left: 37%; animation-duration: 16s; animation-delay: -11s; }
+  .flake:nth-child(4) { left: 52%; animation-duration: 21s; animation-delay: -3s; width: 2px; height: 2px; }
+  .flake:nth-child(5) { left: 66%; animation-duration: 15s; animation-delay: -9s; }
+  .flake:nth-child(6) { left: 79%; animation-duration: 18s; animation-delay: -14s; width: 4px; height: 4px; }
+  .flake:nth-child(7) { left: 91%; animation-duration: 22s; animation-delay: -5s; width: 2px; height: 2px; }
+  @keyframes fall {
+    to { transform: translateY(104vh) translateX(-4vw); }
+  }
+  main { position: relative; z-index: 1; max-width: 40rem; margin: 0 auto; padding: 0 1.5rem; }
+  header { min-height: 82vh; display: flex; flex-direction: column; justify-content: center; }
+  h1 { font-size: 2rem; font-weight: 500; letter-spacing: 0.01em; }
+  .role { color: var(--moon); font-size: 1rem; margin-top: 0.25rem; }
+  .ridge { margin-top: 2.5rem; width: 100%; height: 60px; }
+  .ridge path { stroke: var(--moon); stroke-width: 1.5; fill: none; opacity: 0.8; }
+  nav { display: flex; gap: 1.6rem; margin-top: 2.5rem; flex-wrap: wrap; }
+  a { color: var(--ink); text-decoration: none; }
+  nav a { color: var(--muted); font-size: 0.9rem; letter-spacing: 0.06em; }
+  nav a:hover, nav a:focus { color: var(--moon); }
+  a:focus-visible { outline: 1px solid var(--moon); outline-offset: 3px; }
+  section { padding: 3.5rem 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  .about p { max-width: 34rem; color: var(--ink); }
+  .about .meta { margin-top: 1rem; color: var(--muted); font-size: 0.9rem; }
+  .about .meta b { color: var(--moon); font-weight: 500; }
+  .proj { display: grid; gap: 1.4rem; }
+  .proj a { display: block; }
+  .proj .name { color: var(--moon); }
+  .proj .exc { color: var(--muted); font-size: 0.92rem; }
+  .proj a:hover .name { text-decoration: underline; text-underline-offset: 4px; }
+  footer { padding: 3rem 0 4rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); }
+  @media (prefers-reduced-motion: reduce) { .flake { animation: none; display: none; } }
+</style>
+</head>
+<body>
+  <div class="snow" aria-hidden="true">
+    <i class="flake"></i><i class="flake"></i><i class="flake"></i><i class="flake"></i>
+    <i class="flake"></i><i class="flake"></i><i class="flake"></i>
+  </div>
+  <main>
+    <header>
+      <h1>henry wang</h1>
+      <p class="role">software engineer — night laps &amp; long runs</p>
+      <svg class="ridge" viewBox="0 0 640 60" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 50 L90 22 L150 38 L240 8 L320 34 L410 16 L500 42 L570 28 L640 46" />
+      </svg>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>About</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ <b>phoebe.work</b> · previously fish.audio, nationgraph<br>
+      interests: ML, computer graphics, game theory · also: snowboarding, music</p>
+    </section>
+
+    <section>
+      <h2>Projects</h2>
+      <div class="proj">
+        <a href="#"><span class="name">wiki</span><br><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><br><span class="exc">an agent harness that owns the loop instead of hiding it</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><br><span class="exc">deterministic physics engine and software renderer, built together</span></a>
+      </div>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

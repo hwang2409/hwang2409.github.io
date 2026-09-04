@@ -1,0 +1,91 @@
+<!-- art-deco: gilded geometry — deep green lacquer, brass linework, a sunburst crest that fans open over symmetrical type. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — art deco</title>
+<style>
+  :root {
+    --lacquer: #0e2b25;
+    --brass: #c9a227;
+    --cream: #ede4cd;
+    --dim: #6d8a7f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--lacquer); color: var(--cream);
+    font-family: "Copperplate", "Optima", "Trajan Pro", serif;
+    font-size: 15px; line-height: 1.8;
+    text-align: center;
+  }
+  main { max-width: 38rem; margin: 0 auto; padding: 8vh 1.5rem 7vh; }
+  .fan { width: 150px; height: 76px; margin: 0 auto; overflow: hidden; position: relative; }
+  .fan i {
+    position: absolute; bottom: 0; left: calc(50% - 1px);
+    width: 2px; height: 72px; background: var(--brass);
+    transform-origin: bottom center;
+    animation: fanout 1.4s cubic-bezier(0.2, 0, 0, 1) both;
+  }
+  .fan i:nth-child(1) { --a: -72deg; animation-delay: 0.05s; } .fan i:nth-child(2) { --a: -48deg; animation-delay: 0.1s; }
+  .fan i:nth-child(3) { --a: -24deg; animation-delay: 0.15s; } .fan i:nth-child(4) { --a: 0deg; animation-delay: 0.2s; }
+  .fan i:nth-child(5) { --a: 24deg; animation-delay: 0.25s; } .fan i:nth-child(6) { --a: 48deg; animation-delay: 0.3s; }
+  .fan i:nth-child(7) { --a: 72deg; animation-delay: 0.35s; }
+  @keyframes fanout { from { transform: rotate(0); opacity: 0; } to { transform: rotate(var(--a)); opacity: 1; } }
+  h1 {
+    font-size: clamp(1.8rem, 6.5vw, 2.7rem); font-weight: 400;
+    letter-spacing: 0.35em; text-transform: uppercase; margin-top: 1.4rem;
+    color: var(--brass);
+  }
+  .role { letter-spacing: 0.25em; text-transform: uppercase; font-size: 0.78rem; color: var(--dim); margin-top: 0.6rem; }
+  .frame { border: 1px solid var(--brass); border-width: 1px 0; padding: 0.7rem 0; margin: 2.6rem 0; position: relative; }
+  .frame::before, .frame::after { content: "◆"; color: var(--brass); font-size: 0.6rem; position: absolute; top: 50%; transform: translateY(-50%); }
+  .frame::before { left: 0; } .frame::after { right: 0; }
+  nav { display: flex; justify-content: center; gap: 1.6rem; flex-wrap: wrap; }
+  nav a { color: var(--cream); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; }
+  nav a:hover, nav a:focus { color: var(--brass); }
+  a:focus-visible { outline: 1px solid var(--brass); outline-offset: 4px; }
+  h2 { font-size: 0.75rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--brass); margin-bottom: 1.2rem; }
+  h2::before { content: "— "; color: var(--dim); } h2::after { content: " —"; color: var(--dim); }
+  section { margin-bottom: 4rem; }
+  .about p { max-width: 30rem; margin: 0 auto; font-family: Georgia, serif; letter-spacing: 0.01em; }
+  .meta { color: var(--dim); font-size: 0.9rem; margin-top: 0.8rem; font-family: Georgia, serif; }
+  .proj a { display: block; color: var(--cream); text-decoration: none; padding: 0.6rem 0; font-family: Georgia, serif; }
+  .proj .name { letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.9rem; color: var(--brass); }
+  .proj .exc { color: var(--dim); font-size: 0.9rem; display: block; }
+  .proj a:hover .name { text-decoration: underline; text-underline-offset: 5px; }
+  footer { color: var(--dim); font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; }
+  @media (prefers-reduced-motion: reduce) { .fan i { animation: none; transform: rotate(var(--a)); } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="fan" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <h1>Henry Wang</h1>
+      <p class="role">Software Engineer · Waterloo</p>
+      <div class="frame">
+        <nav aria-label="site">
+          <a href="#">Blog</a><a href="#">Projects</a><a href="#">Music</a>
+          <a href="#">Lab</a><a href="#">Now</a><a href="#">Resume</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="about">
+      <h2>About</h2>
+      <p>Software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. Currently engineering at phoebe.work; previously fish.audio and nationgraph.</p>
+      <p class="meta">ML · Computer Graphics · Game Theory · Snowboarding · Music</p>
+    </section>
+
+    <section class="proj">
+      <h2>Works</h2>
+      <a href="#"><span class="name">Wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="name">Zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">Newt + Chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+    </section>
+
+    <footer>Github — Mail — MMXXVI Henry Wang</footer>
+  </main>
+</body>
+</html>

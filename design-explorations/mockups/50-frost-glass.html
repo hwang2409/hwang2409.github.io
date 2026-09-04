@@ -1,0 +1,105 @@
+<!-- frost-glass: looking out a frozen window — icy blue depth, frosted panes over the view, crystalline corner ferns that slowly grow. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — frost glass</title>
+<style>
+  :root {
+    --deepblue: #1c3c50;
+    --ice: #eaf4f8;
+    --ink: #12303f;
+    --gray: #5d7d8d;
+    --cold: #2a7fa8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background:
+      radial-gradient(70% 60% at 70% 20%, #7fb2c9 0%, transparent 60%),
+      radial-gradient(60% 55% at 20% 80%, #35637e 0%, transparent 65%),
+      var(--deepblue);
+    color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.75;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .fern { position: fixed; width: 240px; height: 240px; pointer-events: none; opacity: 0.5; }
+  .fern.tl { top: 0; left: 0; }
+  .fern.br { right: 0; bottom: 0; transform: rotate(180deg); }
+  .fern path { fill: none; stroke: var(--ice); stroke-width: 1;
+    stroke-dasharray: 400; stroke-dashoffset: 400;
+    animation: crystallize 6s ease-out forwards; }
+  .fern path:nth-child(2) { animation-delay: 0.8s; }
+  .fern path:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes crystallize { to { stroke-dashoffset: 0; } }
+  main { max-width: 37rem; margin: 0 auto; padding: 12vh 1.5rem 8vh; }
+  .pane {
+    background: rgba(234, 244, 248, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 18px; padding: 2.2rem 2.2rem 2.4rem;
+    box-shadow: 0 24px 60px rgba(10, 30, 42, 0.35);
+  }
+  .pane + .pane { margin-top: 1.6rem; }
+  h1 { font-size: 2rem; font-weight: 600; letter-spacing: 0.01em; }
+  .role { color: var(--gray); }
+  nav { display: flex; gap: 1.3rem; flex-wrap: wrap; margin-top: 1.6rem; }
+  nav a { color: var(--ink); text-decoration: none; font-size: 0.88rem; letter-spacing: 0.08em; border-bottom: 1px solid rgba(42, 127, 168, 0.35); }
+  nav a:hover, nav a:focus { color: var(--cold); border-color: var(--cold); }
+  a:focus-visible { outline: 2px solid var(--cold); outline-offset: 3px; }
+  h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.32em; color: var(--cold); margin-bottom: 1rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.65rem 0; border-bottom: 1px solid rgba(42, 127, 168, 0.15); }
+  .proj a:last-child { border-bottom: none; }
+  .proj .name { font-weight: 600; }
+  .proj .exc { color: var(--gray); font-size: 0.9rem; display: block; }
+  .proj a:hover .name { color: var(--cold); }
+  footer { margin-top: 2rem; color: rgba(234, 244, 248, 0.7); font-size: 0.85rem; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .fern path { animation: none; stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+  <svg class="fern tl" viewBox="0 0 240 240" aria-hidden="true">
+    <path d="M10 10 C 60 40, 80 90, 90 150 M 30 30 C 55 35, 70 55, 72 80 M 55 62 C 75 66, 88 82, 90 100"/>
+    <path d="M10 10 C 40 60, 45 120, 40 180 M 22 55 C 40 62, 48 80, 46 100"/>
+    <path d="M10 10 C 90 30, 150 45, 200 40 M 80 26 C 95 42, 100 60, 96 78"/>
+  </svg>
+  <svg class="fern br" viewBox="0 0 240 240" aria-hidden="true">
+    <path d="M10 10 C 60 40, 80 90, 90 150 M 30 30 C 55 35, 70 55, 72 80"/>
+    <path d="M10 10 C 40 60, 45 120, 40 180"/>
+    <path d="M10 10 C 90 30, 150 45, 200 40"/>
+  </svg>
+
+  <main>
+    <div class="pane">
+      <header>
+        <h1>henry wang</h1>
+        <p class="role">software engineer — it's cold out, come in</p>
+        <nav aria-label="site">
+          <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+          <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+        </nav>
+      </header>
+    </div>
+
+    <div class="pane">
+      <h2>about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · computer graphics · game theory · snowboarding · music</p>
+    </div>
+
+    <div class="pane proj">
+      <h2>projects</h2>
+      <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+    </div>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!-- carve-line: one continuous carve — a single SVG line draws itself down the page, linking hero to sections like a board's edge in snow. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — carve line</title>
+<style>
+  :root {
+    --snow: #f5f8fa;
+    --ink: #16232e;
+    --gray: #74858f;
+    --edge: #0b7bd4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--snow); color: var(--ink);
+    font-family: Seravek, "Gill Sans", Verdana, sans-serif;
+    font-size: 15px; line-height: 1.75;
+  }
+  .page { position: relative; max-width: 44rem; margin: 0 auto; padding: 12vh 1.5rem 6rem; }
+  .carve {
+    position: absolute; top: 0; bottom: 0; left: 0; width: 100%;
+    pointer-events: none; overflow: visible;
+  }
+  .carve path {
+    fill: none; stroke: var(--edge); stroke-width: 2; opacity: 0.5;
+    stroke-dasharray: 2600; stroke-dashoffset: 2600;
+    animation: carvein 5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+  }
+  @keyframes carvein { to { stroke-dashoffset: 0; } }
+  .inner { position: relative; z-index: 1; margin-left: clamp(2.5rem, 9vw, 5rem); }
+  h1 { font-size: 2.3rem; font-weight: 600; letter-spacing: -0.01em; }
+  .role { color: var(--gray); }
+  nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.8rem; }
+  nav a { color: var(--ink); text-decoration: none; font-size: 0.88rem; border-bottom: 2px solid transparent; }
+  nav a:hover, nav a:focus { border-color: var(--edge); color: var(--edge); }
+  a:focus-visible { outline: 2px solid var(--edge); outline-offset: 3px; }
+  section { margin-top: 16vh; max-width: 32rem; }
+  h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--edge); margin-bottom: 1rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.7rem 0; }
+  .proj .name { font-weight: 600; }
+  .proj .exc { color: var(--gray); font-size: 0.92rem; display: block; }
+  .proj a:hover .name { color: var(--edge); }
+  footer { margin-top: 14vh; color: var(--gray); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .carve path { animation: none; stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+  <div class="page">
+    <svg class="carve" viewBox="0 0 700 2000" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+      <path d="M 60 0
+               C 20 140, 100 220, 55 340
+               S 15 560, 60 660
+               C 100 760, 20 880, 50 1000
+               S 90 1240, 45 1380
+               C 20 1500, 80 1640, 50 1780
+               L 50 2000" />
+    </svg>
+    <div class="inner">
+      <header>
+        <h1>henry wang</h1>
+        <p class="role">software engineer — always finding an edge</p>
+        <nav aria-label="site">
+          <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+          <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+        </nav>
+      </header>
+
+      <section>
+        <h2>about</h2>
+        <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+        <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+        ML · computer graphics · game theory · snowboarding · music</p>
+      </section>
+
+      <section class="proj">
+        <h2>projects</h2>
+        <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+      </section>
+
+      <footer>github · mail · © 2026 henry wang</footer>
+    </div>
+  </div>
+</body>
+</html>

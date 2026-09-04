@@ -1,0 +1,87 @@
+<!-- agent-fleet: an orchestrator's status board — the person as supervisor, pages as workers with live states and a heartbeat pulse. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — agent fleet</title>
+<style>
+  :root {
+    --bg: #0e1214;
+    --panel: #14191c;
+    --ink: #d4dee2;
+    --gray: #647278;
+    --ok: #3ddc84;
+    --busy: #ffb454;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 8vh 1.5rem 6vh; }
+  .super { display: flex; align-items: center; gap: 0.9rem; }
+  .beat { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); position: relative; flex: none; }
+  .beat::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid var(--ok);
+    animation: ring 2s ease-out infinite; }
+  @keyframes ring { from { transform: scale(0.5); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+  h1 { font-size: 1.6rem; font-weight: 700; }
+  .role { color: var(--gray); margin-top: 0.2rem; }
+  .role b { color: var(--ok); font-weight: 400; }
+  .fleet { margin-top: 3rem; display: grid; gap: 2px; }
+  .row {
+    display: grid; grid-template-columns: 1.1rem 7rem 6.5rem 1fr; gap: 1rem; align-items: baseline;
+    background: var(--panel); padding: 0.55rem 0.9rem;
+    text-decoration: none; color: var(--ink);
+  }
+  .row:hover, .row:focus { background: #1a2125; outline: none; }
+  a:focus-visible { outline: 1px solid var(--ok); outline-offset: 1px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; align-self: center; }
+  .dg { background: var(--ok); } .db { background: var(--busy); } .dgr { background: var(--gray); }
+  .aname { font-weight: 700; }
+  .astate { font-size: 0.78rem; letter-spacing: 0.05em; }
+  .sg { color: var(--ok); } .sb { color: var(--busy); } .sgr { color: var(--gray); }
+  .astep { color: var(--gray); font-size: 0.85rem; }
+  h2 { color: var(--gray); font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; margin: 3rem 0 0.9rem; }
+  .about { max-width: 36rem; }
+  .about .meta { color: var(--gray); margin-top: 0.5rem; }
+  footer { margin-top: 4rem; color: var(--gray); font-size: 0.85em; }
+  footer a { color: var(--gray); }
+  footer a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .row { grid-template-columns: 1.1rem 1fr; } .astate, .astep { grid-column: 2; } }
+  @media (prefers-reduced-motion: reduce) { .beat::after { animation: none; opacity: 0; } }
+</style>
+</head>
+<body>
+  <main>
+    <header class="super">
+      <span class="beat" aria-hidden="true"></span>
+      <div>
+        <h1>henry wang</h1>
+        <p class="role">software engineer · orchestrator: <b>online</b> · fleet: 6 workers</p>
+      </div>
+    </header>
+
+    <h2>fleet — site sections</h2>
+    <nav class="fleet" aria-label="site">
+      <a class="row" href="#"><span class="dot dg" aria-hidden="true"></span><span class="aname">blog</span><span class="astate sg">IDLE</span><span class="astep">7 posts committed, awaiting the next one</span></a>
+      <a class="row" href="#"><span class="dot db" aria-hidden="true"></span><span class="aname">projects</span><span class="astate sb">WORKING</span><span class="astep">3 write-ups shipped, more queued</span></a>
+      <a class="row" href="#"><span class="dot dg" aria-hidden="true"></span><span class="aname">music</span><span class="astate sg">STREAMING</span><span class="astep">spotify heartbeat nominal</span></a>
+      <a class="row" href="#"><span class="dot db" aria-hidden="true"></span><span class="aname">lab</span><span class="astate sb">WORKING</span><span class="astep">local models hot, demos loaded</span></a>
+      <a class="row" href="#"><span class="dot dg" aria-hidden="true"></span><span class="aname">now</span><span class="astate sg">MERGE-READY</span><span class="astep">latest entry: july 31 — building my own harness</span></a>
+      <a class="row" href="#"><span class="dot dgr" aria-hidden="true"></span><span class="aname">resume</span><span class="astate sgr">STABLE</span><span class="astep">no restarts required</span></a>
+    </nav>
+
+    <section class="about">
+      <h2>supervisor — about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio, nationgraph.</p>
+      <p class="meta">side threads: ML, computer graphics, game theory, snowboarding, music.<br>
+      notable spawns: wiki (vault + agent workspace), zeta (agent harness), newt+chimy2 (physics + renderer).</p>
+    </section>
+
+    <footer>─ <a href="#">github</a> · <a href="#">mail</a> · © 2026 henry wang ─ all workers report merge-ready</footer>
+  </main>
+</body>
+</html>

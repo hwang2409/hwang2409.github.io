@@ -1,0 +1,109 @@
+<!-- swiss-grid: international typographic style — strict modular grid, Helvetica, one red, content as ordered information design. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — swiss grid</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #111111;
+    --gray: #767676;
+    --red: #e30613;
+    --hair: #e2e2e2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 15px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 60rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.25rem; }
+  .rulebar { grid-column: 1 / -1; height: 4px; background: var(--ink); }
+  .idx { font-size: 0.72rem; color: var(--gray); letter-spacing: 0.05em; }
+  header.grid { margin-top: 1rem; }
+  h1 {
+    grid-column: 1 / 10;
+    font-size: clamp(2.6rem, 8vw, 5rem);
+    font-weight: 700; letter-spacing: -0.04em; line-height: 0.95;
+  }
+  h1 .red { color: var(--red); }
+  .role { grid-column: 10 / -1; align-self: end; color: var(--gray); font-size: 0.85rem; }
+  nav { grid-column: 1 / -1; display: flex; gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); margin-top: 2rem; flex-wrap: wrap; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.65rem 1.25rem; border-right: 1px solid var(--hair);
+  }
+  nav a:first-child { padding-left: 0; }
+  nav a:hover, nav a:focus { color: var(--red); }
+  a:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  section.grid { margin-top: 3.5rem; }
+  h2 { grid-column: 1 / 4; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; }
+  h2 span { color: var(--red); display: block; }
+  .content { grid-column: 4 / 10; }
+  .sidefact { grid-column: 10 / -1; font-size: 0.78rem; color: var(--gray); border-top: 1px solid var(--hair); padding-top: 0.4rem; }
+  .meta { color: var(--gray); font-size: 0.88rem; margin-top: 0.8rem; }
+  .proj a {
+    display: grid; grid-template-columns: 3rem 10rem 1fr; gap: 1.25rem;
+    padding: 0.9rem 0; border-top: 1px solid var(--hair);
+    color: var(--ink); text-decoration: none; align-items: baseline;
+  }
+  .proj a:hover { background: #fafafa; }
+  .proj a:hover .name { color: var(--red); }
+  .proj .no { color: var(--gray); font-size: 0.75rem; }
+  .proj .name { font-weight: 700; }
+  .proj .exc { color: var(--gray); font-size: 0.9rem; }
+  .bar {
+    grid-column: 1 / -1; height: 4px; background: var(--red);
+    transform-origin: left; transform: scaleX(0);
+    animation: grow 1.1s cubic-bezier(0.2, 0, 0, 1) 0.2s forwards;
+    margin-top: 4rem;
+  }
+  @keyframes grow { to { transform: scaleX(1); } }
+  footer { margin-top: 1rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.1em; }
+  @media (max-width: 700px) {
+    h1 { grid-column: 1 / -1; } .role { grid-column: 1 / -1; }
+    h2, .content, .sidefact { grid-column: 1 / -1; }
+    .proj a { grid-template-columns: 2.5rem 1fr; } .proj .exc { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bar { animation: none; transform: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="grid"><div class="rulebar"></div></div>
+    <header class="grid">
+      <h1>henry<br>wang<span class="red">.</span></h1>
+      <p class="role">software engineer<br>uwaterloo — waterloo, on<br>2026</p>
+      <nav aria-label="site">
+        <a href="#">Blog</a><a href="#">Projects</a><a href="#">Music</a>
+        <a href="#">Lab</a><a href="#">Now</a><a href="#">Resume</a>
+      </nav>
+    </header>
+
+    <section class="grid">
+      <h2><span>01</span>About</h2>
+      <div class="content">
+        <p>Software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. Currently engineering at phoebe.work; previously fish.audio and nationgraph.</p>
+        <p class="meta">ML — computer graphics — game theory — snowboarding — music</p>
+      </div>
+      <p class="sidefact">Fig. 1 — a person, reduced to a paragraph. The rest of the site restores the detail.</p>
+    </section>
+
+    <section class="grid">
+      <h2><span>02</span>Projects</h2>
+      <div class="content proj" style="grid-column: 4 / -1;">
+        <a href="#"><span class="no">P—01</span><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="no">P—02</span><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="no">P—03</span><span class="name">newt + chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+      </div>
+    </section>
+
+    <div class="grid"><div class="bar" aria-hidden="true"></div></div>
+    <footer><span>Github / Mail</span><span>© 2026 Henry Wang</span></footer>
+  </main>
+</body>
+</html>

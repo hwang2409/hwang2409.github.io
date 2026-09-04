@@ -1,0 +1,92 @@
+<!-- phase-space: the homepage as a plot — axes, gridless whitespace, sections positioned like data series, an orbiting trajectory point. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — phase space</title>
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --ink: #21242b;
+    --gray: #8b8e96;
+    --plot: #b5432c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Charter, Georgia, serif;
+    font-size: 15.5px; line-height: 1.7;
+  }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  main { max-width: 42rem; margin: 0 auto; padding: 8vh 1.5rem 7vh; }
+  .plotarea { position: relative; border-left: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); padding: 2rem 0 2.4rem 2rem; margin-bottom: 4rem; }
+  .ylab { position: absolute; left: -1.1rem; top: 0; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.7rem; color: var(--gray); letter-spacing: 0.15em; }
+  .xlab { position: absolute; right: 0; bottom: -1.7rem; font-size: 0.7rem; color: var(--gray); letter-spacing: 0.15em; }
+  h1 { font-size: 2.3rem; font-weight: 400; }
+  h1 em { color: var(--plot); font-style: italic; }
+  .role { color: var(--gray); }
+  .traj { position: absolute; right: 1rem; top: 1rem; width: 120px; height: 90px; }
+  .traj ellipse { fill: none; stroke: #d9d5cb; stroke-width: 1; }
+  .dot { offset-path: ellipse(50px 32px at 60px 45px); animation: orbitpath 7s linear infinite;
+    width: 7px; height: 7px; background: var(--plot); border-radius: 50%; position: absolute; }
+  @keyframes orbitpath { to { offset-distance: 100%; } }
+  nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.8rem; }
+  nav a { color: var(--ink); text-decoration: none; }
+  nav a .mono { color: var(--plot); font-size: 0.75rem; }
+  nav a:hover, nav a:focus { color: var(--plot); }
+  a:focus-visible { outline: 2px solid var(--plot); outline-offset: 3px; }
+  h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.8rem; }
+  h2 .mono { color: var(--gray); font-weight: 400; font-size: 0.75rem; }
+  section { margin-bottom: 3.6rem; max-width: 34rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.7rem; }
+  .series a { display: flex; gap: 0.8rem; align-items: baseline; color: var(--ink); text-decoration: none; padding: 0.5rem 0; }
+  .series .mark { flex: none; width: 9px; height: 9px; align-self: center; }
+  .m1 { background: var(--plot); border-radius: 50%; }
+  .m2 { border: 1.5px solid var(--plot); transform: rotate(45deg); }
+  .m3 { border-bottom: 9px solid var(--plot); border-left: 5px solid transparent; border-right: 5px solid transparent; height: 0; width: 0; }
+  .series .name { font-weight: 700; }
+  .series .exc { color: var(--gray); font-size: 0.9rem; font-style: italic; }
+  .series a:hover .name { color: var(--plot); }
+  footer { color: var(--gray); font-size: 0.85rem; border-top: 1px solid #e4e1d8; padding-top: 1.2rem; }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; offset-distance: 25%; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="plotarea">
+      <span class="ylab">CURIOSITY →</span>
+      <span class="xlab">TIME →</span>
+      <svg class="traj" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="45" rx="50" ry="32"/></svg>
+      <div class="dot" aria-hidden="true"></div>
+      <header>
+        <h1>henry wang <em>(t)</em></h1>
+        <p class="role">software engineer — a stable orbit around interesting problems</p>
+        <nav aria-label="site">
+          <a href="#"><span class="mono">y1</span> blog</a>
+          <a href="#"><span class="mono">y2</span> projects</a>
+          <a href="#"><span class="mono">y3</span> music</a>
+          <a href="#"><span class="mono">y4</span> lab</a>
+          <a href="#"><span class="mono">y5</span> now</a>
+          <a href="#"><span class="mono">y6</span> resume</a>
+        </nav>
+      </header>
+    </div>
+
+    <section>
+      <h2>Initial conditions <span class="mono">// about</span></h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph · state variables: ML, computer graphics, game theory, snowboarding, music</p>
+    </section>
+
+    <section class="series">
+      <h2>Plotted series <span class="mono">// projects</span></h2>
+      <a href="#"><span class="mark m1" aria-hidden="true"></span><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="mark m2" aria-hidden="true"></span><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="mark m3" aria-hidden="true"></span><span class="name">newt + chimy2</span><span class="exc">deterministic physics + software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

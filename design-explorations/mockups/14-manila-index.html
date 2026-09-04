@@ -1,0 +1,91 @@
+<!-- manila-index: a personal filing system — manila folder tabs for nav, index-card sections, typewriter headers, one card slides in. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — manila index</title>
+<style>
+  :root {
+    --desk: #cfc4ad;
+    --manila: #e8d9b0;
+    --card: #fbf7ec;
+    --ink: #2f2a20;
+    --soft: #837a63;
+    --red: #b0413e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--desk); color: var(--ink);
+    font-family: "American Typewriter", "Courier New", monospace;
+    font-size: 14px; line-height: 1.7;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 6vh 1.5rem 5rem; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; padding-left: 0.8rem; }
+  .tabs a {
+    background: var(--manila); color: var(--ink); text-decoration: none;
+    padding: 0.35rem 1rem 0.5rem; font-size: 0.82rem;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid rgba(47,42,32,0.25); border-bottom: none;
+    position: relative; top: 1px;
+  }
+  .tabs a:hover, .tabs a:focus { background: var(--card); }
+  a:focus-visible { outline: 2px solid var(--red); outline-offset: 1px; }
+  .folder {
+    background: var(--manila); border: 1px solid rgba(47,42,32,0.25);
+    border-radius: 0 8px 8px 8px; padding: 2.2rem clamp(1.2rem, 4vw, 2.6rem) 2.6rem;
+  }
+  h1 { font-size: 1.9rem; font-weight: 700; }
+  h1::after { content: " ."; color: var(--red); }
+  .role { color: var(--soft); }
+  .clip { color: var(--red); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .card {
+    background: var(--card); border: 1px solid rgba(47,42,32,0.2);
+    background-image: linear-gradient(rgba(176,65,62,0.18) 1px, transparent 1px);
+    background-size: 100% 1.7rem; background-position: 0 2.4rem;
+    padding: 0.9rem 1.2rem 1.2rem; margin-top: 1.8rem;
+    box-shadow: 2px 3px 0 rgba(47,42,32,0.15);
+  }
+  .card.slide { animation: slidein 0.7s cubic-bezier(0.2, 0, 0, 1) 0.25s both; }
+  @keyframes slidein { from { transform: translateX(30px) rotate(0.6deg); opacity: 0; } }
+  .card h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.25em; color: var(--red); border-bottom: 1px solid rgba(176,65,62,0.4); padding-bottom: 0.5rem; margin-bottom: 0.7rem; }
+  .meta { color: var(--soft); font-size: 0.88rem; margin-top: 0.6rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.35rem 0; }
+  .proj .name { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .proj .exc { color: var(--soft); }
+  .proj a:hover .name { color: var(--red); }
+  footer { margin-top: 1.8rem; color: var(--soft); font-size: 0.8rem; text-align: right; }
+  @media (prefers-reduced-motion: reduce) { .card.slide { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <nav class="tabs" aria-label="site">
+      <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+      <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+    </nav>
+    <div class="folder">
+      <header>
+        <p class="clip">File: WANG, HENRY — active</p>
+        <h1>henry wang</h1>
+        <p class="role">software engineer, uwaterloo</p>
+      </header>
+
+      <div class="card slide">
+        <h2>Summary card</h2>
+        <p>interested in ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio and nationgraph.</p>
+        <p class="meta">cross-refs: ML / computer graphics / game theory / snowboarding / music</p>
+      </div>
+
+      <div class="card proj">
+        <h2>Project index</h2>
+        <a href="#"><span class="name">wiki</span> — <span class="exc">local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span> — <span class="exc">agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span> — <span class="exc">deterministic physics + software renderer</span></a>
+      </div>
+
+      <footer>github · mail · © 2026 henry wang</footer>
+    </div>
+  </main>
+</body>
+</html>

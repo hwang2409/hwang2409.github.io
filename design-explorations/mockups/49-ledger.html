@@ -1,0 +1,93 @@
+<!-- ledger: an accountant's book of a life — ruled columns, tabular figures, entries balanced; the bottom line totals who he is. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — ledger</title>
+<style>
+  :root {
+    --page: #f8f5ec;
+    --ink: #29251c;
+    --gray: #8c8471;
+    --rule: #d8d0bd;
+    --green: #1e6e46;
+    --redl: #a83a32;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--page); color: var(--ink);
+    font-family: Charter, Georgia, serif;
+    font-size: 15px; line-height: 1.7;
+    font-variant-numeric: tabular-nums;
+  }
+  main { max-width: 40rem; margin: 0 auto; padding: 8vh 1.5rem 7vh; }
+  .heading { border-bottom: 3px double var(--ink); padding-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.4rem; }
+  h1 { font-size: 1.7rem; font-weight: 700; }
+  .folio { color: var(--gray); font-size: 0.85rem; font-style: italic; }
+  .role { color: var(--gray); margin-top: 0.5rem; font-style: italic; }
+  nav { display: flex; gap: 1.4rem; flex-wrap: wrap; margin: 1.6rem 0 2.6rem; }
+  nav a { color: var(--ink); text-decoration: none; font-size: 0.88rem; border-bottom: 1px solid var(--gray); }
+  nav a:hover, nav a:focus { color: var(--green); border-color: var(--green); }
+  a:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+  table { width: 100%; border-collapse: collapse; }
+  caption { text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gray); padding-bottom: 0.6rem; }
+  th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gray); font-weight: 400; border-bottom: 1px solid var(--ink); padding: 0.3rem 0.6rem 0.3rem 0; }
+  td { padding: 0.45rem 0.6rem 0.45rem 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+  td.num { text-align: right; color: var(--green); white-space: nowrap; }
+  td.num.deb { color: var(--redl); }
+  td a { color: var(--ink); text-decoration: none; font-weight: 700; }
+  td a:hover { color: var(--green); }
+  .desc { color: var(--gray); font-size: 0.9rem; font-style: italic; }
+  .total td { border-top: 2px solid var(--ink); border-bottom: 3px double var(--ink); font-weight: 700; }
+  .total .num { animation: settle 1.1s cubic-bezier(0.2, 0, 0, 1) 0.4s both; display: inline-block; }
+  @keyframes settle { from { opacity: 0; transform: translateY(-6px); } }
+  section { margin-bottom: 3.2rem; }
+  footer { color: var(--gray); font-size: 0.85rem; font-style: italic; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .total .num { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="heading">
+        <h1>Henry Wang — General Ledger</h1>
+        <span class="folio">folio 26 · fiscal year 2026</span>
+      </div>
+      <p class="role">occupation: software engineer, uwaterloo · books kept in plain text</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section>
+      <table>
+        <caption>Account: About</caption>
+        <thead><tr><th>Entry</th><th>Memo</th><th style="text-align:right;">Balance</th></tr></thead>
+        <tbody>
+          <tr><td>currently</td><td class="desc">engineering @ phoebe.work</td><td class="num">accruing</td></tr>
+          <tr><td>previously</td><td class="desc">fish.audio, nationgraph</td><td class="num">settled</td></tr>
+          <tr><td>interests</td><td class="desc">ML, computer graphics, game theory</td><td class="num">compounding</td></tr>
+          <tr><td>also</td><td class="desc">snowboarding, music</td><td class="num deb">(weekends)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <table>
+        <caption>Account: Projects</caption>
+        <thead><tr><th>Asset</th><th>Memo</th><th style="text-align:right;">Value</th></tr></thead>
+        <tbody>
+          <tr><td><a href="#">wiki</a></td><td class="desc">a local markdown vault and agent workspace</td><td class="num">1,024.00</td></tr>
+          <tr><td><a href="#">zeta</a></td><td class="desc">an agent harness that owns the loop</td><td class="num">2,048.00</td></tr>
+          <tr><td><a href="#">newt + chimy2</a></td><td class="desc">deterministic physics + software renderer</td><td class="num">4,096.00</td></tr>
+          <tr class="total"><td>total</td><td class="desc">small tools, honestly valued</td><td class="num" style="color: var(--green); text-align: right;">7,168.00</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>audited by no one · github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

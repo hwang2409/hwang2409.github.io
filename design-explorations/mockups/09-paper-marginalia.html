@@ -1,0 +1,100 @@
+<!-- paper-marginalia: a cream notebook page with a red margin rule — content as annotated notes, small red asides in the margin. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — paper marginalia</title>
+<style>
+  :root {
+    --paper: #f7f2e7;
+    --ink: #2b2620;
+    --muted: #8a8172;
+    --red: #c0392b;
+    --rule: #e4dccb;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    background-image: linear-gradient(var(--rule) 1px, transparent 1px);
+    background-size: 100% 2rem;
+    color: var(--ink);
+    font-family: Charter, "Iowan Old Style", Georgia, serif;
+    font-size: 16px; line-height: 2rem;
+  }
+  .margin-rule {
+    position: fixed; top: 0; bottom: 0;
+    left: clamp(1rem, 12vw, 11rem);
+    width: 1px; background: rgba(192, 57, 43, 0.5);
+  }
+  main { margin-left: clamp(2.2rem, 15vw, 13.5rem); max-width: 34rem; padding: 4rem 1.5rem 6rem; }
+  .note {
+    position: relative;
+  }
+  .aside {
+    position: absolute; right: calc(100% + clamp(1.6rem, 4vw, 3rem)); top: 0.2rem;
+    width: clamp(4.5rem, 9vw, 8rem);
+    font-family: "Bradley Hand", "Comic Sans MS", cursive;
+    font-size: 0.82rem; line-height: 1.4;
+    color: var(--red); text-align: right;
+    transform: rotate(-2deg);
+  }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 2rem; padding-top: 2rem; }
+  .role { color: var(--muted); font-style: italic; }
+  nav { margin: 2rem 0 4rem; display: flex; gap: 1.4rem; flex-wrap: wrap; }
+  nav a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--red); }
+  nav a:hover, nav a:focus { color: var(--red); }
+  a:focus-visible { outline: 1px solid var(--red); outline-offset: 3px; }
+  h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0; }
+  h2::after { content: " ¶"; color: var(--red); font-weight: 400; }
+  section { margin-bottom: 4rem; }
+  .meta { color: var(--muted); }
+  .proj a { color: var(--ink); text-decoration: none; display: block; }
+  .proj .name { font-weight: 700; border-bottom: 1px dotted var(--red); }
+  .proj .exc { color: var(--muted); font-style: italic; }
+  .proj a:hover .name { color: var(--red); }
+  .underliner { position: relative; white-space: nowrap; }
+  .underliner::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0.15rem;
+    height: 2px; background: var(--red); opacity: 0.7;
+    transform: scaleX(0); transform-origin: left;
+    animation: sweep 1.2s ease-out 0.6s forwards;
+  }
+  @keyframes sweep { to { transform: scaleX(1); } }
+  footer { color: var(--muted); font-size: 0.85rem; }
+  @media (max-width: 560px) { .aside { display: none; } .margin-rule { left: 1.2rem; } main { margin-left: 2rem; } }
+  @media (prefers-reduced-motion: reduce) { .underliner::after { animation: none; transform: scaleX(1); } }
+</style>
+</head>
+<body>
+  <div class="margin-rule" aria-hidden="true"></div>
+  <main>
+    <header class="note">
+      <p class="aside" aria-hidden="true">hello!</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer, <span class="underliner">uwaterloo</span></p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="note">
+      <p class="aside" aria-hidden="true">the short version</p>
+      <h2>about</h2>
+      <p>interested in ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio and nationgraph.</p>
+      <p class="meta">interests: ML, computer graphics, game theory. also: snowboarding, music.</p>
+    </section>
+
+    <section class="note proj">
+      <p class="aside" aria-hidden="true">things i made</p>
+      <h2>projects</h2>
+      <a href="#"><span class="name">wiki</span> — <span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="name">zeta</span> — <span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2</span> — <span class="exc">deterministic physics and a software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

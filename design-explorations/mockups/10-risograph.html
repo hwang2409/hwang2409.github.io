@@ -1,0 +1,88 @@
+<!-- risograph: two-ink riso print — warm paper, fluorescent red + medium blue overprint, slight misregistration as the signature. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — risograph</title>
+<style>
+  :root {
+    --paper: #f4efe3;
+    --blue: #2244aa;
+    --red: #ff4a36;
+    --ink: #23305e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: "Avenir Next", Avenir, Futura, sans-serif;
+    font-size: 15px; line-height: 1.7;
+  }
+  main { max-width: 40rem; margin: 0 auto; padding: 9vh 1.5rem 6rem; }
+  .misprint { position: relative; display: inline-block; }
+  .misprint::before {
+    content: attr(data-text);
+    position: absolute; left: 3px; top: 2px;
+    color: var(--red); z-index: -1;
+    mix-blend-mode: multiply;
+  }
+  h1 { font-size: clamp(2.6rem, 8vw, 4rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; color: var(--blue); }
+  .role { color: var(--red); font-weight: 600; margin-top: 0.6rem; letter-spacing: 0.04em; }
+  .stamp {
+    display: inline-block; margin-top: 1.6rem;
+    border: 2px solid var(--red); color: var(--red);
+    padding: 0.15rem 0.7rem; font-size: 0.72rem; letter-spacing: 0.24em; text-transform: uppercase;
+    transform: rotate(-3deg);
+    animation: settle 0.7s cubic-bezier(0.2, 0, 0, 1) both;
+  }
+  @keyframes settle { from { transform: rotate(-3deg) scale(1.6); opacity: 0; } }
+  nav { display: flex; gap: 1.4rem; flex-wrap: wrap; margin: 3rem 0 4.5rem; }
+  nav a { color: var(--blue); font-weight: 600; text-decoration: none; text-transform: lowercase; }
+  nav a:hover, nav a:focus { color: var(--paper); background: var(--red); padding: 0 0.3rem; margin: 0 -0.3rem; }
+  a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+  h2 { color: var(--red); font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1rem; }
+  section { margin-bottom: 4rem; }
+  .about p { max-width: 32rem; }
+  .about .meta { color: var(--blue); opacity: 0.75; margin-top: 0.8rem; font-size: 0.92rem; }
+  .proj { display: grid; gap: 1.1rem; }
+  .proj a { color: var(--ink); text-decoration: none; display: grid; grid-template-columns: 8.5rem 1fr; gap: 1rem; }
+  .proj .name { font-weight: 700; color: var(--blue); }
+  .proj .exc { opacity: 0.8; }
+  .proj a:hover .name { color: var(--red); }
+  footer { border-top: 2px solid var(--blue); padding-top: 1.2rem; color: var(--blue); font-size: 0.85rem; font-weight: 600; }
+  @media (max-width: 560px) { .proj a { grid-template-columns: 1fr; gap: 0.1rem; } }
+  @media (prefers-reduced-motion: reduce) { .stamp { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1><span class="misprint" data-text="henry wang">henry wang</span></h1>
+      <p class="role">software engineer</p>
+      <span class="stamp">printed in waterloo</span>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · computer graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section>
+      <h2>projects</h2>
+      <div class="proj">
+        <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics + software renderer</span></a>
+      </div>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!-- cyanotype: engineering blueprint — white line-work on prussian blue, drafted title block, dimension lines that measure the hero. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — cyanotype</title>
+<style>
+  :root {
+    --blue: #123a63;
+    --line: rgba(235, 243, 250, 0.85);
+    --dim: rgba(235, 243, 250, 0.55);
+    --faint: rgba(235, 243, 250, 0.18);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background:
+      linear-gradient(var(--faint) 1px, transparent 1px) 0 0 / 100% 32px,
+      linear-gradient(90deg, var(--faint) 1px, transparent 1px) 0 0 / 32px 100%,
+      var(--blue);
+    color: var(--line);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13.5px; line-height: 1.8;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+  .sheet { border: 2px solid var(--line); padding: 2rem clamp(1.2rem, 4vw, 2.6rem) 0; }
+  .dimension { position: relative; display: inline-block; padding: 0 1.2rem; }
+  .dimension::before, .dimension::after {
+    content: ""; position: absolute; top: 50%; width: 0.9rem; height: 1px; background: var(--dim);
+  }
+  .dimension::before { left: 0; } .dimension::after { right: 0; }
+  h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+  .role { color: var(--dim); letter-spacing: 0.08em; }
+  .measure { margin-top: 1.2rem; border-top: 1px solid var(--dim); position: relative; width: 16rem; max-width: 100%; }
+  .measure::before, .measure::after { content: ""; position: absolute; top: -4px; width: 1px; height: 9px; background: var(--dim); }
+  .measure::before { left: 0; } .measure::after { right: 0; }
+  .measure span { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); color: var(--dim); font-size: 0.72rem; letter-spacing: 0.15em; }
+  nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 3.2rem 0 2.6rem; }
+  nav a { color: var(--line); text-decoration: none; letter-spacing: 0.1em; }
+  nav a::before { content: "⌖ "; color: var(--dim); }
+  nav a:hover, nav a:focus { text-decoration: underline; text-underline-offset: 4px; }
+  a:focus-visible { outline: 1px solid var(--line); outline-offset: 3px; }
+  h2 { font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.9rem; }
+  h2::before { content: "DETAIL "; color: var(--line); }
+  section { margin-bottom: 3rem; }
+  .meta { color: var(--dim); margin-top: 0.6rem; }
+  .proj a { display: grid; grid-template-columns: 3.4rem 9rem 1fr; gap: 1rem; color: var(--line); text-decoration: none; padding: 0.45rem 0; border-top: 1px dashed var(--faint); }
+  .proj .rev { color: var(--dim); font-size: 0.78rem; }
+  .proj .name { font-weight: 700; }
+  .proj .exc { color: var(--dim); }
+  .proj a:hover .name { text-decoration: underline; text-underline-offset: 4px; }
+  .titleblock {
+    margin: 0 calc(-1 * clamp(1.2rem, 4vw, 2.6rem));
+    border-top: 2px solid var(--line);
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+  }
+  .titleblock div { padding: 0.5rem 1rem; border-right: 1px solid var(--dim); font-size: 0.75rem; }
+  .titleblock div:last-child { border-right: none; }
+  .titleblock b { display: block; color: var(--dim); font-weight: 400; font-size: 0.65rem; letter-spacing: 0.2em; }
+  .scan {
+    height: 2px; background: var(--line); opacity: 0.5; margin: 0 -2px;
+    transform-origin: left; transform: scaleX(0);
+    animation: scan 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+  }
+  @keyframes scan { to { transform: scaleX(1); } }
+  @media (max-width: 600px) { .proj a { grid-template-columns: 1fr; gap: 0.1rem; } .titleblock { grid-template-columns: 1fr; } .titleblock div { border-right: none; border-bottom: 1px solid var(--dim); } }
+  @media (prefers-reduced-motion: reduce) { .scan { animation: none; transform: scaleX(1); } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="sheet">
+      <header>
+        <p style="color: var(--dim); font-size: 0.75rem; letter-spacing: 0.2em;">DWG NO. HW-2026-01 — SHEET 1 OF 1 — SCALE 1:1</p>
+        <h1 class="dimension">henry wang</h1>
+        <p class="role">software engineer / drafted at uwaterloo</p>
+        <div class="measure" aria-hidden="true"><span>1 person, load-bearing</span></div>
+        <div class="scan" aria-hidden="true"></div>
+      </header>
+
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+
+      <section>
+        <h2>A — about</h2>
+        <p>software engineer at uwaterloo. interested in ML systems, computer graphics, and small technical tools.</p>
+        <p class="meta">currently: engineering @ phoebe.work · previously: fish.audio, nationgraph<br>
+        materials: ML, computer graphics, game theory · finishes: snowboarding, music</p>
+      </section>
+
+      <section class="proj">
+        <h2>B — assemblies</h2>
+        <a href="#"><span class="rev">REV C</span><span class="name">wiki</span><span class="exc">markdown vault + agent workspace</span></a>
+        <a href="#"><span class="rev">REV B</span><span class="name">zeta</span><span class="exc">agent harness that owns the loop</span></a>
+        <a href="#"><span class="rev">REV A</span><span class="name">newt + chimy2</span><span class="exc">deterministic physics + software renderer</span></a>
+      </section>
+
+      <footer class="titleblock">
+        <div><b>DRAWN BY</b>henry wang</div>
+        <div><b>CHECKED</b>github · mail</div>
+        <div><b>DATE</b>© 2026</div>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>

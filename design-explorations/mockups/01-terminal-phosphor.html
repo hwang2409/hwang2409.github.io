@@ -1,0 +1,108 @@
+<!-- terminal-phosphor: the site is a login shell — phosphor green on near-black, the homepage types itself like a session transcript. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — terminal phosphor</title>
+<style>
+  :root {
+    --bg: #050a06;
+    --ink: #33ff66;
+    --dim: #1d8f3f;
+    --faint: #0e4020;
+    --amber: #ffb000;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink);
+    max-width: 44rem;
+    padding: 4rem 1.5rem 6rem;
+    margin: 0 auto;
+    text-shadow: 0 0 6px rgba(51, 255, 102, 0.35);
+  }
+  body::after { /* faint scanline veil, one layer, no chrome */
+    content: "";
+    position: fixed; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0 1px, transparent 1px 3px);
+  }
+  .prompt { color: var(--dim); user-select: none; }
+  h1 { font-size: 14px; font-weight: 400; display: inline; }
+  .cursor {
+    display: inline-block; width: 0.6em; height: 1.1em;
+    background: var(--ink); vertical-align: text-bottom;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  section { margin-top: 2.6rem; }
+  .cmd { color: var(--ink); }
+  .out { color: var(--dim); }
+  .out b { color: var(--ink); font-weight: 400; }
+  nav a, .proj a {
+    color: var(--ink); text-decoration: none;
+    border-bottom: 1px solid var(--faint);
+  }
+  nav a:hover, nav a:focus, .proj a:hover, .proj a:focus {
+    color: var(--bg); background: var(--ink); outline: none; text-shadow: none;
+  }
+  nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.4rem; }
+  dl { margin-top: 0.4rem; }
+  dl div { display: grid; grid-template-columns: 9rem 1fr; }
+  dt { color: var(--dim); }
+  dt::before { content: "· "; color: var(--faint); }
+  .proj { margin-top: 0.4rem; }
+  .proj li { list-style: none; display: grid; grid-template-columns: 9rem 1fr; }
+  .proj .exc { color: var(--dim); }
+  .status { color: var(--amber); text-shadow: 0 0 6px rgba(255,176,0,0.3); }
+  footer { margin-top: 4rem; color: var(--faint); }
+  footer a { color: var(--dim); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <p><span class="prompt">login:</span> <h1>henry wang</h1> <span class="out">— software engineer</span><span class="cursor" aria-hidden="true"></span></p>
+
+  <section>
+    <p><span class="prompt">$</span> <span class="cmd">ls ~/site</span></p>
+    <nav aria-label="site">
+      <a href="#">blog/</a>
+      <a href="#">projects/</a>
+      <a href="#">music/</a>
+      <a href="#">lab/</a>
+      <a href="#">now.md</a>
+      <a href="#">resume.pdf</a>
+    </nav>
+  </section>
+
+  <section>
+    <p><span class="prompt">$</span> <span class="cmd">cat about.txt</span></p>
+    <p class="out">software engineer at <b>uwaterloo</b>. interested in ML systems, computer graphics, and small technical tools.</p>
+    <dl>
+      <div><dt>currently</dt><dd class="out">engineering @ <b>phoebe.work</b></dd></div>
+      <div><dt>previously</dt><dd class="out">fish.audio, nationgraph</dd></div>
+      <div><dt>interests</dt><dd class="out">ML, computer graphics, game theory</dd></div>
+      <div><dt>also</dt><dd class="out">snowboarding, music</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <p><span class="prompt">$</span> <span class="cmd">top -o commits</span> <span class="status">3 processes running</span></p>
+    <ul class="proj">
+      <li><span><a href="#">wiki</a></span><span class="exc">markdown vault + agent workspace</span></li>
+      <li><span><a href="#">zeta</a></span><span class="exc">agent harness that owns the loop</span></li>
+      <li><span><a href="#">newt + chimy2</a></span><span class="exc">deterministic physics + renderer</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>tty1 · <a href="#">github</a> · <a href="#">mail</a> · © 2026 henry wang</p>
+  </footer>
+</body>
+</html>

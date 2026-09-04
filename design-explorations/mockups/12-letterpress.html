@@ -1,0 +1,87 @@
+<!-- letterpress: deep-impression print on ivory — classic serif, generous leading, ornament rules, ink that darkens on hover. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — letterpress</title>
+<style>
+  :root {
+    --ivory: #f6f1e5;
+    --ink: #24211c;
+    --soft: #6d675c;
+    --press: #b8b0a0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--ivory); color: var(--ink);
+    font-family: "Big Caslon", "Baskerville", "Hoefler Text", Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    text-rendering: optimizeLegibility;
+  }
+  main { max-width: 36rem; margin: 0 auto; padding: 12vh 1.5rem 8vh; text-align: center; }
+  .orn { color: var(--press); letter-spacing: 0.8em; font-size: 0.9rem; user-select: none; }
+  h1 {
+    font-size: clamp(2.6rem, 8vw, 3.8rem); font-weight: 400;
+    letter-spacing: 0.02em; margin: 1rem 0 0.2rem;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.7), 0 -1px 0 rgba(0,0,0,0.12); /* debossed impression */
+  }
+  .sc { font-variant: small-caps; letter-spacing: 0.28em; color: var(--soft); }
+  .rule { border: none; border-top: 1px solid var(--press); width: 8rem; margin: 2.2rem auto; position: relative; }
+  .rule::after {
+    content: "hw"; font-variant: small-caps; letter-spacing: 0.2em;
+    position: absolute; top: -0.85rem; left: 50%; transform: translateX(-50%);
+    background: var(--ivory); padding: 0 0.8rem; color: var(--soft);
+    display: inline-block; animation: inkin 1.4s ease-out both;
+  }
+  @keyframes inkin { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: blur(0); } }
+  nav { display: flex; justify-content: center; gap: 1.6rem; flex-wrap: wrap; font-size: 0.85rem; }
+  nav a { color: var(--soft); text-decoration: none; font-variant: small-caps; letter-spacing: 0.2em; }
+  nav a:hover, nav a:focus { color: var(--ink); }
+  a:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+  section { margin-top: 4.5rem; text-align: left; }
+  h2 { text-align: center; font-weight: 400; font-size: 1rem; font-variant: small-caps; letter-spacing: 0.35em; color: var(--soft); margin-bottom: 1.6rem; }
+  .about p { text-align: center; max-width: 30rem; margin: 0 auto; }
+  .about .meta { color: var(--soft); font-size: 0.92rem; margin-top: 1rem; font-style: italic; }
+  .proj { max-width: 28rem; margin: 0 auto; }
+  .proj a { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; color: var(--ink); text-decoration: none; padding: 0.7rem 0; }
+  .proj .name { font-style: italic; font-size: 1.1rem; white-space: nowrap; }
+  .proj .dots { flex: 1; border-bottom: 1px dotted var(--press); transform: translateY(-4px); }
+  .proj .exc { color: var(--soft); font-size: 0.85rem; text-align: right; }
+  .proj a:hover .name { text-decoration: underline; text-underline-offset: 4px; }
+  footer { margin-top: 5rem; color: var(--soft); font-size: 0.8rem; font-variant: small-caps; letter-spacing: 0.2em; }
+  @media (prefers-reduced-motion: reduce) { .rule::after { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="orn" aria-hidden="true">· · ·</p>
+      <h1>Henry Wang</h1>
+      <p class="sc">Software Engineer</p>
+      <hr class="rule">
+      <nav aria-label="site">
+        <a href="#">Blog</a><a href="#">Projects</a><a href="#">Music</a>
+        <a href="#">Lab</a><a href="#">Now</a><a href="#">Resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>About</h2>
+      <p>Software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. Currently engineering at phoebe.work; previously fish.audio and nationgraph.</p>
+      <p class="meta" style="text-align:center;">ML · computer graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section>
+      <h2>Projects</h2>
+      <div class="proj">
+        <a href="#"><span class="name">wiki</span><span class="dots" aria-hidden="true"></span><span class="exc">markdown vault + agents</span></a>
+        <a href="#"><span class="name">zeta</span><span class="dots" aria-hidden="true"></span><span class="exc">an agent harness</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="dots" aria-hidden="true"></span><span class="exc">physics + renderer</span></a>
+      </div>
+    </section>
+
+    <footer>Github — Mail — © 2026 Henry Wang</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!-- obsidian-ember: near-black stone with a single warm ember accent — serif display over mono details, slow ember pulse. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — obsidian ember</title>
+<style>
+  :root {
+    --bg: #131110;
+    --ink: #e9e2d9;
+    --muted: #8d8578;
+    --ember: #ff6b35;
+    --line: #2a2624;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-size: 16px; line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.78rem; letter-spacing: 0.08em; }
+  main { max-width: 38rem; margin: 0 auto; padding: 0 1.5rem 5rem; }
+  header { padding-top: 22vh; padding-bottom: 10vh; }
+  .ember-dot {
+    display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--ember); margin-right: 0.8rem; vertical-align: 0.15em;
+    animation: pulse 3.2s ease-in-out infinite;
+    box-shadow: 0 0 14px rgba(255, 107, 53, 0.55);
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 14px rgba(255,107,53,0.55); }
+    50% { opacity: 0.45; box-shadow: 0 0 4px rgba(255,107,53,0.2); }
+  }
+  h1 { font-size: 2.4rem; font-weight: 400; font-style: italic; letter-spacing: -0.01em; text-wrap: balance; }
+  .role { color: var(--muted); margin-top: 0.5rem; }
+  nav { display: flex; gap: 1.8rem; margin-top: 3rem; flex-wrap: wrap; }
+  nav a { color: var(--muted); text-decoration: none; text-transform: uppercase; }
+  nav a:hover, nav a:focus { color: var(--ember); }
+  a:focus-visible { outline: 1px solid var(--ember); outline-offset: 3px; }
+  section { border-top: 1px solid var(--line); padding: 3rem 0; }
+  h2 { color: var(--ember); font-weight: 400; font-size: 0.78rem; margin-bottom: 1.4rem; text-transform: uppercase; }
+  p a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 4px; }
+  .facts { margin-top: 1.2rem; color: var(--muted); }
+  .facts span { color: var(--ink); }
+  .proj { display: grid; gap: 1.6rem; }
+  .proj a { text-decoration: none; color: var(--ink); display: block; }
+  .proj i { font-style: italic; font-size: 1.15rem; }
+  .proj .exc { color: var(--muted); font-size: 0.95rem; }
+  .proj a:hover i { color: var(--ember); }
+  footer { border-top: 1px solid var(--line); padding-top: 2rem; color: var(--muted); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .ember-dot { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="mono" style="color: var(--muted);"><span class="ember-dot" aria-hidden="true"></span>ONLINE — WATERLOO, ON</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer. slow craft, hot loops.</p>
+      <nav class="mono" aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section>
+      <h2 class="mono">About</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering @ <a href="#">phoebe.work</a>; previously fish.audio and nationgraph.</p>
+      <p class="facts mono">interests — <span>ML · graphics · game theory</span><br>also — <span>snowboarding · music</span></p>
+    </section>
+
+    <section>
+      <h2 class="mono">Selected work</h2>
+      <div class="proj">
+        <a href="#"><i>wiki</i><br><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><i>zeta</i><br><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><i>newt + chimy2</i><br><span class="exc">deterministic physics and a software renderer, from first principles</span></a>
+      </div>
+    </section>
+
+    <footer class="mono">github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

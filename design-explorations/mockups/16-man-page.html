@@ -1,0 +1,81 @@
+<!-- man-page: the homepage as man(1) — NAME/SYNOPSIS/DESCRIPTION sections, pager statusline, austere and complete. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HENRY(1) — man page</title>
+<style>
+  :root {
+    --bg: #f9f7f1;
+    --ink: #1e1e1e;
+    --dim: #6f6f6f;
+    --hl: #00507a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, Courier, monospace;
+    font-size: 13.5px; line-height: 1.7;
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  .head { display: flex; justify-content: space-between; color: var(--dim); }
+  h2 { font-size: 13.5px; font-weight: 700; margin: 2.2rem 0 0.4rem; letter-spacing: 0.05em; }
+  .indent { margin-left: 2.5rem; }
+  b { font-weight: 700; }
+  i { font-style: italic; color: var(--dim); }
+  a { color: var(--hl); text-decoration: none; }
+  a:hover, a:focus { text-decoration: underline; }
+  a:focus-visible { outline: 1px solid var(--hl); outline-offset: 2px; }
+  .opt { display: grid; grid-template-columns: 9rem 1fr; margin-left: 2.5rem; }
+  .opt dt { font-weight: 700; }
+  .opt dd { color: var(--ink); }
+  .pager {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: var(--ink); color: var(--bg);
+    padding: 0.25rem 1rem; font-size: 12.5px;
+    display: flex; justify-content: space-between;
+  }
+  .pager .pos::after {
+    content: ""; display: inline-block; width: 0.55em; height: 1em;
+    background: var(--bg); vertical-align: text-bottom; margin-left: 0.4em;
+    animation: blink 1.2s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .pager .pos::after { animation: none; } }
+  @media (max-width: 560px) { .opt { grid-template-columns: 1fr; } .indent, .opt { margin-left: 1.2rem; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="head"><span>HENRY(1)</span><span>General Commands Manual</span><span>HENRY(1)</span></div>
+
+    <h2>NAME</h2>
+    <p class="indent"><b>henry wang</b> — software engineer</p>
+
+    <h2>SYNOPSIS</h2>
+    <p class="indent"><b>henry</b> [<a href="#">blog</a>] [<a href="#">projects</a>] [<a href="#">music</a>] [<a href="#">lab</a>] [<a href="#">now</a>] [<a href="#">resume</a>]</p>
+
+    <h2>DESCRIPTION</h2>
+    <p class="indent">Software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. Currently engineering at <a href="#">phoebe.work</a>; previously fish.audio and nationgraph.</p>
+    <dl class="opt">
+      <dt>--interests</dt><dd>ML, computer graphics, game theory</dd>
+      <dt>--also</dt><dd>snowboarding, music</dd>
+    </dl>
+
+    <h2>PROJECTS</h2>
+    <dl class="opt">
+      <dt><a href="#">wiki</a></dt><dd>a local markdown vault and agent workspace</dd>
+      <dt><a href="#">zeta</a></dt><dd>an agent harness that owns the loop</dd>
+      <dt><a href="#">newt+chimy2</a></dt><dd>deterministic physics engine and software renderer</dd>
+    </dl>
+
+    <h2>SEE ALSO</h2>
+    <p class="indent"><a href="#">github(1)</a>, <a href="#">mail(1)</a></p>
+
+    <h2>COLOPHON</h2>
+    <p class="indent"><i>© 2026 henry wang. This page is intentionally quiet.</i></p>
+  </main>
+  <div class="pager" aria-hidden="true"><span>Manual page henry(1)</span><span class="pos">line 1/1 (END)</span></div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!-- topo-contours: quiet topographic map — faint contour rings across the canvas, content pinned like survey markers, one ring breathes. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — topo contours</title>
+<style>
+  :root {
+    --base: #eef0e9;
+    --line: #c3cbb8;
+    --ink: #333d2e;
+    --gray: #7d8873;
+    --marker: #c25e1e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--base); color: var(--ink);
+    font-family: Optima, "Gill Sans", Seravek, sans-serif;
+    font-size: 15px; line-height: 1.75;
+  }
+  .contours { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .contours svg { width: 100%; height: 100%; }
+  .contours path { fill: none; stroke: var(--line); stroke-width: 1; }
+  .breathe { animation: breathe 9s ease-in-out infinite; transform-origin: 70% 30%; }
+  @keyframes breathe { 50% { transform: scale(1.03); } }
+  main { position: relative; z-index: 1; max-width: 37rem; margin: 0 auto; padding: 15vh 1.5rem 8vh; }
+  .marker { color: var(--marker); font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.2em; }
+  h1 { font-size: 2.1rem; font-weight: 500; letter-spacing: 0.03em; margin-top: 0.4rem; }
+  .role { color: var(--gray); }
+  nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 2.4rem; }
+  nav a { color: var(--ink); text-decoration: none; font-size: 0.88rem; letter-spacing: 0.08em; border-bottom: 1px solid var(--line); }
+  nav a:hover, nav a:focus { color: var(--marker); border-color: var(--marker); }
+  a:focus-visible { outline: 2px solid var(--marker); outline-offset: 3px; }
+  section { margin-top: 11vh; }
+  h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--marker); margin-bottom: 1rem; }
+  h2::before { content: "▲ "; font-size: 0.6rem; vertical-align: 0.1em; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.65rem 0; }
+  .proj .elev { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; color: var(--gray); }
+  .proj .name { font-weight: 600; margin-right: 0.6rem; }
+  .proj .exc { color: var(--gray); font-size: 0.9rem; display: block; }
+  .proj a:hover .name { color: var(--marker); }
+  footer { margin-top: 12vh; color: var(--gray); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .breathe { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="contours" aria-hidden="true">
+    <svg viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice">
+      <g class="breathe">
+        <path d="M 700 240 m -60 0 a 60 48 15 1 0 120 0 a 60 48 15 1 0 -120 0" />
+        <path d="M 700 240 m -110 0 a 110 88 15 1 0 220 0 a 110 88 15 1 0 -220 0" />
+        <path d="M 700 240 m -170 0 a 170 135 15 1 0 340 0 a 170 135 15 1 0 -340 0" />
+        <path d="M 700 240 m -240 0 a 240 190 15 1 0 480 0 a 240 190 15 1 0 -480 0" />
+      </g>
+      <path d="M 150 650 m -50 0 a 50 40 -10 1 0 100 0 a 50 40 -10 1 0 -100 0" />
+      <path d="M 150 650 m -100 0 a 100 80 -10 1 0 200 0 a 100 80 -10 1 0 -200 0" />
+      <path d="M 150 650 m -160 0 a 160 128 -10 1 0 320 0 a 160 128 -10 1 0 -320 0" />
+    </svg>
+  </div>
+  <main>
+    <header>
+      <p class="marker">BM 2026 — ELEV 334 M — WATERLOO</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer, mapping small systems</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section>
+      <h2>survey notes</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · computer graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section class="proj">
+      <h2>summits logged</h2>
+      <a href="#"><span class="elev">1 024 m</span><br><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="elev">1 618 m</span><br><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="elev">2 048 m</span><br><span class="name">newt + chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

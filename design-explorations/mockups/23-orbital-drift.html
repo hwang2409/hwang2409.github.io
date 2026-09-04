@@ -1,0 +1,109 @@
+<!-- orbital-drift: the nav orbits the name — site sections as satellites on slow circular paths around a fixed center of mass. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — orbital drift</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --ink: #e6e9ee;
+    --gray: #6e7787;
+    --gold: #ffc65c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: radial-gradient(circle at 50% 30%, #161b23, var(--bg) 60%);
+    color: var(--ink);
+    font-family: Avenir, "Century Gothic", Futura, sans-serif;
+    font-size: 15px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .system { position: relative; height: 88vh; min-height: 540px; display: flex; align-items: center; justify-content: center; }
+  .center { text-align: center; z-index: 2; }
+  h1 { font-size: 1.9rem; font-weight: 500; letter-spacing: 0.06em; }
+  .role { color: var(--gray); font-size: 0.9rem; }
+  .orbit {
+    position: absolute; top: 50%; left: 50%;
+    border: 1px dashed rgba(110, 119, 135, 0.3); border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin linear infinite;
+  }
+  .o1 { width: min(340px, 78vw); height: min(340px, 78vw); animation-duration: 60s; }
+  .o2 { width: min(520px, 96vw); height: min(520px, 96vw); animation-duration: 95s; animation-direction: reverse; }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  .sat { position: absolute; top: 50%; left: 50%; }
+  .sat a {
+    display: inline-block; transform: translate(-50%, -50%);
+    color: var(--ink); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.15em; text-transform: lowercase;
+    background: var(--bg); border: 1px solid var(--gray); border-radius: 999px; padding: 0.3rem 0.9rem;
+    animation: counterspin linear infinite;
+  }
+  .o1 .sat a { animation-duration: 60s; }
+  .o2 .sat a { animation-duration: 95s; animation-direction: reverse; }
+  @keyframes counterspin { to { transform: translate(-50%, -50%) rotate(-360deg); } }
+  .sat a:hover, .sat a:focus { border-color: var(--gold); color: var(--gold); }
+  a:focus-visible { outline: 1px solid var(--gold); outline-offset: 3px; }
+  .s1 { transform: translate(0, -170px); } .s2 { transform: translate(147px, 85px); } .s3 { transform: translate(-147px, 85px); }
+  .s4 { transform: translate(0, 260px); } .s5 { transform: translate(-225px, -130px); } .s6 { transform: translate(225px, -130px); }
+  .ground { max-width: 36rem; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  h2 { color: var(--gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 1rem; }
+  section { margin-bottom: 3.5rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.6rem 0; }
+  .proj .name::before { content: "◦ "; color: var(--gold); }
+  .proj .exc { color: var(--gray); font-size: 0.9rem; margin-left: 1rem; display: block; }
+  .proj a:hover .name { color: var(--gold); }
+  footer { color: var(--gray); font-size: 0.85rem; }
+  @media (max-width: 640px) {
+    .system { height: auto; min-height: 0; padding: 5rem 0 2rem; }
+    .orbit { display: none; }
+    .center nav.fallback { display: flex !important; gap: 1.2rem; margin-top: 1.4rem; flex-wrap: wrap; justify-content: center; }
+  }
+  .center nav.fallback { display: none; }
+  .center nav.fallback a { color: var(--gray); text-decoration: none; font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .orbit, .sat a { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="system">
+    <div class="orbit o1" aria-hidden="true">
+      <span class="sat s1"><a href="#" tabindex="-1">blog</a></span>
+      <span class="sat s2"><a href="#" tabindex="-1">music</a></span>
+      <span class="sat s3"><a href="#" tabindex="-1">now</a></span>
+    </div>
+    <div class="orbit o2" aria-hidden="true">
+      <span class="sat s5"><a href="#" tabindex="-1">projects</a></span>
+      <span class="sat s6"><a href="#" tabindex="-1">lab</a></span>
+      <span class="sat s4"><a href="#" tabindex="-1">resume</a></span>
+    </div>
+    <header class="center">
+      <h1>henry wang</h1>
+      <p class="role">software engineer — center of a small system</p>
+      <nav class="fallback" aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+  </div>
+
+  <div class="ground">
+    <section>
+      <h2>about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section class="proj">
+      <h2>projects</h2>
+      <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics + software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </div>
+</body>
+</html>

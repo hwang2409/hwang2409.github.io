@@ -1,0 +1,124 @@
+<!-- pixel-mountain: the mascot's world grows — chunky pixel type, an 8-bit mountain scene in box-shadow art, snow that falls in steps. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — pixel mountain</title>
+<style>
+  :root {
+    --sky: #a7d8e8;
+    --deep: #2b3a4a;
+    --snowc: #ffffff;
+    --pine: #2e6b4f;
+    --board: #ff5a5f;
+    --ink: #22303c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--sky); color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 14px; line-height: 1.7;
+    image-rendering: pixelated;
+  }
+  .scene { position: relative; overflow: hidden; padding: 10vh 0 0; background: linear-gradient(#8ecbe0, var(--sky)); }
+  .wrap { max-width: 40rem; margin: 0 auto; padding: 0 1.5rem; }
+  h1 {
+    font-size: clamp(1.6rem, 6vw, 2.4rem); font-weight: 700;
+    text-transform: lowercase; letter-spacing: 0.05em;
+    text-shadow: 3px 3px 0 rgba(34,48,60,0.15);
+  }
+  .role { color: #446; }
+  /* pixel mountain built from stacked box-shadows on an 8px unit */
+  .mtn { position: relative; height: 180px; margin-top: 3rem; }
+  .px { position: absolute; bottom: 0; left: 50%; width: 16px; height: 16px; background: transparent; }
+  .peak { box-shadow:
+    -16px -160px var(--snowc), 0 -160px var(--snowc),
+    -32px -144px var(--snowc), 16px -144px var(--snowc),
+    -48px -128px var(--deep), 32px -128px var(--deep), -16px -128px var(--snowc), 0 -128px var(--snowc),
+    -64px -112px var(--deep), 48px -112px var(--deep), -32px -112px var(--deep), 16px -112px var(--deep),
+    -80px -96px var(--deep), 64px -96px var(--deep), -48px -96px var(--deep), 32px -96px var(--deep), -16px -96px var(--deep), 0 -96px var(--deep),
+    -96px -80px var(--deep), 80px -80px var(--deep), -64px -80px var(--deep), 48px -80px var(--deep),
+    -112px -64px var(--deep), 96px -64px var(--deep), -80px -64px var(--deep), 64px -64px var(--deep),
+    -128px -48px var(--deep), 112px -48px var(--deep),
+    -144px -32px var(--deep), 128px -32px var(--deep),
+    -160px -16px var(--deep), 144px -16px var(--deep),
+    -176px 0 var(--deep), 160px 0 var(--deep); }
+  .boarder {
+    position: absolute; bottom: 118px; left: calc(50% - 40px);
+    width: 8px; height: 8px;
+    box-shadow: 0 -16px var(--ink), 0 -8px var(--ink), -8px 0 var(--board), 0 0 var(--board), 8px 0 var(--board);
+    animation: carve 9s linear infinite;
+  }
+  @keyframes carve {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(60px, 30px); }
+    50% { transform: translate(10px, 60px); }
+    75% { transform: translate(80px, 90px); }
+    100% { transform: translate(140px, 118px); opacity: 0; }
+  }
+  .flakes { position: absolute; inset: 0; pointer-events: none; }
+  .f { position: absolute; width: 8px; height: 8px; background: var(--snowc); top: -8px; animation: fallsteps 7s steps(14) infinite; }
+  .f:nth-child(1) { left: 15%; } .f:nth-child(2) { left: 45%; animation-delay: -3s; } .f:nth-child(3) { left: 75%; animation-delay: -5s; }
+  @keyframes fallsteps { to { transform: translateY(60vh); opacity: 0; } }
+  .ground { background: var(--snowc); position: relative; z-index: 1; }
+  .ground .wrap { padding-top: 3rem; padding-bottom: 4rem; }
+  nav { display: flex; gap: 1.3rem; flex-wrap: wrap; margin-bottom: 3rem; }
+  nav a {
+    color: var(--ink); text-decoration: none; background: #e8f2f6;
+    border: 2px solid var(--ink); padding: 0.2rem 0.7rem;
+    box-shadow: 2px 2px 0 var(--ink); font-size: 0.85rem;
+  }
+  nav a:hover, nav a:focus { background: var(--board); color: #fff; transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+  a:focus-visible { outline: 2px solid var(--board); outline-offset: 2px; }
+  h2 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.8rem; }
+  h2::before { content: "► "; color: var(--board); }
+  section { margin-bottom: 3rem; max-width: 34rem; }
+  .meta { color: #587; font-size: 0.9rem; margin-top: 0.6rem; }
+  .proj a { color: var(--ink); display: block; text-decoration: none; padding: 0.3rem 0; }
+  .proj .name { font-weight: 700; border-bottom: 2px solid var(--board); }
+  .proj a:hover .name { background: var(--board); color: #fff; }
+  .proj .exc { color: #567; }
+  footer { color: #587; font-size: 0.85rem; border-top: 2px dashed var(--deep); padding-top: 1rem; }
+  @media (prefers-reduced-motion: reduce) { .boarder, .f { animation: none; } .f { display: none; } }
+</style>
+</head>
+<body>
+  <div class="scene">
+    <div class="flakes" aria-hidden="true"><i class="f"></i><i class="f"></i><i class="f"></i></div>
+    <header class="wrap">
+      <h1>henry wang</h1>
+      <p class="role">software engineer · waterloo</p>
+    </header>
+    <div class="mtn" aria-hidden="true">
+      <i class="px peak"></i>
+      <i class="boarder"></i>
+    </div>
+  </div>
+
+  <div class="ground">
+    <div class="wrap">
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+
+      <section>
+        <h2>about</h2>
+        <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+        <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+        ML · graphics · game theory · snowboarding · music</p>
+      </section>
+
+      <section class="proj">
+        <h2>projects</h2>
+        <a href="#"><span class="name">wiki</span> <span class="exc">— markdown vault + agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span> <span class="exc">— agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span> <span class="exc">— deterministic physics + renderer</span></a>
+      </section>
+
+      <footer>github · mail · © 2026 henry wang</footer>
+    </div>
+  </div>
+</body>
+</html>

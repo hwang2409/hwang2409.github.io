@@ -1,0 +1,89 @@
+<!-- bauhaus: form follows function — primary color geometry, circle/triangle/square as section marks, one rotating composition. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — bauhaus</title>
+<style>
+  :root {
+    --bg: #f5f1e8;
+    --ink: #191919;
+    --red: #de3831;
+    --blue: #1c5b8c;
+    --yellow: #f0c020;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Futura, "Century Gothic", "Avenir Next", sans-serif;
+    font-size: 15px; line-height: 1.65;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 7vh 1.5rem 6vh; }
+  .comp { position: relative; height: 150px; margin-bottom: 2.5rem; }
+  .comp .c { position: absolute; left: 0; top: 10px; width: 110px; height: 110px; border-radius: 50%; background: var(--red); }
+  .comp .s { position: absolute; left: 80px; top: 40px; width: 90px; height: 90px; background: var(--yellow); mix-blend-mode: multiply; }
+  .comp .t { position: absolute; left: 190px; top: 20px; width: 0; height: 0;
+    border-left: 55px solid transparent; border-right: 55px solid transparent; border-bottom: 110px solid var(--blue);
+    mix-blend-mode: multiply; transform-origin: 50% 66%;
+    animation: slowturn 26s linear infinite; }
+  @keyframes slowturn { to { transform: rotate(360deg); } }
+  h1 { font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 700; text-transform: lowercase; letter-spacing: -0.02em; }
+  h1 span { color: var(--red); }
+  .role { font-size: 1rem; color: #555; }
+  nav { display: flex; gap: 0; flex-wrap: wrap; margin: 2.2rem 0 3.5rem; border: 3px solid var(--ink); width: fit-content; }
+  nav a { color: var(--ink); text-decoration: none; padding: 0.5rem 1.1rem; font-weight: 500; text-transform: lowercase; border-right: 3px solid var(--ink); }
+  nav a:last-child { border-right: none; }
+  nav a:hover, nav a:focus { background: var(--yellow); }
+  a:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
+  section { display: grid; grid-template-columns: 3rem 1fr; gap: 1.4rem; margin-bottom: 3.4rem; max-width: 38rem; }
+  .mark { width: 2rem; height: 2rem; }
+  .mk-c { border-radius: 50%; background: var(--red); }
+  .mk-s { background: var(--blue); }
+  h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.25em; margin-bottom: 0.7rem; }
+  .meta { color: #666; font-size: 0.92rem; margin-top: 0.6rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.5rem 0; border-bottom: 3px solid var(--ink); }
+  .proj a:first-of-type { border-top: 3px solid var(--ink); }
+  .proj .name { font-weight: 700; }
+  .proj .exc { color: #666; }
+  .proj a:hover { background: rgba(240, 192, 32, 0.35); }
+  footer { color: #666; font-size: 0.85rem; text-transform: lowercase; }
+  @media (max-width: 560px) { section { grid-template-columns: 1fr; gap: 0.5rem; } nav a { padding: 0.4rem 0.8rem; } }
+  @media (prefers-reduced-motion: reduce) { .comp .t { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="comp" aria-hidden="true"><div class="c"></div><div class="s"></div><div class="t"></div></div>
+    <header>
+      <h1>henry wang<span>.</span></h1>
+      <p class="role">software engineer — form follows function</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section>
+      <div class="mark mk-c" aria-hidden="true"></div>
+      <div>
+        <h2>about</h2>
+        <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio, nationgraph.</p>
+        <p class="meta">ML · computer graphics · game theory · snowboarding · music</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="mark mk-s" aria-hidden="true"></div>
+      <div class="proj">
+        <h2>projects</h2>
+        <a href="#"><span class="name">wiki</span> — <span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span> — <span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span> — <span class="exc">deterministic physics + software renderer</span></a>
+      </div>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!-- waveform: sound made visible — dark studio canvas, a live equalizer of CSS bars under the name, sections as channels. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — waveform</title>
+<style>
+  :root {
+    --bg: #14161a;
+    --ink: #e8ebee;
+    --gray: #757d88;
+    --sig: #35e0a1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+    font-size: 15px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 38rem; margin: 0 auto; padding: 13vh 1.5rem 7vh; }
+  .ch { font-family: ui-monospace, Menlo, monospace; font-size: 0.7rem; color: var(--gray); letter-spacing: 0.25em; }
+  .ch b { color: var(--sig); font-weight: 400; }
+  h1 { font-size: 2.3rem; font-weight: 500; margin-top: 0.4rem; letter-spacing: -0.01em; }
+  .role { color: var(--gray); }
+  .eq { display: flex; gap: 4px; align-items: flex-end; height: 56px; margin-top: 2rem; }
+  .eq i { width: 6px; background: var(--sig); border-radius: 2px 2px 0 0; height: 20%;
+    animation: bounce 1.1s ease-in-out infinite alternate; }
+  .eq i:nth-child(2n) { animation-duration: 0.9s; background: #2aa87c; }
+  .eq i:nth-child(3n) { animation-duration: 1.4s; height: 35%; }
+  .eq i:nth-child(4n) { animation-duration: 0.8s; height: 55%; }
+  .eq i:nth-child(5n) { animation-duration: 1.2s; height: 70%; }
+  .eq i:nth-child(7n) { animation-duration: 1.6s; height: 45%; }
+  @keyframes bounce { to { height: 100%; } }
+  nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 2.6rem; }
+  nav a { color: var(--gray); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; }
+  nav a:hover, nav a:focus { color: var(--sig); }
+  a:focus-visible { outline: 1px solid var(--sig); outline-offset: 3px; }
+  section { margin-top: 10vh; }
+  h2 { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.25em; color: var(--sig); margin-bottom: 1.1rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a {
+    display: flex; align-items: center; gap: 1rem;
+    color: var(--ink); text-decoration: none; padding: 0.8rem 0;
+    border-bottom: 1px solid #23262c;
+  }
+  .proj .vu { width: 3rem; height: 4px; background: #23262c; flex: none; position: relative; overflow: hidden; border-radius: 2px; }
+  .proj .vu::after { content: ""; position: absolute; inset: 0; background: var(--sig); transform: scaleX(0.4); transform-origin: left; transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1); }
+  .proj a:nth-child(2) .vu::after { transform: scaleX(0.65); }
+  .proj a:nth-child(3) .vu::after { transform: scaleX(0.85); }
+  .proj a:hover .vu::after { transform: scaleX(1); }
+  .proj .name { font-weight: 600; }
+  .proj .exc { color: var(--gray); font-size: 0.88rem; margin-left: auto; text-align: right; }
+  footer { margin-top: 10vh; color: var(--gray); font-size: 0.82rem; font-family: ui-monospace, Menlo, monospace; }
+  @media (prefers-reduced-motion: reduce) { .eq i { animation: none; height: 50%; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="ch">CH 01 — <b>REC</b> — WATERLOO SESSIONS</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer, monitoring levels</p>
+      <div class="eq" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section>
+      <h2>INPUT / ABOUT</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · computer graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section class="proj">
+      <h2>OUTPUT / PROJECTS</h2>
+      <a href="#"><span class="vu" aria-hidden="true"></span><span class="name">wiki</span><span class="exc">markdown vault + agent workspace</span></a>
+      <a href="#"><span class="vu" aria-hidden="true"></span><span class="name">zeta</span><span class="exc">agent harness that owns the loop</span></a>
+      <a href="#"><span class="vu" aria-hidden="true"></span><span class="name">newt + chimy2</span><span class="exc">deterministic physics + renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang · 48kHz / 24-bit</footer>
+  </main>
+</body>
+</html>

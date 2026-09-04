@@ -1,0 +1,81 @@
+<!-- alpine-dawn: first light on the mountain — pale gradient sky warming at the horizon, long shadows, type set like a summit sign. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — alpine dawn</title>
+<style>
+  :root {
+    --sky-hi: #dfe9f5;
+    --sky-lo: #f9e0c8;
+    --ink: #33404f;
+    --gray: #8595a5;
+    --sunrise: #e0784a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(var(--sky-hi) 30%, var(--sky-lo) 100%) fixed;
+    color: var(--ink);
+    font-family: Optima, "Gill Sans", Candara, sans-serif;
+    font-size: 15.5px; line-height: 1.8;
+    min-height: 100vh;
+  }
+  main { max-width: 37rem; margin: 0 auto; padding: 15vh 1.5rem 9vh; }
+  .glow {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(circle, #ffd9a8, #f2a86b 65%, transparent 70%);
+    animation: rise 3s cubic-bezier(0.2, 0, 0, 1) both;
+  }
+  @keyframes rise { from { transform: translateY(26px); opacity: 0; } }
+  h1 { font-size: 2.4rem; font-weight: 500; letter-spacing: 0.04em; margin-top: 1.6rem; }
+  .role { color: var(--gray); }
+  .sign { display: inline-block; margin-top: 2rem; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 0.5rem 0; }
+  .sign nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .sign a { color: var(--ink); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .sign a:hover, .sign a:focus { color: var(--sunrise); }
+  a:focus-visible { outline: 2px solid var(--sunrise); outline-offset: 3px; }
+  section { margin-top: 11vh; }
+  h2 { font-size: 0.75rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--sunrise); margin-bottom: 1.1rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; color: var(--ink); text-decoration: none; padding: 0.75rem 0; border-bottom: 1px solid rgba(51, 64, 79, 0.18); }
+  .proj .name { font-weight: 600; letter-spacing: 0.03em; }
+  .proj .exc { color: var(--gray); font-size: 0.88rem; text-align: right; }
+  .proj .alt { font-size: 0.7rem; color: var(--sunrise); letter-spacing: 0.1em; }
+  .proj a:hover .name { color: var(--sunrise); }
+  footer { margin-top: 11vh; color: var(--gray); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .glow { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="glow" aria-hidden="true"></div>
+      <h1>henry wang</h1>
+      <p class="role">software engineer — up before the lifts open</p>
+      <div class="sign">
+        <nav aria-label="site">
+          <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+          <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+        </nav>
+      </div>
+    </header>
+
+    <section>
+      <h2>morning briefing</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · computer graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section class="proj">
+      <h2>routes</h2>
+      <a href="#"><span class="name">wiki <span class="alt">EST. 2026</span></span><span class="exc">markdown vault + agent workspace</span></a>
+      <a href="#"><span class="name">zeta <span class="alt">EST. 2026</span></span><span class="exc">agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2 <span class="alt">EST. 2026</span></span><span class="exc">deterministic physics + renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

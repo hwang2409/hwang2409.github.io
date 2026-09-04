@@ -1,0 +1,94 @@
+<!-- dark-grid: engineer's dark graph paper — a faint grid canvas where content snaps to plotted points, cyan crosshair accents. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — dark grid</title>
+<style>
+  :root {
+    --bg: #0c0e12;
+    --grid: rgba(94, 234, 255, 0.06);
+    --ink: #dbe4ea;
+    --muted: #71818f;
+    --cyan: #5eeaff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 100% 28px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 28px 100%,
+      var(--bg);
+    color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13.5px; line-height: 28px; /* line-height locked to the grid */
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: 112px 1.5rem 112px; }
+  .crosshair { color: var(--cyan); }
+  h1 { font-size: 1.6rem; font-weight: 700; line-height: 56px; letter-spacing: 0.02em; }
+  .role { color: var(--muted); }
+  .plot {
+    margin: 28px 0; height: 84px; position: relative;
+  }
+  .plot svg { width: 100%; height: 100%; }
+  .plot polyline { fill: none; stroke: var(--cyan); stroke-width: 1.5;
+    stroke-dasharray: 700; stroke-dashoffset: 700;
+    animation: draw 3s ease-out forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  nav { display: flex; gap: 1.8rem; flex-wrap: wrap; margin-bottom: 56px; }
+  nav a { color: var(--muted); text-decoration: none; }
+  nav a::before { content: "+ "; color: var(--cyan); }
+  nav a:hover, nav a:focus { color: var(--cyan); }
+  a:focus-visible { outline: 1px solid var(--cyan); outline-offset: 3px; }
+  h2 { font-size: 13.5px; font-weight: 400; color: var(--cyan); margin-bottom: 28px; }
+  h2::before { content: "[ "; color: var(--muted); }
+  h2::after { content: " ]"; color: var(--muted); }
+  section { margin-bottom: 84px; }
+  .about p { max-width: 36rem; }
+  .about .meta { color: var(--muted); margin-top: 28px; }
+  .proj a { display: grid; grid-template-columns: 10rem 1fr; color: var(--ink); text-decoration: none; }
+  .proj a:hover .n { color: var(--cyan); }
+  .proj .e { color: var(--muted); }
+  footer { color: var(--muted); border-top: 1px dashed rgba(94,234,255,0.25); }
+  @media (prefers-reduced-motion: reduce) { .plot polyline { animation: none; stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="crosshair">(0, 0)</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer / plotted at uwaterloo</p>
+      <div class="plot" aria-hidden="true">
+        <svg viewBox="0 0 640 84" preserveAspectRatio="none">
+          <polyline points="0,70 80,62 140,66 200,44 260,50 320,28 400,34 460,18 540,24 640,8" />
+        </svg>
+      </div>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>about</h2>
+      <p>software engineer at uwaterloo. interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently: engineering @ phoebe.work<br>
+      previously: fish.audio, nationgraph<br>
+      interests: ML, computer graphics, game theory<br>
+      also: snowboarding, music</p>
+    </section>
+
+    <section class="proj">
+      <h2>projects</h2>
+      <a href="#"><span class="n">wiki</span><span class="e">markdown vault + agent workspace</span></a>
+      <a href="#"><span class="n">zeta</span><span class="e">agent harness that owns the loop</span></a>
+      <a href="#"><span class="n">newt + chimy2</span><span class="e">deterministic physics + software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

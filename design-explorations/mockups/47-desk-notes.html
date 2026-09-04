@@ -1,0 +1,96 @@
+<!-- desk-notes: a desk seen from above — sticky notes and taped scraps at slight angles, one note swings on its tape when it loads. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — desk notes</title>
+<style>
+  :root {
+    --desk: #8a6f57;
+    --paper: #fbf8ef;
+    --yellow: #f9e79f;
+    --blue: #aed6f1;
+    --pink: #f5b7b1;
+    --ink: #2c2418;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--desk);
+    background-image: linear-gradient(90deg, rgba(0,0,0,0.06) 2px, transparent 2px);
+    background-size: 90px 100%;
+    color: var(--ink);
+    font-family: Charter, Georgia, serif;
+    font-size: 14.5px; line-height: 1.65;
+  }
+  main { max-width: 46rem; margin: 0 auto; padding: 6vh 1.2rem 6vh; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.6rem; align-items: start; }
+  .note { padding: 1.3rem 1.4rem 1.5rem; box-shadow: 0 6px 16px rgba(0,0,0,0.25); position: relative; }
+  .note::before {
+    content: ""; position: absolute; top: -9px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+    width: 74px; height: 20px; background: rgba(255,255,255,0.45); border: 1px solid rgba(0,0,0,0.05);
+  }
+  .main-note { background: var(--paper); grid-column: 1 / -1; transform: rotate(-0.7deg); }
+  .n-y { background: var(--yellow); transform: rotate(1.4deg); }
+  .n-b { background: var(--blue); transform: rotate(-1.8deg); }
+  .n-p { background: var(--pink); transform: rotate(0.9deg); transform-origin: top center; animation: swing 3.2s ease-in-out 0.4s; }
+  @keyframes swing {
+    0% { transform: rotate(4.5deg); } 30% { transform: rotate(-1.4deg); }
+    60% { transform: rotate(2.2deg); } 100% { transform: rotate(0.9deg); }
+  }
+  h1 { font-size: 2rem; font-weight: 700; }
+  h1 small { font-size: 1rem; font-weight: 400; color: #7a6f5a; display: block; }
+  nav { display: flex; gap: 1.1rem; flex-wrap: wrap; margin-top: 1rem; }
+  nav a { color: var(--ink); font-family: "Bradley Hand", "Marker Felt", cursive; text-decoration: underline; text-underline-offset: 3px; }
+  nav a:hover, nav a:focus { color: #b0413e; }
+  a:focus-visible { outline: 2px solid #b0413e; outline-offset: 3px; }
+  h2 { font-family: "Bradley Hand", "Marker Felt", cursive; font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .meta { color: #6e6248; font-size: 0.88rem; margin-top: 0.5rem; }
+  .note ul { list-style: none; }
+  .note li { padding: 0.25rem 0; }
+  .note li::before { content: "- "; }
+  .note a.p { color: var(--ink); text-decoration: none; border-bottom: 1px dashed var(--ink); }
+  .note a.p:hover { color: #b0413e; border-color: #b0413e; }
+  .exc { color: #5c523c; font-size: 0.88rem; }
+  footer { grid-column: 1 / -1; text-align: center; color: rgba(255,255,255,0.75); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .n-p { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="note main-note">
+      <h1>henry wang <small>software engineer — uwaterloo · this is my desk, mind the mess</small></h1>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </div>
+
+    <div class="note n-y">
+      <h2>about me</h2>
+      <p>into ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">now: phoebe.work<br>before: fish.audio, nationgraph</p>
+    </div>
+
+    <div class="note n-b">
+      <h2>current obsessions</h2>
+      <ul>
+        <li>ML + game theory</li>
+        <li>computer graphics</li>
+        <li>snowboarding (season soon)</li>
+        <li>music, always on</li>
+      </ul>
+    </div>
+
+    <div class="note n-p">
+      <h2>things i built</h2>
+      <ul>
+        <li><a class="p" href="#">wiki</a> <span class="exc">— vault + agents</span></li>
+        <li><a class="p" href="#">zeta</a> <span class="exc">— agent harness</span></li>
+        <li><a class="p" href="#">newt + chimy2</a> <span class="exc">— physics + renderer</span></li>
+      </ul>
+    </div>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

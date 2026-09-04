@@ -1,0 +1,106 @@
+<!-- mixtape: a cassette handed to a friend — warm cream, felt-tip handwriting on the label, spinning tape reels, sides A and B. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — mixtape</title>
+<style>
+  :root {
+    --cream: #f3ead9;
+    --shell: #2e2a26;
+    --label: #fdf8ec;
+    --ink: #33291e;
+    --pen: #1d4ed8;
+    --gray: #8d7f6c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--cream); color: var(--ink);
+    font-family: Charter, Georgia, serif;
+    font-size: 15px; line-height: 1.75;
+  }
+  main { max-width: 38rem; margin: 0 auto; padding: 8vh 1.5rem 6vh; }
+  .tape {
+    background: var(--shell); border-radius: 12px; padding: 1.1rem;
+    box-shadow: 0 2px 4px rgba(46,42,38,0.25), 0 14px 34px rgba(46,42,38,0.25);
+  }
+  .sticker {
+    background: var(--label); border-radius: 6px; padding: 1rem 1.2rem 1.2rem; position: relative;
+    background-image: linear-gradient(rgba(29,78,216,0.12) 1px, transparent 1px);
+    background-size: 100% 1.6rem; background-position: 0 2.9rem;
+  }
+  h1 {
+    font-family: "Marker Felt", "Bradley Hand", "Comic Sans MS", cursive;
+    color: var(--pen); font-size: 1.9rem; font-weight: 400; transform: rotate(-0.8deg);
+  }
+  .role { font-family: "Marker Felt", "Bradley Hand", cursive; color: var(--ink); opacity: 0.75; transform: rotate(-0.4deg); }
+  .side { position: absolute; top: 0.9rem; right: 1rem; font-family: "Marker Felt", cursive; color: var(--pen); font-size: 0.9rem; }
+  .window {
+    margin-top: 1rem; background: var(--shell); border-radius: 8px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 2rem;
+  }
+  .reel { width: 44px; height: 44px; border: 4px solid #d8cfc0; border-radius: 50%; position: relative; animation: reel 4s linear infinite; }
+  .reel::before { content: ""; position: absolute; inset: 40%; background: #d8cfc0; border-radius: 50%; }
+  .reel::after { content: ""; position: absolute; top: -4px; left: calc(50% - 2px); width: 4px; height: 8px; background: #d8cfc0; }
+  @keyframes reel { to { transform: rotate(360deg); } }
+  .tapeline { flex: 1; height: 3px; background: #55483c; margin: 0 1rem; }
+  nav { display: flex; gap: 1.3rem; flex-wrap: wrap; margin: 2.6rem 0 0; }
+  nav a { color: var(--pen); text-decoration: none; font-style: italic; }
+  nav a::before { content: "» "; }
+  nav a:hover, nav a:focus { text-decoration: underline; text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--pen); outline-offset: 3px; }
+  section { margin-top: 3rem; }
+  h2 { font-family: "Marker Felt", "Bradley Hand", cursive; color: var(--ink); font-size: 1.1rem; font-weight: 400; margin-bottom: 0.7rem; }
+  h2 span { color: var(--pen); }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.6rem; }
+  .tracks { counter-reset: trk; }
+  .tracks a { display: flex; gap: 0.7rem; align-items: baseline; color: var(--ink); text-decoration: none; padding: 0.45rem 0; border-bottom: 1px dotted #d6c9b4; counter-increment: trk; }
+  .tracks a::before { content: counter(trk, decimal-leading-zero); color: var(--gray); font-size: 0.8rem; font-family: ui-monospace, Menlo, monospace; }
+  .tracks .name { font-weight: 700; }
+  .tracks .exc { color: var(--gray); font-size: 0.9rem; }
+  .tracks .len { margin-left: auto; color: var(--gray); font-size: 0.8rem; font-family: ui-monospace, Menlo, monospace; }
+  .tracks a:hover .name { color: var(--pen); }
+  footer { margin-top: 3.5rem; color: var(--gray); font-size: 0.85rem; font-style: italic; }
+  @media (prefers-reduced-motion: reduce) { .reel { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="tape">
+      <div class="sticker">
+        <span class="side" aria-hidden="true">SIDE A</span>
+        <h1>henry wang</h1>
+        <p class="role">software engineer · 90 min · dolby off</p>
+      </div>
+      <div class="window" aria-hidden="true">
+        <div class="reel"></div>
+        <div class="tapeline"></div>
+        <div class="reel" style="animation-duration: 5.2s;"></div>
+      </div>
+    </div>
+
+    <nav aria-label="site">
+      <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+      <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+    </nav>
+
+    <section>
+      <h2>liner notes <span>(about)</span></h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio and nationgraph.</p>
+      <p class="meta">genres: ML, computer graphics, game theory. bonus tracks: snowboarding, music.</p>
+    </section>
+
+    <section>
+      <h2>side b <span>(projects)</span></h2>
+      <div class="tracks">
+        <a href="#"><span class="name">wiki</span><span class="exc">markdown vault + agent workspace</span><span class="len">4:12</span></a>
+        <a href="#"><span class="name">zeta</span><span class="exc">agent harness that owns the loop</span><span class="len">7:38</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics + renderer</span><span class="len">9:01</span></a>
+      </div>
+    </section>
+
+    <footer>recorded over an old tape · github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

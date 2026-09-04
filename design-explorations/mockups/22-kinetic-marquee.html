@@ -1,0 +1,81 @@
+<!-- kinetic-marquee: motion as the identity — horizontal type bands scrolling at different speeds, still content islands between them. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — kinetic marquee</title>
+<style>
+  :root {
+    --bg: #101010;
+    --ink: #f5f2ec;
+    --gray: #7d7a72;
+    --lime: #d8ff3e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Futura, "Avenir Next", "Trebuchet MS", sans-serif;
+    font-size: 15px; line-height: 1.7; overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .band { white-space: nowrap; overflow: hidden; user-select: none; border-top: 1px solid #242424; border-bottom: 1px solid #242424; }
+  .band .in { display: inline-block; animation: slide 30s linear infinite; }
+  .band.rev .in { animation-direction: reverse; animation-duration: 38s; }
+  .band span {
+    display: inline-block; padding: 0.6rem 1.5rem 0.6rem 0;
+    font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em;
+  }
+  .band .o { color: transparent; -webkit-text-stroke: 1px var(--gray); }
+  .band .g { color: var(--lime); }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .island { max-width: 38rem; margin: 0 auto; padding: 4.5rem 1.5rem; }
+  h1 { font-size: 1rem; font-weight: 400; color: var(--gray); text-transform: uppercase; letter-spacing: 0.3em; }
+  h1 b { color: var(--ink); }
+  nav { display: flex; gap: 1.6rem; flex-wrap: wrap; margin-top: 1.2rem; }
+  nav a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--lime); font-weight: 700; text-transform: lowercase; }
+  nav a:hover, nav a:focus { color: var(--lime); }
+  a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+  .meta { color: var(--gray); margin-top: 0.8rem; }
+  .meta b { color: var(--ink); font-weight: 400; }
+  .proj a { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; color: var(--ink); text-decoration: none; padding: 0.8rem 0; border-bottom: 1px solid #242424; }
+  .proj .name { font-weight: 700; text-transform: uppercase; }
+  .proj .exc { color: var(--gray); font-size: 0.88rem; text-align: right; }
+  .proj a:hover .name { color: var(--lime); }
+  footer { color: var(--gray); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .band .in { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="band" aria-hidden="true"><div class="in">
+    <span>Henry Wang</span><span class="o">Henry Wang</span><span class="g">Software Engineer</span><span class="o">Henry Wang</span>
+    <span>Henry Wang</span><span class="o">Henry Wang</span><span class="g">Software Engineer</span><span class="o">Henry Wang</span>
+  </div></div>
+
+  <header class="island">
+    <h1><b>henry wang</b> — software engineer, uwaterloo</h1>
+    <nav aria-label="site">
+      <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+      <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+    </nav>
+  </header>
+
+  <div class="band rev" aria-hidden="true"><div class="in">
+    <span class="o">ML Systems</span><span>Graphics</span><span class="o">Game Theory</span><span class="g">Snowboarding</span><span class="o">Music</span>
+    <span class="o">ML Systems</span><span>Graphics</span><span class="o">Game Theory</span><span class="g">Snowboarding</span><span class="o">Music</span>
+  </div></div>
+
+  <section class="island">
+    <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+    <p class="meta">currently <b>engineering @ phoebe.work</b> · previously <b>fish.audio, nationgraph</b></p>
+  </section>
+
+  <section class="island proj" style="padding-top: 0;">
+    <a href="#"><span class="name">wiki</span><span class="exc">markdown vault + agent workspace</span></a>
+    <a href="#"><span class="name">zeta</span><span class="exc">agent harness that owns the loop</span></a>
+    <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics + renderer</span></a>
+  </section>
+
+  <footer class="island" style="padding-top: 0;">github · mail · © 2026 henry wang</footer>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!-- japanese-ma: negative space as the design — one red dot, vertical rhythm, content arriving in the emptiness one breath at a time. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — ma</title>
+<style>
+  :root {
+    --white: #fcfbf9;
+    --ink: #1d1c1a;
+    --gray: #a3a09a;
+    --red: #d43d2a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--white); color: var(--ink);
+    font-family: "Hiragino Sans", Optima, "Gill Sans", sans-serif;
+    font-size: 15px; line-height: 2.1;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 26rem; margin: 0 auto; padding: 26vh 1.5rem 20vh; }
+  .dot {
+    width: 12px; height: 12px; border-radius: 50%; background: var(--red);
+    animation: arrive 1.6s cubic-bezier(0.2, 0, 0, 1) both;
+  }
+  @keyframes arrive { from { transform: scale(0); } }
+  h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: 0.3em; margin-top: 3rem; }
+  .role { color: var(--gray); font-size: 0.85rem; letter-spacing: 0.15em; }
+  nav { margin-top: 5rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  nav a { color: var(--gray); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.25em; width: fit-content; }
+  nav a:hover, nav a:focus { color: var(--red); }
+  a:focus-visible { outline: 1px solid var(--red); outline-offset: 4px; }
+  section { margin-top: 22vh; }
+  h2 { font-size: 0.7rem; letter-spacing: 0.5em; color: var(--red); text-transform: lowercase; font-weight: 400; margin-bottom: 2rem; }
+  .about p { color: var(--ink); }
+  .meta { color: var(--gray); font-size: 0.85rem; margin-top: 1.5rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; margin-bottom: 2rem; }
+  .proj .name { letter-spacing: 0.2em; }
+  .proj .exc { color: var(--gray); font-size: 0.85rem; display: block; }
+  .proj a:hover .name { color: var(--red); }
+  footer { margin-top: 24vh; color: var(--gray); font-size: 0.75rem; letter-spacing: 0.2em; }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="dot" aria-hidden="true"></div>
+      <h1>henry wang</h1>
+      <p class="role">software engineer</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently — phoebe.work<br>previously — fish.audio, nationgraph<br>always — ML, graphics, game theory, snowboarding, music</p>
+    </section>
+
+    <section class="proj">
+      <h2>work</h2>
+      <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics and a software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

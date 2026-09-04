@@ -1,0 +1,162 @@
+<!-- gallery: browsable grid of all 50 WEB-4 home-page mockups; click any card to open the full mockup. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEB-4 — 50 design explorations</title>
+<style>
+  :root {
+    --bg: #141517;
+    --card: #1c1e21;
+    --ink: #e8e9eb;
+    --gray: #8a8f98;
+    --acc: #6ea8fe;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header { max-width: 1400px; margin: 0 auto; padding: 2.5rem 1.5rem 1.5rem; }
+  h1 { font-size: 1.4rem; font-weight: 600; }
+  .sub { color: var(--gray); margin-top: 0.3rem; }
+  .filters { margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .filters button {
+    background: var(--card); color: var(--gray); border: 1px solid #2c2f34;
+    border-radius: 999px; padding: 0.3rem 0.9rem; font-size: 0.8rem; cursor: pointer;
+  }
+  .filters button:hover { color: var(--ink); }
+  .filters button.on { background: var(--acc); color: #10151c; border-color: var(--acc); }
+  main {
+    max-width: 1400px; margin: 0 auto; padding: 0.5rem 1.5rem 4rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.4rem;
+  }
+  .tile { background: var(--card); border: 1px solid #2c2f34; border-radius: 10px; overflow: hidden; }
+  .tile.hidden { display: none; }
+  .frame {
+    position: relative; height: 340px; overflow: hidden; display: block; cursor: pointer;
+    background: #0c0d0f;
+  }
+  .frame iframe {
+    width: 200%; height: 200%;
+    transform: scale(0.5); transform-origin: top left;
+    border: 0; pointer-events: none;
+  }
+  .frame::after { content: ""; position: absolute; inset: 0; }
+  .label { padding: 0.7rem 0.9rem 0.85rem; display: flex; gap: 0.7rem; align-items: baseline; }
+  .no { color: var(--acc); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+  .name a { color: var(--ink); text-decoration: none; font-weight: 600; }
+  .name a:hover { color: var(--acc); }
+  .thesis { color: var(--gray); font-size: 0.78rem; display: block; margin-top: 0.15rem; }
+  .tags { margin-left: auto; color: #565b63; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>WEB-4 — 50 home-page design explorations</h1>
+    <p class="sub">Click a preview or a title to open the full mockup. Every file is self-contained. Filter by theme below.</p>
+    <div class="filters" id="filters">
+      <button data-f="all" class="on">all (50)</button>
+      <button data-f="dark">dark</button>
+      <button data-f="warm">warm / paper</button>
+      <button data-f="terminal">terminal</button>
+      <button data-f="pixel">pixel</button>
+      <button data-f="editorial">editorial</button>
+      <button data-f="motion">motion</button>
+      <button data-f="snow">snowboard</button>
+      <button data-f="music">music</button>
+      <button data-f="physics">physics / graphics</button>
+      <button data-f="agents">agents</button>
+    </div>
+  </header>
+  <main id="grid"></main>
+
+<script>
+var MOCKUPS = [
+  ["01-terminal-phosphor", "terminal phosphor", "the site is a login shell; phosphor green session transcript", ["dark","terminal"]],
+  ["02-midnight-slopes", "midnight slopes", "night riding; deep blue-black, drifting snow, moonlit ridge", ["dark","snow"]],
+  ["03-obsidian-ember", "obsidian ember", "near-black stone with one warm ember; serif over mono", ["dark","editorial"]],
+  ["04-deep-field", "deep field", "rotating CSS starfield behind sparse type; debug view of space", ["dark","physics","motion"]],
+  ["05-oled-void", "oled void", "pure black, enormous ultra-light type, staggered reveal", ["dark","editorial","motion"]],
+  ["06-twilight-ridge", "twilight ridge", "dusk gradient over layered mountain silhouettes", ["dark","snow"]],
+  ["07-dark-grid", "dark grid", "dark graph paper; content snaps to plotted points", ["dark","terminal","physics"]],
+  ["08-noir-editorial", "noir editorial", "charcoal magazine spread; numbered sections, Didot display", ["dark","editorial"]],
+  ["09-paper-marginalia", "paper marginalia", "cream notebook page with red margin rule and handwritten asides", ["warm","editorial"]],
+  ["10-risograph", "risograph", "two-ink riso print; red + blue overprint, slight misregistration", ["warm"]],
+  ["11-kraft-stamp", "kraft stamp", "shipped in a kraft envelope; typewriter labels, rubber stamp", ["warm"]],
+  ["12-letterpress", "letterpress", "deep-impression print on ivory; classic serif, ornament rules", ["warm","editorial"]],
+  ["13-tatami", "tatami", "warm beige stillness; vermilion seal, vast negative space", ["warm"]],
+  ["14-manila-index", "manila index", "personal filing system; folder tabs, index cards", ["warm"]],
+  ["15-tui-panels", "tui panels", "zeta-style TUI dashboard; box-drawing panels, keyboard hints", ["dark","terminal","agents"]],
+  ["16-man-page", "man page", "the homepage as man(1); NAME/SYNOPSIS/DESCRIPTION", ["terminal","warm"]],
+  ["17-pixel-mountain", "pixel mountain", "the mascot's world grows; box-shadow pixel art scene", ["pixel","snow"]],
+  ["18-game-cartridge", "game cartridge", "8-bit start screen; four-color palette, PRESS START", ["pixel","dark"]],
+  ["19-broadsheet", "broadsheet", "a one-man newspaper; masthead, columns, drop cap, ticker", ["warm","editorial"]],
+  ["20-swiss-grid", "swiss grid", "international typographic style; 12-col grid, Helvetica, one red", ["editorial"]],
+  ["21-type-specimen", "type specimen", "the person as a typeface; giant specimen with glyph metrics", ["editorial","warm"]],
+  ["22-kinetic-marquee", "kinetic marquee", "scrolling type bands at different speeds; still islands between", ["dark","motion","editorial"]],
+  ["23-orbital-drift", "orbital drift", "nav orbits the name; sections as satellites on slow paths", ["dark","motion","physics"]],
+  ["24-carve-line", "carve line", "one SVG line draws itself down the page like a board's edge", ["snow","motion"]],
+  ["25-fresh-powder", "fresh powder", "white-on-white morning; blue shadows, lift-ticket nav", ["snow"]],
+  ["26-trail-map", "trail map", "resort trail map; dashed trails to pages, difficulty ratings", ["snow","warm"]],
+  ["27-topo-contours", "topo contours", "quiet topographic map; contour rings, survey markers", ["snow","warm"]],
+  ["28-mixtape", "mixtape", "a cassette handed to a friend; felt-tip label, spinning reels", ["music","warm","motion"]],
+  ["29-vinyl-sleeve", "vinyl sleeve", "an LP jacket with a record peeking out and slowly spinning", ["music","warm"]],
+  ["30-waveform", "waveform", "sound made visible; live equalizer bars under the name", ["music","dark","motion"]],
+  ["31-tracklist", "tracklist", "album back cover; typographic track listing with durations", ["music","editorial"]],
+  ["32-verlet-springs", "verlet springs", "a live canvas spring lattice you can poke with the cursor", ["physics","dark","motion"]],
+  ["33-wireframe-mesh", "wireframe mesh", "software-renderer homage; CSS 3D wireframe cube turning forever", ["physics","dark","motion"]],
+  ["34-shader-gradient", "shader gradient", "layered radial gradients drifting like a fragment shader", ["physics","motion"]],
+  ["35-cyanotype", "cyanotype", "engineering blueprint; white line-work on prussian blue", ["physics","dark"]],
+  ["36-phase-space", "phase space", "the homepage as a plot; axes, data series, orbiting point", ["physics","warm"]],
+  ["37-fixed-timestep", "fixed timestep", "determinism as a motif; visible clock, stepped animations", ["physics","dark","terminal"]],
+  ["38-agent-fleet", "agent fleet", "an orchestrator's status board; pages as workers with states", ["agents","dark","terminal"]],
+  ["39-graph-nodes", "graph nodes", "a knowledge graph of a person; SVG nodes, wikilinks", ["agents","physics"]],
+  ["40-transcript", "transcript", "the homepage as an agent conversation that types itself", ["agents","motion"]],
+  ["41-cron-log", "cron log", "life as tail -f; timestamped log lines with levels", ["agents","dark","terminal"]],
+  ["42-brutalist-raw", "brutalist raw", "honest web materials; thick borders, default-blue links", ["editorial"]],
+  ["43-soft-pastel", "soft pastel", "quiet morning light; powder wash, rounded pills, floating card", ["warm","motion"]],
+  ["44-art-deco", "art deco", "gilded geometry; green lacquer, brass sunburst that fans open", ["dark","editorial"]],
+  ["45-japanese-ma", "japanese ma", "negative space as the design; one red dot, vertical rhythm", ["warm","editorial"]],
+  ["46-bauhaus", "bauhaus", "primary-color geometry; circle/triangle/square section marks", ["editorial","warm"]],
+  ["47-desk-notes", "desk notes", "a desk from above; sticky notes and taped scraps at angles", ["warm"]],
+  ["48-alpine-dawn", "alpine dawn", "first light on the mountain; warming gradient, summit sign nav", ["snow","warm"]],
+  ["49-ledger", "ledger", "an accountant's book of a life; ruled columns, balanced entries", ["warm","editorial"]],
+  ["50-frost-glass", "frost glass", "a frozen window; icy depth, frosted panes, crystal ferns", ["snow","dark","motion"]]
+];
+
+var grid = document.getElementById("grid");
+MOCKUPS.forEach(function (m, i) {
+  var file = "mockups/" + m[0] + ".html";
+  var tile = document.createElement("div");
+  tile.className = "tile";
+  tile.dataset.tags = m[3].join(" ");
+  tile.innerHTML =
+    '<a class="frame" href="' + file + '" aria-label="open ' + m[1] + '">' +
+      '<iframe loading="lazy" src="' + file + '" title="' + m[1] + ' preview" tabindex="-1"></iframe>' +
+    '</a>' +
+    '<div class="label">' +
+      '<span class="no">' + String(i + 1).padStart(2, "0") + '</span>' +
+      '<span class="name"><a href="' + file + '">' + m[1] + '</a>' +
+        '<span class="thesis">' + m[2] + '</span></span>' +
+      '<span class="tags">' + m[3].join(" · ") + '</span>' +
+    '</div>';
+  grid.appendChild(tile);
+});
+
+document.getElementById("filters").addEventListener("click", function (e) {
+  var btn = e.target.closest("button");
+  if (!btn) return;
+  document.querySelectorAll("#filters button").forEach(function (b) { b.classList.remove("on"); });
+  btn.classList.add("on");
+  var f = btn.dataset.f;
+  document.querySelectorAll(".tile").forEach(function (t) {
+    t.classList.toggle("hidden", f !== "all" && t.dataset.tags.split(" ").indexOf(f) === -1);
+  });
+});
+</script>
+</body>
+</html>

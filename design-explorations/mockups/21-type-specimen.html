@@ -1,0 +1,104 @@
+<!-- type-specimen: the person as a typeface — giant specimen name, content presented as glyph metrics and font features. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — type specimen</title>
+<style>
+  :root {
+    --bg: #f2efe9;
+    --ink: #16140f;
+    --gray: #8b8577;
+    --accent: #1f5eff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Hoefler Text", Baskerville, Georgia, serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .mono { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; letter-spacing: 0.06em; color: var(--gray); }
+  main { max-width: 56rem; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+  .specimen { border-bottom: 1px solid var(--ink); padding-bottom: 2rem; position: relative; }
+  h1 {
+    font-size: clamp(4rem, 16vw, 11rem); font-weight: 400; line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  h1 em { font-style: italic; }
+  .baseline {
+    position: absolute; left: 0; right: 0; bottom: 3.4rem;
+    border-top: 1px solid var(--accent); opacity: 0.6;
+  }
+  .baseline::after {
+    content: "baseline"; position: absolute; right: 0; top: -1.2rem;
+    font-family: ui-monospace, Menlo, monospace; font-size: 0.65rem; color: var(--accent);
+  }
+  .specimen .mono { position: absolute; top: 0; right: 0; text-align: right; }
+  .features { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem; }
+  nav { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-size: 0.8rem;
+    font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em;
+    border: 1px solid var(--ink); border-radius: 999px; padding: 0.3rem 0.9rem;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  nav a:hover, nav a:focus { background: var(--ink); color: var(--bg); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .row { display: grid; grid-template-columns: 12rem 1fr; gap: 2rem; margin-top: 3.2rem; }
+  .row h2 { font-size: 0.75rem; font-family: ui-monospace, Menlo, monospace; text-transform: uppercase; letter-spacing: 0.2em; color: var(--gray); }
+  .waterfall p { border-bottom: 1px dotted #cfc9bb; padding: 0.5rem 0; }
+  .s1 { font-size: 1.6rem; } .s2 { font-size: 1.15rem; } .s3 { font-size: 0.92rem; color: var(--gray); }
+  .proj a { color: var(--ink); text-decoration: none; display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; border-bottom: 1px dotted #cfc9bb; padding: 0.6rem 0; }
+  .proj .name { font-style: italic; font-size: 1.3rem; }
+  .proj .exc { color: var(--gray); font-size: 0.85rem; text-align: right; }
+  .proj a:hover .name { color: var(--accent); }
+  .glyph {
+    display: inline-block; animation: swapcase 6s steps(1) infinite;
+  }
+  @keyframes swapcase {
+    0%, 49% { transform: none; }
+    50%, 100% { transform: scaleY(-1); }
+  }
+  footer { margin-top: 4rem; }
+  @media (max-width: 640px) { .row { grid-template-columns: 1fr; gap: 0.6rem; } .specimen .mono { position: static; text-align: left; margin-bottom: 1rem; display: block; } }
+  @media (prefers-reduced-motion: reduce) { .glyph { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header class="specimen">
+      <span class="mono">FAMILY: WANG<br>STYLE: REGULAR + ITALIC<br>CUT: 2026</span>
+      <h1>Henry <em>Wang<span class="glyph">*</span></em></h1>
+      <div class="baseline" aria-hidden="true"></div>
+      <div class="features mono">
+        <span>role: software engineer</span><span>hinting: uwaterloo</span><span>weight: curious</span>
+      </div>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="row">
+      <h2>Waterfall / About</h2>
+      <div class="waterfall">
+        <p class="s1">software engineer at uwaterloo</p>
+        <p class="s2">ML systems, computer graphics, and small technical tools</p>
+        <p class="s3">currently phoebe.work · previously fish.audio, nationgraph · also snowboarding and music</p>
+      </div>
+    </section>
+
+    <section class="row">
+      <h2>Alternates / Projects</h2>
+      <div class="proj">
+        <a href="#"><span class="name">wiki</span><span class="exc">markdown vault + agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics + software renderer</span></a>
+      </div>
+    </section>
+
+    <footer class="mono">github · mail · © 2026 henry wang — set in whatever your system had lying around</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!-- game-cartridge: 8-bit start screen — four-color palette, PRESS START pulse, nav as a game menu with a moving selector. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — game cartridge</title>
+<style>
+  :root {
+    --g0: #0f1a0f;
+    --g1: #2c5033;
+    --g2: #86b06a;
+    --g3: #d7e8c4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--g0); color: var(--g3);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px; line-height: 1.9;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  main { max-width: 36rem; margin: 0 auto; padding: 8vh 1.5rem 5rem; }
+  .frame { border: 4px solid var(--g2); padding: 2rem clamp(1rem, 4vw, 2.4rem) 2.4rem; }
+  .top { color: var(--g2); display: flex; justify-content: space-between; font-size: 0.8rem; }
+  h1 { font-size: clamp(1.4rem, 5.5vw, 2.1rem); margin-top: 1.6rem; line-height: 1.3;
+       text-shadow: 3px 3px 0 var(--g1); }
+  .press { margin-top: 1rem; color: var(--g2); animation: pulse 1.4s steps(2) infinite; }
+  @keyframes pulse { 50% { opacity: 0.15; } }
+  nav { margin: 2.2rem 0; display: grid; gap: 0.2rem; }
+  nav a { color: var(--g3); text-decoration: none; padding-left: 1.4rem; position: relative; }
+  nav a:hover, nav a:focus { color: var(--g0); background: var(--g2); }
+  nav a:hover::before, nav a:focus::before { content: "►"; position: absolute; left: 0.2rem; color: var(--g0); }
+  a:focus-visible { outline: 2px solid var(--g3); outline-offset: 1px; }
+  h2 { font-size: 0.85rem; color: var(--g2); margin-bottom: 0.4rem; }
+  h2::before { content: "== "; } h2::after { content: " =="; }
+  section { margin-bottom: 2.4rem; }
+  p.body { text-transform: none; letter-spacing: 0; }
+  .meta { color: var(--g2); text-transform: none; letter-spacing: 0; font-size: 0.92em; }
+  .proj a { color: var(--g3); text-decoration: none; display: block; text-transform: none; letter-spacing: 0; }
+  .proj .name { color: var(--g3); font-weight: 700; }
+  .proj .exc { color: var(--g2); }
+  .proj a:hover .name { background: var(--g2); color: var(--g0); }
+  .hud { display: flex; justify-content: space-between; margin-top: 2rem; color: var(--g2); font-size: 0.8rem; }
+  @media (prefers-reduced-motion: reduce) { .press { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="frame">
+      <div class="top"><span>HENRY.DEV</span><span>1UP</span></div>
+      <h1>HENRY WANG<br>SOFTWARE ENGINEER</h1>
+      <p class="press">— PRESS START —</p>
+
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+
+      <section>
+        <h2>Player info</h2>
+        <p class="body">software engineer at uwaterloo. into ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio, nationgraph.</p>
+        <p class="meta">skills: ML / graphics / game theory. side quests: snowboarding, music.</p>
+      </section>
+
+      <section class="proj">
+        <h2>Save files</h2>
+        <a href="#"><span class="name">wiki</span> <span class="exc">- markdown vault + agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span> <span class="exc">- agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span> <span class="exc">- deterministic physics + renderer</span></a>
+      </section>
+
+      <div class="hud"><span>GITHUB · MAIL</span><span>© 2026 HW</span></div>
+    </div>
+  </main>
+</body>
+</html>

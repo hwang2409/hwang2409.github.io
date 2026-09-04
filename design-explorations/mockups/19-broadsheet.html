@@ -1,0 +1,93 @@
+<!-- broadsheet: a one-man newspaper — masthead, column rules, drop cap, dateline; the site as today's edition of henry. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Wang Dispatch — henry wang</title>
+<style>
+  :root {
+    --paper: #faf6ee;
+    --ink: #191713;
+    --soft: #6e695e;
+    --rule: #c9c2b2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px; line-height: 1.65;
+  }
+  main { max-width: 52rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  .masthead { text-align: center; border-bottom: 3px double var(--ink); padding-bottom: 1rem; }
+  .masthead .ears { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--soft); text-transform: uppercase; letter-spacing: 0.1em; }
+  h1 {
+    font-family: "Old English Text MT", "Didot", Georgia, serif;
+    font-size: clamp(2.4rem, 8vw, 4.2rem); font-weight: 400; letter-spacing: 0.01em;
+  }
+  .masthead .sub { font-style: italic; color: var(--soft); font-size: 0.9rem; }
+  nav { display: flex; justify-content: center; gap: 1.6rem; flex-wrap: wrap; border-bottom: 1px solid var(--ink); padding: 0.5rem 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.18em; }
+  nav a { color: var(--ink); text-decoration: none; }
+  nav a:hover, nav a:focus { text-decoration: underline; text-underline-offset: 3px; }
+  a:focus-visible { outline: 1px solid var(--ink); outline-offset: 2px; }
+  .grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 2rem; margin-top: 2rem; }
+  .lead h2 { font-size: 1.8rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
+  .dateline { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--soft); margin: 0.5rem 0 0.8rem; }
+  .lead p.body::first-letter {
+    float: left; font-size: 3.4rem; line-height: 0.8;
+    padding: 0.35rem 0.5rem 0 0; font-weight: 700;
+  }
+  .lead .cont { color: var(--soft); font-style: italic; font-size: 0.85rem; margin-top: 0.8rem; }
+  aside { border-left: 1px solid var(--rule); padding-left: 2rem; }
+  aside h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.2em; border-bottom: 1px solid var(--ink); padding-bottom: 0.3rem; margin-bottom: 0.8rem; }
+  .brief { padding: 0.7rem 0; border-bottom: 1px dotted var(--rule); }
+  .brief a { color: var(--ink); text-decoration: none; }
+  .brief .name { font-weight: 700; }
+  .brief .exc { color: var(--soft); font-size: 0.88rem; font-style: italic; }
+  .brief a:hover .name { text-decoration: underline; }
+  .ticker {
+    overflow: hidden; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+    margin-top: 2.5rem; padding: 0.3rem 0; white-space: nowrap; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 0.15em; color: var(--soft);
+  }
+  .ticker span { display: inline-block; padding-left: 100%; animation: tick 28s linear infinite; }
+  @keyframes tick { to { transform: translateX(-100%); } }
+  footer { text-align: center; margin-top: 2rem; font-size: 0.78rem; color: var(--soft); font-style: italic; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } aside { border-left: none; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 1.5rem; } }
+  @media (prefers-reduced-motion: reduce) { .ticker span { animation: none; padding-left: 0; } }
+</style>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <div class="ears"><span>Waterloo, Ontario</span><span>Est. 2026 — Free</span></div>
+      <h1>The Wang Dispatch</h1>
+      <p class="sub">All the code that's fit to ship — published by henry wang, software engineer</p>
+    </header>
+    <nav aria-label="site">
+      <a href="#">Blog</a><a href="#">Projects</a><a href="#">Music</a>
+      <a href="#">Lab</a><a href="#">Now</a><a href="#">Resume</a>
+    </nav>
+
+    <div class="grid">
+      <article class="lead">
+        <h2>Local Engineer Insists Small Tools Can Be Great Tools</h2>
+        <p class="dateline">About — Waterloo</p>
+        <p class="body">Software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. Currently engineering at phoebe.work; previously seen at fish.audio and nationgraph.</p>
+        <p class="body" style="margin-top: 0.6rem;">Interests reportedly include ML, computer graphics, and game theory. Witnesses also place him on snowboards and behind headphones.</p>
+        <p class="cont">Continued on every other page of this site.</p>
+      </article>
+
+      <aside>
+        <h3>Project Briefs</h3>
+        <div class="brief"><a href="#"><span class="name">wiki</span><br><span class="exc">a local markdown vault and agent workspace</span></a></div>
+        <div class="brief"><a href="#"><span class="name">zeta</span><br><span class="exc">an agent harness that owns the loop</span></a></div>
+        <div class="brief"><a href="#"><span class="name">newt + chimy2</span><br><span class="exc">deterministic physics, software renderer</span></a></div>
+      </aside>
+    </div>
+
+    <div class="ticker" aria-hidden="true"><span>Now playing: something on repeat — Lab demos run locally — Snow forecast: promising — Now page updated july 31 — </span></div>
+    <footer>github · mail · © 2026 The Wang Dispatch</footer>
+  </main>
+</body>
+</html>

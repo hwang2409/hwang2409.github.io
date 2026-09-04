@@ -1,0 +1,93 @@
+<!-- transcript: the homepage as an agent conversation — visitor asks, the site answers; the last message types itself out. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — transcript</title>
+<style>
+  :root {
+    --bg: #fafaf8;
+    --ink: #1f2124;
+    --gray: #85878c;
+    --me: #eef1f4;
+    --accent: #0d7a68;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 36rem; margin: 0 auto; padding: 7vh 1.5rem 8vh; }
+  .turn { margin-bottom: 2rem; }
+  .who { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.35rem; }
+  .who.h { color: var(--accent); }
+  .msg { max-width: 30rem; }
+  .visitor .msg { background: var(--me); padding: 0.7rem 1rem; border-radius: 12px 12px 12px 4px; display: inline-block; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid #bcdcd5; }
+  a:hover, a:focus { border-color: var(--accent); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  nav.msg { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+  .cursor { display: inline-block; width: 2px; height: 1.05em; background: var(--accent); vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .typing span { display: inline-block; opacity: 0; animation: appear 0.01s forwards; }
+  .meta { color: var(--gray); font-size: 0.9rem; }
+  h1 { font-size: 1rem; font-weight: 600; display: inline; }
+  footer { margin-top: 4rem; color: var(--gray); font-size: 0.82rem; border-top: 1px solid #e7e7e2; padding-top: 1.2rem; }
+  @keyframes appear { to { opacity: 1; } }
+  .typing span:nth-child(1) { animation-delay: 0.6s; } .typing span:nth-child(2) { animation-delay: 0.75s; }
+  .typing span:nth-child(3) { animation-delay: 0.9s; } .typing span:nth-child(4) { animation-delay: 1.05s; }
+  .typing span:nth-child(5) { animation-delay: 1.2s; } .typing span:nth-child(6) { animation-delay: 1.35s; }
+  .typing span:nth-child(7) { animation-delay: 1.5s; } .typing span:nth-child(8) { animation-delay: 1.65s; }
+  .typing span:nth-child(9) { animation-delay: 1.8s; } .typing span:nth-child(10) { animation-delay: 1.95s; }
+  @media (prefers-reduced-motion: reduce) {
+    .typing span { animation: none; opacity: 1; }
+    .cursor { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <main>
+    <div class="turn visitor">
+      <p class="who">visitor</p>
+      <p class="msg">who runs this site?</p>
+    </div>
+
+    <div class="turn">
+      <p class="who h">henry — final message</p>
+      <p class="msg"><h1>henry wang</h1>, software engineer at uwaterloo. i like ML systems, computer graphics, and small technical tools. currently engineering @ <a href="#">phoebe.work</a>; previously <a href="#">fish.audio</a> and nationgraph.</p>
+    </div>
+
+    <div class="turn visitor">
+      <p class="who">visitor</p>
+      <p class="msg">where should i go next?</p>
+    </div>
+
+    <div class="turn">
+      <p class="who h">henry — tool call: navigate()</p>
+      <nav class="msg" aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </div>
+
+    <div class="turn visitor">
+      <p class="who">visitor</p>
+      <p class="msg">what have you built?</p>
+    </div>
+
+    <div class="turn">
+      <p class="who h">henry — streaming</p>
+      <p class="msg"><a href="#">wiki</a> <span class="meta">— a markdown vault and agent workspace</span><br>
+      <a href="#">zeta</a> <span class="meta">— an agent harness that owns the loop</span><br>
+      <a href="#">newt + chimy2</a> <span class="meta">— deterministic physics + renderer</span></p>
+      <p class="msg typing" style="margin-top: 0.6rem;"><span>a</span><span>l</span><span>s</span><span>o</span><span>:&nbsp;</span><span>snowboarding,&nbsp;</span><span>music,&nbsp;</span><span>game&nbsp;</span><span>theory</span><span>.</span><span class="cursor" aria-hidden="true"></span></p>
+    </div>
+
+    <footer>session persisted forever · github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

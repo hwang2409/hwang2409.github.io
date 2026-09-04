@@ -1,0 +1,146 @@
+<!-- verlet-springs: a live physics toy — a canvas spring lattice you can poke with the cursor; the page is proof of the physics hobby. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — verlet springs</title>
+<style>
+  :root {
+    --bg: #0f1215;
+    --ink: #dde4e9;
+    --gray: #6c7883;
+    --wire: #58c4dc;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13.5px; line-height: 1.75;
+  }
+  #sim { position: fixed; inset: 0; z-index: 0; }
+  main { position: relative; z-index: 1; max-width: 38rem; margin: 0 auto; padding: 14vh 1.5rem 8vh; pointer-events: none; }
+  main a, main p, main h1, main h2 { pointer-events: auto; }
+  .tag { color: var(--wire); font-size: 0.75rem; letter-spacing: 0.2em; }
+  h1 { font-size: 1.9rem; font-weight: 700; margin-top: 0.4rem; }
+  .role { color: var(--gray); }
+  nav { display: flex; gap: 1.4rem; flex-wrap: wrap; margin-top: 2.2rem; }
+  nav a { color: var(--ink); text-decoration: none; border-bottom: 1px solid #263038; }
+  nav a:hover, nav a:focus { color: var(--wire); border-color: var(--wire); }
+  a:focus-visible { outline: 1px solid var(--wire); outline-offset: 3px; }
+  section { margin-top: 9vh; background: rgba(15, 18, 21, 0.82); padding: 1rem 0; }
+  h2 { color: var(--wire); font-size: 0.78rem; letter-spacing: 0.2em; margin-bottom: 0.8rem; }
+  h2::before { content: "// "; color: var(--gray); }
+  .meta { color: var(--gray); margin-top: 0.6rem; font-size: 0.95em; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; padding: 0.35rem 0; }
+  .proj .name { font-weight: 700; }
+  .proj .exc { color: var(--gray); }
+  .proj a:hover .name { color: var(--wire); }
+  footer { margin-top: 8vh; color: var(--gray); font-size: 0.85em; }
+  .hint { color: var(--gray); font-size: 0.8em; margin-top: 1rem; }
+</style>
+</head>
+<body>
+  <canvas id="sim" aria-hidden="true"></canvas>
+  <main>
+    <header>
+      <p class="tag">dt = 1/120 · verlet · fixed timestep</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer — simulating something, always</p>
+      <p class="hint">(move your cursor through the lattice)</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section>
+      <h2>about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently: phoebe.work · previously: fish.audio, nationgraph<br>ML · graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section class="proj">
+      <h2>projects</h2>
+      <a href="#"><span class="name">wiki</span> <span class="exc">— markdown vault + agent workspace</span></a>
+      <a href="#"><span class="name">zeta</span> <span class="exc">— agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2</span> <span class="exc">— deterministic physics + renderer (this canvas is the pitch)</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv = document.getElementById('sim');
+  var cx = cv.getContext('2d');
+  var W, H, cols = 14, rows = 9, pts = [], links = [];
+  var mouse = { x: -9999, y: -9999 };
+
+  function build() {
+    W = cv.width = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    pts = []; links = [];
+    var gx = W / (cols - 1), gy = H / (rows - 1);
+    for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) {
+      pts.push({ x: i * gx, y: j * gy, px: i * gx, py: j * gy,
+                 pin: i === 0 || i === cols - 1 || j === 0 || j === rows - 1 });
+    }
+    for (var j2 = 0; j2 < rows; j2++) for (var i2 = 0; i2 < cols; i2++) {
+      var k = j2 * cols + i2;
+      if (i2 < cols - 1) links.push([k, k + 1, gx]);
+      if (j2 < rows - 1) links.push([k, k + cols, gy]);
+    }
+  }
+
+  function step() {
+    for (var n = 0; n < pts.length; n++) {
+      var p = pts[n];
+      if (p.pin) continue;
+      var vx = (p.x - p.px) * 0.985, vy = (p.y - p.py) * 0.985;
+      p.px = p.x; p.py = p.y;
+      p.x += vx; p.y += vy;
+      var dx = p.x - mouse.x, dy = p.y - mouse.y;
+      var d2 = dx * dx + dy * dy;
+      if (d2 < 8100 && d2 > 0.01) {
+        var d = Math.sqrt(d2), f = (90 - d) / 90 * 2.2;
+        p.x += dx / d * f; p.y += dy / d * f;
+      }
+    }
+    for (var it = 0; it < 2; it++) {
+      for (var l = 0; l < links.length; l++) {
+        var a = pts[links[l][0]], b = pts[links[l][1]], rest = links[l][2];
+        var ddx = b.x - a.x, ddy = b.y - a.y;
+        var dist = Math.sqrt(ddx * ddx + ddy * ddy) || 0.001;
+        var diff = (dist - rest) / dist * 0.5;
+        if (!a.pin) { a.x += ddx * diff * 0.5; a.y += ddy * diff * 0.5; }
+        if (!b.pin) { b.x -= ddx * diff * 0.5; b.y -= ddy * diff * 0.5; }
+      }
+    }
+  }
+
+  function draw() {
+    cx.clearRect(0, 0, W, H);
+    cx.strokeStyle = 'rgba(88, 196, 220, 0.16)';
+    cx.lineWidth = 1;
+    cx.beginPath();
+    for (var l = 0; l < links.length; l++) {
+      var a = pts[links[l][0]], b = pts[links[l][1]];
+      cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y);
+    }
+    cx.stroke();
+  }
+
+  function loop() { step(); draw(); requestAnimationFrame(loop); }
+
+  window.addEventListener('resize', build);
+  window.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('mouseout', function () { mouse.x = -9999; mouse.y = -9999; });
+
+  build();
+  if (reduced) { draw(); } else { loop(); }
+})();
+</script>
+</body>
+</html>

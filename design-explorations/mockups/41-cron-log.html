@@ -1,0 +1,69 @@
+<!-- cron-log: life as a tail -f — timestamped log lines with levels, the newest line pulses in like a live append. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — cron log</title>
+<style>
+  :root {
+    --bg: #121417;
+    --ink: #ccd6dd;
+    --gray: #5c6a75;
+    --info: #58a6ff;
+    --warn: #d29922;
+    --ok: #3fb950;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px; line-height: 1.9;
+  }
+  main { max-width: 46rem; margin: 0 auto; padding: 7vh 1.5rem 6vh; }
+  .line { display: block; }
+  .ts { color: var(--gray); }
+  .lvl { font-weight: 700; }
+  .INFO { color: var(--info); } .OK { color: var(--ok); } .WARN { color: var(--warn); }
+  a { color: var(--info); text-decoration: none; }
+  a:hover, a:focus { text-decoration: underline; }
+  a:focus-visible { outline: 1px solid var(--info); outline-offset: 2px; }
+  h1 { display: inline; font-size: 13px; font-weight: 700; color: var(--ok); }
+  .gap { height: 1.2rem; }
+  .live { animation: append 0.6s cubic-bezier(0.2, 0, 0, 1) 0.8s both; }
+  @keyframes append { from { opacity: 0; transform: translateY(6px); } }
+  .caret::after { content: "▌"; color: var(--ok); animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .live { animation: none; } .caret::after { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <span class="line"><span class="ts">2000-01-01T00:00:00</span> <span class="lvl OK">BOOT</span> <h1>henry wang</h1> initialized — software engineer</span>
+    <span class="line"><span class="ts">2024-09-01T09:00:00</span> <span class="lvl INFO">INFO</span> enrolled: uwaterloo — software engineering</span>
+    <span class="line"><span class="ts">2025-05-12T10:12:44</span> <span class="lvl INFO">INFO</span> internship: fish.audio — shipped things that spoke</span>
+    <span class="line"><span class="ts">2025-09-03T14:02:10</span> <span class="lvl INFO">INFO</span> internship: nationgraph — graphs, at nation scale</span>
+    <span class="line"><span class="ts">2026-06-23T11:30:00</span> <span class="lvl OK">OK</span> engineering @ <a href="#">phoebe.work</a> — current</span>
+
+    <div class="gap"></div>
+
+    <span class="line"><span class="ts">interests</span> <span class="lvl INFO">INFO</span> ML systems · computer graphics · game theory</span>
+    <span class="line"><span class="ts">also.....</span> <span class="lvl WARN">WARN</span> snowboarding season approaching, expect reduced uptime</span>
+    <span class="line"><span class="ts">music....</span> <span class="lvl INFO">INFO</span> something is always playing</span>
+
+    <div class="gap"></div>
+
+    <span class="line"><span class="ts">projects.</span> <span class="lvl OK">OK</span> <a href="#">wiki</a> — markdown vault + agent workspace</span>
+    <span class="line"><span class="ts">projects.</span> <span class="lvl OK">OK</span> <a href="#">zeta</a> — agent harness that owns the loop</span>
+    <span class="line"><span class="ts">projects.</span> <span class="lvl OK">OK</span> <a href="#">newt+chimy2</a> — deterministic physics + renderer</span>
+
+    <div class="gap"></div>
+
+    <span class="line"><span class="ts">navigate.</span> <span class="lvl INFO">INFO</span> <a href="#">blog</a> · <a href="#">projects</a> · <a href="#">music</a> · <a href="#">lab</a> · <a href="#">now</a> · <a href="#">resume</a></span>
+    <span class="line live"><span class="ts">2026-07-31T23:58:01</span> <span class="lvl OK">OK</span> building my own harness. life is mostly work right now<span class="caret" aria-hidden="true"></span></span>
+
+    <div class="gap"></div>
+    <span class="line"><span class="ts">footer...</span> <span class="lvl INFO">INFO</span> <a href="#">github</a> · <a href="#">mail</a> · © 2026 henry wang — log rotates never</span>
+  </main>
+</body>
+</html>

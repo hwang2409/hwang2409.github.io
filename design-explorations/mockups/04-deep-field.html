@@ -1,0 +1,95 @@
+<!-- deep-field: graphics-programmer dark — a slowly rotating CSS starfield/point cloud behind sparse type, like a debug view of space. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — deep field</title>
+<style>
+  :root {
+    --bg: #06070c;
+    --ink: #c9d1e3;
+    --muted: #5d6680;
+    --accent: #7ee0c2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Optima, Candara, "Gill Sans", sans-serif;
+    font-size: 15px; line-height: 1.75; overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .field {
+    position: fixed; inset: -30%; z-index: 0; pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 12% 30%, #aab6d8 50%, transparent 50%),
+      radial-gradient(1px 1px at 28% 72%, #8fa0c8 50%, transparent 50%),
+      radial-gradient(2px 2px at 44% 18%, #cdd6ec 50%, transparent 50%),
+      radial-gradient(1px 1px at 58% 55%, #aab6d8 50%, transparent 50%),
+      radial-gradient(1px 1px at 71% 84%, #8fa0c8 50%, transparent 50%),
+      radial-gradient(2px 2px at 83% 38%, #cdd6ec 50%, transparent 50%),
+      radial-gradient(1px 1px at 92% 64%, #aab6d8 50%, transparent 50%),
+      radial-gradient(1px 1px at 6% 88%, #8fa0c8 50%, transparent 50%);
+    background-size: 640px 640px;
+    opacity: 0.6;
+    animation: drift 120s linear infinite;
+  }
+  @keyframes drift { to { transform: rotate(360deg); } }
+  main { position: relative; z-index: 1; max-width: 40rem; margin: 0 auto; padding: 0 1.5rem 5rem; }
+  header { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; }
+  .coords { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; }
+  h1 { font-size: 2.2rem; font-weight: 400; letter-spacing: 0.06em; margin-top: 0.6rem; }
+  .role { color: var(--accent); margin-top: 0.3rem; }
+  nav { display: flex; gap: 1.6rem; margin-top: 2.8rem; flex-wrap: wrap; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; letter-spacing: 0.1em; }
+  nav a:hover, nav a:focus { color: var(--accent); }
+  a:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+  section { margin: 4rem 0; }
+  h2 { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; }
+  h2::after { content: " ———"; color: var(--accent); }
+  .about { max-width: 33rem; }
+  .about .meta { margin-top: 1rem; color: var(--muted); font-size: 0.92rem; }
+  .about .meta em { color: var(--ink); font-style: normal; }
+  .proj { display: grid; gap: 1.5rem; }
+  .proj a { color: var(--ink); text-decoration: none; display: block; }
+  .proj .name { letter-spacing: 0.08em; }
+  .proj .name::before { content: "· "; color: var(--accent); }
+  .proj .exc { color: var(--muted); font-size: 0.9rem; margin-left: 0.85rem; }
+  .proj a:hover .name { color: var(--accent); }
+  footer { color: var(--muted); font-size: 0.82rem; border-top: 1px solid #1a2030; padding-top: 1.6rem; }
+  @media (prefers-reduced-motion: reduce) { .field { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="field" aria-hidden="true"></div>
+  <main>
+    <header>
+      <p class="coords">43.4723 N, 80.5449 W — FRAME 000001</p>
+      <h1>henry wang</h1>
+      <p class="role">software engineer</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>about</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently <em>engineering @ phoebe.work</em> · previously <em>fish.audio, nationgraph</em><br>
+      interests <em>ML, computer graphics, game theory</em> · also <em>snowboarding, music</em></p>
+    </section>
+
+    <section>
+      <h2>projects</h2>
+      <div class="proj">
+        <a href="#"><span class="name">wiki</span><br><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><br><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><br><span class="exc">deterministic physics engine and software renderer</span></a>
+      </div>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!-- tui-panels: a zeta-style TUI dashboard — box-drawing panels, keyboard hints, focus ring moves like a pane selector. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — tui panels</title>
+<style>
+  :root {
+    --bg: #101418;
+    --ink: #c8d3dc;
+    --dim: #5c6b78;
+    --frame: #33424f;
+    --acc: #66d9ef;
+    --ok: #a6e22e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px; line-height: 1.6;
+    padding: 3rem 1rem 4rem;
+  }
+  main { max-width: 46rem; margin: 0 auto; display: grid; gap: 1rem; }
+  .panel { border: 1px solid var(--frame); position: relative; padding: 1.1rem 1.2rem 1.2rem; }
+  .panel > .t {
+    position: absolute; top: -0.65em; left: 0.8rem;
+    background: var(--bg); padding: 0 0.5rem; color: var(--acc);
+  }
+  .panel > .keys {
+    position: absolute; top: -0.65em; right: 0.8rem;
+    background: var(--bg); padding: 0 0.5rem; color: var(--dim); font-size: 0.85em;
+  }
+  h1 { font-size: 1.25rem; font-weight: 700; display: inline; }
+  h1::after { content: "_"; color: var(--acc); animation: blink 1.2s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .role { color: var(--dim); }
+  .statusline {
+    display: flex; gap: 1.5rem; flex-wrap: wrap; color: var(--dim); font-size: 0.9em; margin-top: 0.6rem;
+  }
+  .statusline b { color: var(--ok); font-weight: 400; }
+  nav { display: flex; gap: 0.4rem 1.4rem; flex-wrap: wrap; }
+  nav a { color: var(--ink); text-decoration: none; }
+  nav a .k { color: var(--acc); }
+  nav a:hover, nav a:focus { background: var(--frame); outline: none; }
+  a:focus-visible { outline: 1px solid var(--acc); outline-offset: 2px; }
+  dl div { display: grid; grid-template-columns: 8.5rem 1fr; }
+  dt { color: var(--dim); }
+  dd a { color: var(--acc); text-decoration: none; }
+  dd a:hover { text-decoration: underline; }
+  .proc { width: 100%; border-collapse: collapse; }
+  .proc td { padding: 0.15rem 1rem 0.15rem 0; vertical-align: baseline; }
+  .proc .pid { color: var(--dim); }
+  .proc .name a { color: var(--ink); text-decoration: none; border-bottom: 1px dashed var(--frame); }
+  .proc .name a:hover { color: var(--acc); border-color: var(--acc); }
+  .proc .st { color: var(--ok); }
+  .proc .d { color: var(--dim); }
+  footer { color: var(--dim); text-align: center; }
+  footer a { color: var(--dim); }
+  footer a:hover { color: var(--acc); }
+  @media (prefers-reduced-motion: reduce) { h1::after { animation: none; } }
+  @media (max-width: 560px) { .proc .d { display: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <section class="panel">
+      <span class="t">┤ session ├</span><span class="keys">tty: guest</span>
+      <h1>henry wang</h1>
+      <p class="role">software engineer — uwaterloo</p>
+      <div class="statusline">
+        <span>mode: <b>NORMAL</b></span><span>branch: <b>main</b></span><span>agents: <b>3 idle</b></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <span class="t">┤ go to ├</span><span class="keys">j/k to move · ⏎ to open</span>
+      <nav aria-label="site">
+        <a href="#"><span class="k">b</span>log</a>
+        <a href="#"><span class="k">p</span>rojects</a>
+        <a href="#"><span class="k">m</span>usic</a>
+        <a href="#"><span class="k">l</span>ab</a>
+        <a href="#"><span class="k">n</span>ow</a>
+        <a href="#"><span class="k">r</span>esume</a>
+      </nav>
+    </section>
+
+    <section class="panel">
+      <span class="t">┤ about ├</span>
+      <p>interested in ML systems, computer graphics, and small technical tools.</p>
+      <dl>
+        <div><dt>currently</dt><dd>engineering @ <a href="#">phoebe.work</a></dd></div>
+        <div><dt>previously</dt><dd>fish.audio, nationgraph</dd></div>
+        <div><dt>interests</dt><dd>ML, computer graphics, game theory</dd></div>
+        <div><dt>also</dt><dd>snowboarding, music</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <span class="t">┤ projects ├</span><span class="keys">3 running</span>
+      <table class="proc">
+        <tr><td class="pid">001</td><td class="name"><a href="#">wiki</a></td><td class="st">RUNNING</td><td class="d">markdown vault + agent workspace</td></tr>
+        <tr><td class="pid">002</td><td class="name"><a href="#">zeta</a></td><td class="st">RUNNING</td><td class="d">agent harness that owns the loop</td></tr>
+        <tr><td class="pid">003</td><td class="name"><a href="#">newt+chimy2</a></td><td class="st">STABLE</td><td class="d">deterministic physics + renderer</td></tr>
+      </table>
+    </section>
+
+    <footer>─── <a href="#">github</a> · <a href="#">mail</a> · © 2026 henry wang ───</footer>
+  </main>
+</body>
+</html>

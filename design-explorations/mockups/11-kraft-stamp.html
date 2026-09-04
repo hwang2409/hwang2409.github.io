@@ -1,0 +1,93 @@
+<!-- kraft-stamp: shipped in a kraft envelope — tan cardboard tones, typewriter labels, a rubber-stamped name and inked postmark. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — kraft stamp</title>
+<style>
+  :root {
+    --kraft: #d6bd97;
+    --ink: #3b2f23;
+    --stamp: #9e2b25;
+    --faded: #7c6a53;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--kraft);
+    background-image: radial-gradient(rgba(59,47,35,0.05) 1px, transparent 1px);
+    background-size: 5px 5px;
+    color: var(--ink);
+    font-family: "American Typewriter", "Courier New", Courier, monospace;
+    font-size: 14.5px; line-height: 1.8;
+  }
+  main { max-width: 38rem; margin: 0 auto; padding: 8vh 1.5rem 6rem; }
+  .label {
+    display: inline-block; background: rgba(247, 242, 231, 0.85);
+    padding: 0.05rem 0.6rem; border: 1px solid rgba(59,47,35,0.3);
+  }
+  h1 {
+    font-size: clamp(2rem, 7vw, 3rem); font-weight: 700;
+    color: var(--stamp); text-transform: uppercase; letter-spacing: 0.06em;
+    border: 4px double var(--stamp); display: inline-block;
+    padding: 0.3rem 1rem; transform: rotate(-1.5deg);
+    opacity: 0.92;
+  }
+  .role { margin-top: 1rem; color: var(--faded); }
+  .postmark {
+    display: inline-block; margin-left: 0.6rem;
+    width: 54px; height: 54px; border: 2px solid var(--faded); border-radius: 50%;
+    vertical-align: middle; position: relative; opacity: 0.7;
+    font-size: 0.5rem; text-align: center; line-height: 1.3;
+    padding-top: 12px; text-transform: uppercase; letter-spacing: 0.1em;
+    animation: thump 0.5s cubic-bezier(0.2, 0, 0, 1) 0.4s both;
+  }
+  @keyframes thump { from { transform: scale(2); opacity: 0; } to { opacity: 0.7; } }
+  nav { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: 2.6rem 0 4rem; }
+  nav a { color: var(--ink); text-decoration: none; }
+  nav a::before { content: "["; color: var(--faded); }
+  nav a::after { content: "]"; color: var(--faded); }
+  nav a:hover, nav a:focus { color: var(--stamp); }
+  a:focus-visible { outline: 2px solid var(--stamp); outline-offset: 3px; }
+  h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.25em; color: var(--stamp); margin-bottom: 1rem; }
+  section { margin-bottom: 3.6rem; }
+  .about .meta { color: var(--faded); margin-top: 0.8rem; font-size: 0.9rem; }
+  .proj a { display: block; color: var(--ink); text-decoration: none; margin-bottom: 1rem; }
+  .proj .name { font-weight: 700; text-decoration: underline; text-decoration-style: dashed; text-underline-offset: 4px; }
+  .proj .exc { color: var(--faded); display: block; font-size: 0.9rem; }
+  .proj a:hover .name { color: var(--stamp); }
+  footer { border-top: 1px dashed var(--faded); padding-top: 1.2rem; color: var(--faded); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .postmark { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="label">TO: the internet — FROM: waterloo, on</p>
+      <div style="margin-top: 1.4rem;">
+        <h1>henry wang</h1><span class="postmark" aria-hidden="true">2026<br>SHIPPED</span>
+      </div>
+      <p class="role">contents: one (1) software engineer</p>
+      <nav aria-label="site">
+        <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+        <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+      </nav>
+    </header>
+
+    <section class="about">
+      <h2>Manifest</h2>
+      <p>software engineer at uwaterloo. interested in ML systems, computer graphics, and small technical tools. currently engineering @ phoebe.work; previously fish.audio, nationgraph.</p>
+      <p class="meta">declared interests: ML, computer graphics, game theory. undeclared: snowboarding, music.</p>
+    </section>
+
+    <section class="proj">
+      <h2>Enclosed items</h2>
+      <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+      <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+      <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang · no postage necessary</footer>
+  </main>
+</body>
+</html>

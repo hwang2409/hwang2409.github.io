@@ -1,0 +1,88 @@
+<!-- soft-pastel: quiet morning light — powder blue and blush wash, rounded pills, everything breathes with a slow floating card. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — soft pastel</title>
+<style>
+  :root {
+    --bg: #f3f0fa;
+    --card: #ffffff;
+    --ink: #3d3a50;
+    --gray: #9691ab;
+    --blush: #f6c6c2;
+    --sky2: #bcd8f0;
+    --accent: #7f6dd8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(160deg, var(--sky2) 0%, var(--bg) 45%, var(--blush) 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
+    font-size: 15px; line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 36rem; margin: 0 auto; padding: 12vh 1.5rem 8vh; }
+  .card {
+    background: var(--card); border-radius: 24px; padding: 2.4rem 2.2rem;
+    box-shadow: 0 2px 6px rgba(61, 58, 80, 0.05), 0 24px 60px rgba(61, 58, 80, 0.12);
+    animation: float 7s ease-in-out infinite;
+  }
+  @keyframes float { 50% { transform: translateY(-8px); } }
+  h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.01em; }
+  .role { color: var(--gray); }
+  nav { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.6rem; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-size: 0.85rem;
+    background: var(--bg); border-radius: 999px; padding: 0.35rem 1rem;
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+  nav a:hover, nav a:focus { background: var(--accent); color: #fff; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  section { margin-top: 3.4rem; }
+  h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent); margin-bottom: 1rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .proj a {
+    display: block; color: var(--ink); text-decoration: none;
+    background: rgba(255, 255, 255, 0.65); border-radius: 16px; padding: 0.9rem 1.2rem; margin-bottom: 0.8rem;
+    transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.18s ease;
+  }
+  .proj a:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(61, 58, 80, 0.12); }
+  .proj .name { font-weight: 600; }
+  .proj .exc { color: var(--gray); font-size: 0.9rem; display: block; }
+  footer { margin-top: 3rem; color: var(--gray); font-size: 0.85rem; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .card { animation: none; } .proj a { transition: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="card">
+      <header>
+        <h1>henry wang</h1>
+        <p class="role">software engineer — gentle on the eyes, busy underneath</p>
+        <nav aria-label="site">
+          <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+          <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+        </nav>
+      </header>
+
+      <section>
+        <h2>about</h2>
+        <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+        <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+        ML · computer graphics · game theory · snowboarding · music</p>
+      </section>
+
+      <section class="proj">
+        <h2>projects</h2>
+        <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics engine and software renderer</span></a>
+      </section>
+    </div>
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

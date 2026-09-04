@@ -1,0 +1,99 @@
+<!-- fresh-powder: white-on-white morning — pale blue shadows for structure, a lift-ticket nav, snowfall so sparse it feels like luck. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — fresh powder</title>
+<style>
+  :root {
+    --snow: #fdfeff;
+    --shade: #dbe7f2;
+    --ink: #2c3e50;
+    --gray: #8ba2b5;
+    --sky: #4a90d9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--snow); color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
+    font-size: 15px; line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .flake { position: fixed; top: -2vh; color: var(--shade); font-size: 0.8rem; pointer-events: none; animation: drift linear infinite; }
+  .flake:nth-child(1) { left: 18%; animation-duration: 21s; }
+  .flake:nth-child(2) { left: 55%; animation-duration: 27s; animation-delay: -12s; }
+  .flake:nth-child(3) { left: 84%; animation-duration: 24s; animation-delay: -6s; }
+  @keyframes drift { to { transform: translateY(106vh) rotate(180deg); } }
+  main { max-width: 38rem; margin: 0 auto; padding: 16vh 1.5rem 8vh; }
+  h1 { font-size: 2.2rem; font-weight: 500; letter-spacing: 0.02em; }
+  .role { color: var(--gray); }
+  .ticket {
+    display: inline-flex; margin-top: 2.2rem; background: var(--snow);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(44, 62, 80, 0.08), 0 8px 24px rgba(122, 159, 191, 0.25);
+    overflow: hidden;
+  }
+  .ticket .stub {
+    background: var(--sky); color: #fff; padding: 0.7rem 0.9rem;
+    writing-mode: vertical-rl; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase;
+    display: flex; align-items: center;
+  }
+  .ticket nav { display: flex; flex-wrap: wrap; gap: 0 1.4rem; padding: 0.7rem 1.3rem; align-items: center; border-left: 2px dashed var(--shade); }
+  .ticket a { color: var(--ink); text-decoration: none; font-size: 0.88rem; }
+  .ticket a:hover, .ticket a:focus { color: var(--sky); }
+  a:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; }
+  section { margin-top: 12vh; }
+  h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--sky); margin-bottom: 1.2rem; }
+  .meta { color: var(--gray); font-size: 0.92rem; margin-top: 0.8rem; }
+  .runs a {
+    display: flex; align-items: baseline; gap: 0.9rem;
+    color: var(--ink); text-decoration: none; padding: 0.75rem 0;
+    border-bottom: 1px solid var(--shade);
+  }
+  .runs .diff { width: 0.8rem; height: 0.8rem; flex: none; align-self: center; }
+  .runs .green { background: #2e9e5b; border-radius: 50%; }
+  .runs .blue { background: var(--sky); }
+  .runs .black { background: var(--ink); transform: rotate(45deg); }
+  .runs .name { font-weight: 600; }
+  .runs .exc { color: var(--gray); font-size: 0.88rem; }
+  .runs a:hover .name { color: var(--sky); }
+  footer { margin-top: 12vh; color: var(--gray); font-size: 0.85rem; }
+  @media (prefers-reduced-motion: reduce) { .flake { display: none; } }
+</style>
+</head>
+<body>
+  <span class="flake" aria-hidden="true">*</span>
+  <span class="flake" aria-hidden="true">*</span>
+  <span class="flake" aria-hidden="true">*</span>
+  <main>
+    <header>
+      <h1>henry wang</h1>
+      <p class="role">software engineer — first tracks, most mornings</p>
+      <div class="ticket">
+        <span class="stub" aria-hidden="true">day pass</span>
+        <nav aria-label="site">
+          <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+          <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+        </nav>
+      </div>
+    </header>
+
+    <section>
+      <h2>conditions</h2>
+      <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools.</p>
+      <p class="meta">currently engineering @ phoebe.work · previously fish.audio, nationgraph<br>
+      ML · computer graphics · game theory · snowboarding · music</p>
+    </section>
+
+    <section class="runs">
+      <h2>open runs</h2>
+      <a href="#"><span class="diff green" aria-hidden="true"></span><span class="name">wiki</span><span class="exc">markdown vault + agent workspace</span></a>
+      <a href="#"><span class="diff blue" aria-hidden="true"></span><span class="name">zeta</span><span class="exc">agent harness that owns the loop</span></a>
+      <a href="#"><span class="diff black" aria-hidden="true"></span><span class="name">newt + chimy2</span><span class="exc">deterministic physics + renderer</span></a>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang</footer>
+  </main>
+</body>
+</html>

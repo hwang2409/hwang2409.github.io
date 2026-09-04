@@ -1,0 +1,87 @@
+<!-- tracklist: the homepage as an album back cover — pure typographic track listing with durations, runtime, and a progress needle. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — tracklist</title>
+<style>
+  :root {
+    --bg: #f4f1ec;
+    --ink: #191817;
+    --gray: #8a857c;
+    --tape: #d84727;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 15px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 34rem; margin: 0 auto; padding: 9vh 1.5rem 7vh; }
+  .top { text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.3em; color: var(--gray); display: flex; justify-content: space-between; }
+  h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 1.6rem; text-transform: uppercase; }
+  .role { color: var(--gray); font-size: 0.9rem; }
+  .progress { height: 2px; background: #ddd8cf; margin: 2rem 0; position: relative; }
+  .progress::after {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 30%;
+    background: var(--tape);
+    animation: play 24s linear infinite;
+  }
+  @keyframes play { from { width: 0; } to { width: 100%; } }
+  ol { list-style: none; counter-reset: n; }
+  ol.tracks a {
+    counter-increment: n;
+    display: flex; align-items: baseline; gap: 0.9rem;
+    color: var(--ink); text-decoration: none; padding: 0.55rem 0;
+    border-bottom: 1px solid #e3ded5;
+  }
+  ol.tracks a::before { content: counter(n, decimal-leading-zero); font-size: 0.75rem; color: var(--gray); font-variant-numeric: tabular-nums; }
+  .t-name { font-weight: 700; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em; }
+  .t-sub { color: var(--gray); font-size: 0.85rem; }
+  .t-len { margin-left: auto; color: var(--gray); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  ol.tracks a:hover .t-name, ol.tracks a:focus .t-name { color: var(--tape); }
+  a:focus-visible { outline: 2px solid var(--tape); outline-offset: 2px; }
+  .side-label { margin: 2.4rem 0 0.5rem; font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--tape); }
+  .fine {
+    margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--ink);
+    font-size: 0.78rem; color: var(--gray); line-height: 1.8;
+  }
+  .fine b { color: var(--ink); font-weight: 500; }
+  @media (prefers-reduced-motion: reduce) { .progress::after { animation: none; width: 30%; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="top"><span>HW · LP 001</span><span>Total runtime: 26 yrs</span></div>
+    <header>
+      <h1>Henry Wang</h1>
+      <p class="role">software engineer — uwaterloo — recorded live</p>
+    </header>
+    <div class="progress" aria-hidden="true"></div>
+
+    <p class="side-label">Side A — the site</p>
+    <ol class="tracks">
+      <li><a href="#"><span class="t-name">Blog</span><span class="t-sub">notes and write-ups</span><span class="t-len">7:12</span></a></li>
+      <li><a href="#"><span class="t-name">Projects</span><span class="t-sub">things that shipped</span><span class="t-len">5:48</span></a></li>
+      <li><a href="#"><span class="t-name">Music</span><span class="t-sub">what's on repeat</span><span class="t-len">3:33</span></a></li>
+      <li><a href="#"><span class="t-name">Lab</span><span class="t-sub">local model demos</span><span class="t-len">4:04</span></a></li>
+      <li><a href="#"><span class="t-name">Now</span><span class="t-sub">append-only life notes</span><span class="t-len">2:26</span></a></li>
+      <li><a href="#"><span class="t-name">Resume</span><span class="t-sub">the formal cut</span><span class="t-len">1:11</span></a></li>
+    </ol>
+
+    <p class="side-label">Side B — projects</p>
+    <ol class="tracks">
+      <li><a href="#"><span class="t-name">wiki</span><span class="t-sub">markdown vault + agent workspace</span><span class="t-len">4:12</span></a></li>
+      <li><a href="#"><span class="t-name">zeta</span><span class="t-sub">agent harness that owns the loop</span><span class="t-len">7:38</span></a></li>
+      <li><a href="#"><span class="t-name">newt + chimy2</span><span class="t-sub">deterministic physics + renderer</span><span class="t-len">9:01</span></a></li>
+    </ol>
+
+    <p class="fine">
+      <b>Liner notes:</b> software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. Currently engineering @ phoebe.work; previously fish.audio, nationgraph. Additional instrumentation: snowboarding, music.<br>
+      github · mail · © 2026 henry wang
+    </p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!-- vinyl-sleeve: an LP jacket — big album-cover hero with a record peeking out and slowly spinning, credits as the about section. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>henry wang — vinyl sleeve</title>
+<style>
+  :root {
+    --wall: #e9e4dc;
+    --jacket: #1f1d24;
+    --ink: #26242b;
+    --gray: #77737e;
+    --spot: #e8b23a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--wall); color: var(--ink);
+    font-family: Futura, "Avenir Next", "Century Gothic", sans-serif;
+    font-size: 15px; line-height: 1.7;
+  }
+  main { max-width: 40rem; margin: 0 auto; padding: 7vh 1.5rem 6vh; }
+  .sleeve { position: relative; padding-right: 70px; }
+  .jacket {
+    position: relative; z-index: 1;
+    background: var(--jacket); color: #f0ede6; aspect-ratio: 1;
+    max-width: 26rem;
+    padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 2px 3px rgba(31,29,36,0.3), 0 18px 40px rgba(31,29,36,0.3);
+  }
+  .jacket .lbl { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--spot); text-transform: uppercase; }
+  h1 { font-size: 2.4rem; font-weight: 500; text-transform: lowercase; letter-spacing: 0.02em; line-height: 1.1; }
+  .role { color: #b9b4aa; font-size: 0.9rem; }
+  .disc {
+    position: absolute; z-index: 0; top: 50%; right: 0;
+    width: 190px; height: 190px; margin-top: -95px;
+    background: radial-gradient(circle, var(--spot) 0 14%, #111 15% 100%);
+    border-radius: 50%;
+    animation: spin 8s linear infinite;
+  }
+  .disc::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 5px, rgba(255,255,255,0.05) 5px 6px); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  nav { display: flex; gap: 1.4rem; flex-wrap: wrap; margin: 3rem 0; }
+  nav a { color: var(--ink); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em; }
+  nav a:hover, nav a:focus { color: var(--spot); }
+  a:focus-visible { outline: 2px solid var(--spot); outline-offset: 3px; }
+  h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gray); margin-bottom: 1rem; }
+  section { margin-bottom: 3.2rem; max-width: 33rem; }
+  .credits div { display: grid; grid-template-columns: 10rem 1fr; padding: 0.3rem 0; border-bottom: 1px solid #d8d2c8; }
+  .credits dt { color: var(--gray); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .tracks a { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; color: var(--ink); text-decoration: none; padding: 0.55rem 0; border-bottom: 1px solid #d8d2c8; }
+  .tracks .name { font-weight: 500; text-transform: lowercase; }
+  .tracks .exc { color: var(--gray); font-size: 0.88rem; text-align: right; }
+  .tracks a:hover .name { color: var(--spot); }
+  footer { color: var(--gray); font-size: 0.82rem; letter-spacing: 0.1em; }
+  @media (max-width: 560px) { .sleeve { padding-right: 0; } .disc { display: none; } .credits div { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .disc { animation: none; } }
+</style>
+</head>
+<body>
+  <main>
+    <header class="sleeve">
+      <div class="disc" aria-hidden="true"></div>
+      <div class="jacket">
+        <span class="lbl">HW-001 · 33 1/3 RPM · STEREO</span>
+        <div>
+          <h1>henry wang</h1>
+          <p class="role">software engineer — the debut</p>
+        </div>
+      </div>
+    </header>
+
+    <nav aria-label="site">
+      <a href="#">blog</a><a href="#">projects</a><a href="#">music</a>
+      <a href="#">lab</a><a href="#">now</a><a href="#">resume</a>
+    </nav>
+
+    <section>
+      <h2>Credits</h2>
+      <dl class="credits">
+        <div><dt>written by</dt><dd>henry wang, uwaterloo</dd></div>
+        <div><dt>currently</dt><dd>engineering @ phoebe.work</dd></div>
+        <div><dt>previously</dt><dd>fish.audio, nationgraph</dd></div>
+        <div><dt>influences</dt><dd>ML, computer graphics, game theory</dd></div>
+        <div><dt>b-sides</dt><dd>snowboarding, music</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Track listing</h2>
+      <div class="tracks">
+        <a href="#"><span class="name">wiki</span><span class="exc">a local markdown vault and agent workspace</span></a>
+        <a href="#"><span class="name">zeta</span><span class="exc">an agent harness that owns the loop</span></a>
+        <a href="#"><span class="name">newt + chimy2</span><span class="exc">deterministic physics + software renderer</span></a>
+      </div>
+    </section>
+
+    <footer>github · mail · © 2026 henry wang · all rights reserved</footer>
+  </main>
+</body>
+</html>
