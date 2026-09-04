@@ -266,7 +266,14 @@ h3 {
 
 .statusline .theme-toggle:hover,
 .statusline .theme-toggle:focus-visible {
-  color: var(--accent);
+  color: var(--status-fg);
+  outline-color: var(--status-fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.statusline .theme-toggle {
+  text-transform: none;
 }
 
 @keyframes blink { 50% { opacity: 0; } }
@@ -556,7 +563,6 @@ h3 {
   grid-template-columns: 6.5rem minmax(0, 1fr);
   gap: 1.1rem;
   padding: 1.4rem 0;
-  border-bottom: 1px solid var(--border);
 }
 
 .now-entry:first-child {
@@ -615,25 +621,24 @@ h3 {
   list-style: none;
 }
 
-.project-list {
-  gap: 0;
-}
-
 .project-list li {
-  padding: 1.4rem 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.project-list li:first-child {
-  padding-top: 0;
-}
-
-.project-list li:last-child {
-  border-bottom: 0;
+  padding: 0;
 }
 
 .project-list .post-link-title {
   font-weight: 700;
+}
+
+.project-list {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-list .post-link {
+  display: inline;
 }
 
 .post-link {
@@ -673,39 +678,28 @@ h3 {
   line-height: 1.6;
 }
 
-.post-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.7rem;
-  color: var(--muted);
-  font-size: 0.77rem;
-  line-height: 1.5;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transform: translateY(-0.15rem);
-  transition: max-height 120ms ease, opacity 120ms ease, transform 120ms ease;
-}
-
-.post-meta span::before {
-  content: "/";
-  margin-right: 0.35rem;
-  color: var(--border);
-}
-
-.post-link:hover .post-meta,
-.post-link:focus-visible .post-meta {
-  max-height: 1.4rem;
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .post-header {
   margin-bottom: 0;
 }
 
 .post-title {
   font-weight: 700;
+}
+
+.blog-article > .post-title {
+  margin-bottom: 2.2rem;
+}
+
+.blog-content > .man-section {
+  margin-top: 2.2rem;
+}
+
+.blog-content > .man-section:first-child {
+  margin-top: 0;
+}
+
+.blog-content > .man-section > h2 {
+  margin: 0 0 0.8rem;
 }
 
 .tagged-list .post-link-row {
@@ -920,15 +914,27 @@ h3 {
   text-wrap: pretty;
 }
 
-.prose [id^="sidenote-target-"] {
-  position: relative;
-}
-
 .prose img {
   max-width: 100%;
   height: auto;
   margin: 1.25rem 0;
   border: 1px solid var(--border);
+}
+
+.prose figure {
+  margin: 1.25rem 0;
+}
+
+.prose figure img {
+  display: block;
+  margin: 0;
+}
+
+.prose figcaption {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .prose center {
@@ -1063,41 +1069,12 @@ h3 {
   margin-bottom: 0;
 }
 
-.sidenote-ref {
-  position: absolute;
-  left: -1.35rem;
-  top: 0.12rem;
-  display: inline-grid;
-  width: 0.85rem;
-  height: 0.85rem;
-  place-items: center;
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1;
-  text-decoration: none;
-}
-
-.sidenote-ref:hover,
-.sidenote-ref:focus-visible {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.sidenote-backref {
-  display: inline-block;
-  margin-bottom: 0.35rem;
-  color: var(--muted);
-  text-decoration: none;
-}
-
 .prose :target {
   scroll-margin-top: 1.25rem;
 }
 
-.prose [id^="sidenote-target-"]:target,
-.prose .sidenote:target {
-  outline: 1px solid var(--border);
-  outline-offset: 0.25rem;
+.sidenote-label {
+  font-style: italic;
 }
 
 .prose hr {
@@ -1263,8 +1240,9 @@ h3 {
 }
 
 .lab-workbench {
+  padding: 1.25rem;
   border: 0;
-  background: transparent;
+  background: var(--code);
 }
 
 .lab-workbench-heading {
@@ -1359,10 +1337,12 @@ h3 {
   cursor: pointer;
 }
 
-.lab-example-row button:hover,
-.lab-example-row button:focus-visible,
 .lab-run-button:hover,
-.lab-run-button:focus-visible {
+.lab-run-button:focus-visible,
+.lab-reset-button:hover,
+.lab-reset-button:focus-visible {
+  background: var(--accent);
+  color: var(--background);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -1374,6 +1354,12 @@ h3 {
 
 .lab-example-row button[aria-pressed="true"] {
   color: var(--accent);
+}
+
+.lab-example-row button:hover,
+.lab-example-row button:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .lab-run-button {
@@ -1393,13 +1379,6 @@ h3 {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-}
-
-.lab-reset-button:hover,
-.lab-reset-button:focus-visible {
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .lab-run-button:disabled,
@@ -1636,9 +1615,9 @@ h3 {
   display: grid;
   gap: 1rem;
   align-content: start;
-  padding: 0;
+  padding: 1.25rem;
   border: 0;
-  background: transparent;
+  background: var(--code);
 }
 
 .lab-panel-heading {
@@ -1778,6 +1757,21 @@ h3 {
 @media print {
   body:has(.resume-page),
   body:has(.resume-page) .site-main {
+    --background: #fff;
+    --foreground: #000;
+    --muted: #333;
+    --border: #000;
+    --surface: #fff;
+    --code: #fff;
+    --accent: #000;
+    --warn: #000;
+    --status-bg: #fff;
+    --status-fg: #000;
+    --syntax-strong: #000;
+    --syntax-base: #000;
+    --syntax-muted: #333;
+    --syntax-faint: #555;
+    --syntax-mark: #333;
     background: #fff;
     color: #000;
   }
@@ -1816,10 +1810,6 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .statusline-cursor {
     animation: none;
-  }
-
-  .post-meta {
-    transition: none;
   }
 
   .prediction-meter span {
@@ -1976,22 +1966,6 @@ h3 {
     white-space: normal;
   }
 
-  .post-meta {
-    max-height: none;
-    opacity: 1;
-    overflow: visible;
-    transform: none;
-  }
-
-  .sidenote-ref {
-    position: static;
-    display: inline;
-    width: auto;
-    height: auto;
-    margin-left: 0.25rem;
-    vertical-align: super;
-  }
-
   .lab-completion {
     grid-template-columns: 1fr;
     min-height: 0;
@@ -2029,14 +2003,5 @@ h3 {
 
   .browser-model-result strong {
     justify-self: start;
-  }
-}
-
-@media (hover: none) {
-  .post-meta {
-    max-height: none;
-    opacity: 1;
-    overflow: visible;
-    transform: none;
   }
 }

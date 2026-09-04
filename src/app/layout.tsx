@@ -34,7 +34,7 @@ export default function RootLayout({
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Link href="/" className="site-name">
-          hw
+          hw(1)
         </Link>
         <div className="site-shell">
           <main className="site-main">{children}</main>

@@ -25,6 +25,10 @@
   margin-bottom: 3.5rem;
 }
 
+.musicPageIntro h1 {
+  text-transform: lowercase;
+}
+
 .music {
   display: grid;
   gap: 3.5rem;
@@ -60,6 +64,16 @@
   min-width: 0;
 }
 
+.nowPlayingSection > h2,
+.filesPanel > h2,
+.metricsSection > h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.7;
+  text-transform: uppercase;
+}
+
 .playbackPanel,
 .statusPanel,
 .tracksPanel,
@@ -81,16 +95,9 @@
 .header h2 {
   margin: 0;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.7;
-  text-transform: lowercase;
-}
-
-.header::after {
-  content: "";
-  flex: 1;
-  order: 1;
-  border-top: 0;
+  text-transform: uppercase;
 }
 
 .header span {
@@ -244,6 +251,21 @@
 .coverShelfCompact {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.9rem;
+}
+
+.coverShelfTagged {
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+.coverShelfTagged .coverTile {
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.coverShelfTagged .coverArt {
+  width: 9rem;
 }
 
 .coverTile {
@@ -417,15 +439,9 @@
   gap: 0.8rem;
   margin: 0;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.7;
-  text-transform: lowercase;
-}
-
-.metricSection h3::after {
-  content: "";
-  flex: 1;
-  border-top: 0;
+  text-transform: uppercase;
 }
 
 .metricGrid {
@@ -458,6 +474,28 @@
   line-height: 1.5;
 }
 
+.fileList {
+  display: grid;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.fileList > div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.fileList dt {
+  font-weight: 700;
+}
+
+.fileList dd {
+  min-width: 0;
+  margin: 0;
+}
+
 @media (max-width: 560px) {
   .coverShelfWall,
   .coverShelfCompact {
@@ -477,26 +515,22 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .coverShelfTagged .coverTile {
+    grid-template-columns: 7rem minmax(0, 1fr);
+  }
+
+  .coverShelfTagged .coverArt {
+    width: 7rem;
+  }
+
+  .fileList > div {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
   .timelineLegend,
   .timelineTitle {
     flex-direction: column;
     gap: 0.2rem;
   }
-}
-
-/* manual pages use solid functional rules and no decorative panel headers. */
-.header::after,
-.metricSection h3::after {
-  content: none;
-  border-top: 0;
-}
-
-.header h2,
-.metricSection h3 {
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.timelineStrip {
-  border-bottom: 1px solid var(--border);
 }

@@ -34,17 +34,21 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const htmlContent = await markdownToHtml(post.content, { slug: post.slug });
+  const htmlContent = await markdownToHtml(post.content, {
+    slug: post.slug,
+    manualSections: true,
+  });
   const tokenModel = getClientNGramModel();
 
   return (
     <>
     <ManualChrome name="WIKI(7)" title="Miscellaneous Manual" status="wiki(7)" />
     <article className="post-article blog-article">
+      <h1 className="post-title page-title">{post.title}</h1>
       <section className="man-section">
         <h2>NAME</h2>
         <div className="man-indent post-header">
-          <h1 className="post-title">{post.title} — {post.excerpt}</h1>
+          <p>{post.title} — {post.excerpt}</p>
           <div className="post-tools">
           <p className="post-date">
             {post.date} · {post.kind} · {post.readingMinutes} min read
@@ -55,10 +59,7 @@ export default async function BlogPostPage({
           </div>
         </div>
       </section>
-      <section className="man-section">
-        <h2>DESCRIPTION</h2>
-        <div className="man-indent prose" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-      </section>
+      <div className="prose blog-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
       <MermaidRenderer />
       <IframeResizer />
       <CodeTokenInspector />

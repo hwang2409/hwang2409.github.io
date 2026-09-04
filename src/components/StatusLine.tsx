@@ -38,9 +38,9 @@ export default function StatusLine({ label }: { readonly label: string }) {
 
   return (
     <div className="statusline">
-      <span className="statusline-label">Manual page {label}</span>
+      <span className="statusline-label">{label}</span>
       <span className="statusline-right">
-        <span className="statusline-position" aria-live="polite">
+        <span className="statusline-position">
           line {position.current}/{position.total} {position.atEnd ? '(END)' : `(${position.percent}%)`}
           <span className="statusline-cursor" aria-hidden="true" />
         </span>

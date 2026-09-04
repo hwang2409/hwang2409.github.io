@@ -7,6 +7,7 @@ export default function Home() {
   return (
     <>
       <ManualChrome name="HENRY(1)" title="General Commands Manual" status="henry(1)" />
+      <h1 className="page-title home-title">henry wang</h1>
       <section className="man-section home-hero" aria-labelledby="home-name">
         <h2>NAME</h2>
         <p className="man-indent" id="home-name"><strong>henry wang</strong> — software engineer</p>

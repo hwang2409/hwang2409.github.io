@@ -88,6 +88,12 @@ export default function BrowserModelPanel() {
     }
   }
 
+  function resetModel() {
+    setState('idle');
+    setResult(null);
+    setError(null);
+  }
+
   return (
     <section className="lab-panel" aria-labelledby="browser-model">
       <div className="lab-panel-heading">
@@ -98,14 +104,19 @@ export default function BrowserModelPanel() {
         <span className={`lab-state lab-state-${state === 'ready' ? 'ok' : state}`}>{state}</span>
       </div>
 
-      <button
-        className="lab-run-button"
-        type="button"
-        onClick={runModel}
-        disabled={state === 'loading'}
-      >
-        {state === 'loading' ? 'running' : 'run in browser'}
-      </button>
+      <div className="lab-actions">
+        <button
+          className="lab-run-button"
+          type="button"
+          onClick={runModel}
+          disabled={state === 'loading'}
+        >
+          {state === 'loading' ? '[running]' : '[run]'}
+        </button>
+        <button className="lab-reset-button" type="button" onClick={resetModel}>
+          [reset]
+        </button>
+      </div>
 
       {result ? (
         <div className="browser-model-result">

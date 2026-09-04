@@ -74,7 +74,7 @@ export default function MusicCoverShelf({
 }: {
   readonly items: readonly MusicCoverItem[];
   readonly empty: string;
-  readonly variant?: 'wall' | 'compact';
+  readonly variant?: 'wall' | 'compact' | 'tagged';
   readonly showMeta?: boolean;
 }) {
   if (items.length === 0) {
@@ -84,7 +84,9 @@ export default function MusicCoverShelf({
   const shelfClassName =
     variant === 'compact'
       ? `${styles.coverShelf} ${styles.coverShelfCompact}`
-      : `${styles.coverShelf} ${styles.coverShelfWall}`;
+      : variant === 'tagged'
+        ? `${styles.coverShelf} ${styles.coverShelfTagged}`
+        : `${styles.coverShelf} ${styles.coverShelfWall}`;
 
   return (
     <div className={shelfClassName}>

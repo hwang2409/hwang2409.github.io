@@ -8,6 +8,7 @@ import type { Element, Root, Text } from 'hast';
 
 type MarkdownSource = {
   slug: string;
+  manualSections?: boolean;
 };
 
 type SyntaxClass = {
@@ -344,6 +345,29 @@ function rehypeMonochromeSyntax() {
   };
 }
 
+function rehypeFigures() {
+  return (tree: Root) => {
+    let figureCount = 0;
+
+    visitElements(tree, (node, parent) => {
+      if (node.tagName !== 'img' || !parent) return;
+
+      const imageIndex = parent.children.indexOf(node);
+      if (imageIndex === -1) return;
+
+      figureCount += 1;
+      const alt = node.properties?.alt;
+      const caption = typeof alt === 'string' && alt.length > 0 ? alt : 'untitled image';
+      const figure = createElement('figure', {}, [
+        node,
+        createElement('figcaption', {}, [createText(`fig. ${figureCount} — ${caption}`)]),
+      ]);
+
+      parent.children.splice(imageIndex, 1, figure);
+    });
+  };
+}
+
 function isElement(node: Root['children'][number] | Element['children'][number]): node is Element {
   return node.type === 'element';
 }
@@ -370,53 +394,8 @@ function findSidenoteMarker(node: Element) {
   return firstParagraph;
 }
 
-function findPreviousAnchorTarget(
-  children: Array<Root['children'][number] | Element['children'][number]>,
-  index: number
-) {
-  for (let offset = index - 1; offset >= 0; offset -= 1) {
-    const child = children[offset];
-    if (!isElement(child)) continue;
-
-    if (['p', 'h2', 'h3', 'li'].includes(child.tagName)) {
-      return child;
-    }
-  }
-
-  return null;
-}
-
-function ensureElementId(element: Element, id: string) {
-  const existingId = element.properties?.id;
-  if (typeof existingId === 'string') return existingId;
-
-  element.properties = {
-    ...element.properties,
-    id,
-  };
-
-  return id;
-}
-
-function appendSidenoteRef(target: Element, noteId: string, index: number) {
-  target.children.push(
-    createText(' '),
-    createElement(
-      'a',
-      {
-        className: ['sidenote-ref'],
-        href: `#${noteId}`,
-        ariaLabel: `Read side note ${index}`,
-      },
-      [createText('+')]
-    )
-  );
-}
-
 function rehypeSidenotes() {
   return (tree: Root) => {
-    let noteCount = 0;
-
     function transform(parent: Root | Element) {
       const children = parent.children as Array<
         Root['children'][number] | Element['children'][number]
@@ -429,41 +408,16 @@ function rehypeSidenotes() {
         const markerParagraph = findSidenoteMarker(child);
 
         if (markerParagraph) {
-          noteCount += 1;
-          const noteId = `sidenote-${noteCount}`;
-          const target = findPreviousAnchorTarget(children, index);
-          let targetId: string | null = null;
-
-          if (target) {
-            targetId = ensureElementId(target, `sidenote-target-${noteCount}`);
-            appendSidenoteRef(target, noteId, noteCount);
-          }
+          markerParagraph.children.unshift(
+            createElement('em', { className: ['sidenote-label'] }, [createText('note:')]),
+            createText(' '),
+          );
 
           child.tagName = 'aside';
           child.properties = {
             ...child.properties,
-            id: noteId,
             className: ['sidenote'],
-            ...(targetId
-              ? {
-                  ariaLabelledBy: targetId,
-                }
-              : {}),
           };
-
-          if (targetId) {
-            child.children.unshift(
-              createElement(
-                'a',
-                {
-                  className: ['sidenote-backref'],
-                  href: `#${targetId}`,
-                  ariaLabel: `Back to side note reference ${noteCount}`,
-                },
-                [createText(`// ${noteCount}`)]
-              )
-            );
-          }
 
           if (
             markerParagraph.children.length === 1 &&
@@ -488,7 +442,7 @@ function sourceKindForTag(tagName: string) {
   if (/^h[1-6]$/.test(tagName)) return 'heading';
   if (tagName === 'pre') return 'code';
   if (tagName === 'table') return 'table';
-  if (tagName === 'blockquote') return 'note';
+  if (tagName === 'blockquote' || tagName === 'aside') return 'note';
   if (tagName === 'li') return 'item';
   return 'paragraph';
 }
@@ -498,7 +452,7 @@ function rehypeSourceMap(source?: MarkdownSource) {
     if (!source) return;
 
     visitElements(tree, (node) => {
-      if (!['p', 'h2', 'h3', 'li', 'pre', 'table', 'blockquote'].includes(node.tagName)) {
+      if (!['p', 'h2', 'h3', 'li', 'pre', 'table', 'blockquote', 'aside'].includes(node.tagName)) {
         return;
       }
 
@@ -515,6 +469,39 @@ function rehypeSourceMap(source?: MarkdownSource) {
   };
 }
 
+function rehypeManualSections(enabled: boolean) {
+  return (tree: Root) => {
+    if (!enabled) return;
+
+    const sections: Element[] = [];
+    let currentBody: Element | null = null;
+
+    function startSection(heading: Element): Element {
+      const body = createElement('div', { className: ['man-indent'] });
+      currentBody = body;
+      sections.push(
+        createElement('section', { className: ['man-section'] }, [heading, body]),
+      );
+      return body;
+    }
+
+    function startDescription(): Element {
+      return startSection(createElement('h2', {}, [createText('DESCRIPTION')]));
+    }
+
+    for (const child of tree.children) {
+      if (isElement(child) && child.tagName === 'h2') {
+        startSection(child);
+      } else {
+        const body = currentBody ?? startDescription();
+        if (child.type !== 'doctype') body.children.push(child);
+      }
+    }
+
+    tree.children = sections;
+  };
+}
+
 export async function markdownToHtml(
   markdown: string,
   source?: MarkdownSource
@@ -525,8 +512,10 @@ export async function markdownToHtml(
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeHighlight, { plainText: ['mermaid'] })
     .use(rehypeMonochromeSyntax)
+    .use(rehypeFigures)
     .use(rehypeSidenotes)
     .use(rehypeSourceMap, source)
+    .use(rehypeManualSections, source?.manualSections === true)
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();
