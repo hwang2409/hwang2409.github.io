@@ -1,5 +1,5 @@
 import { getBlogPost, getAllBlogPosts } from '@/lib/blog';
-import { markdownToHtml } from '@/lib/blog';
+import { markdownToHtml } from '@/lib/markdown';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import MermaidRenderer from '@/components/MermaidRenderer';

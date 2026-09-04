@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProject, getProjects } from '@/lib/projects';
+import { markdownToHtml } from '@/lib/markdown';
 
 export async function generateMetadata({
   params,
@@ -8,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const project = getProject(slug);
   if (!project) return {};
   return { title: project.title };
 }
@@ -19,9 +20,10 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const project = getProject(slug);
 
   if (!project) notFound();
+  const htmlContent = await markdownToHtml(project.content, { slug: project.slug });
 
   return (
     <article className="post-article">
@@ -38,7 +40,7 @@ export default async function ProjectPage({
 
       <div
         className="prose"
-        dangerouslySetInnerHTML={{ __html: project.htmlContent }}
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     </article>
   );
