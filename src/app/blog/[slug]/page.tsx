@@ -1,5 +1,5 @@
 import { getBlogPost, getAllBlogPosts } from '@/lib/blog';
-import { markdownToHtml } from '@/lib/blog';
+import { markdownToHtml } from '@/lib/markdown';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import MermaidRenderer from '@/components/MermaidRenderer';
@@ -37,7 +37,7 @@ export default async function BlogPostPage({
   const tokenModel = getClientNGramModel();
 
   return (
-    <article className="post-article">
+    <article className="post-article blog-article">
       <header className="post-header">
         <h1 className="post-title">{post.title}</h1>
         <div className="post-tools">

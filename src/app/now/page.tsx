@@ -1,4 +1,4 @@
-import { markdownToHtml } from '@/lib/blog';
+import { markdownToHtml } from '@/lib/markdown';
 import { getNowLog } from '@/lib/now';
 
 export const metadata = {

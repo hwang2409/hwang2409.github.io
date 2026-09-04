@@ -541,6 +541,27 @@ h3 {
   list-style: none;
 }
 
+.project-list {
+  gap: 0;
+}
+
+.project-list li {
+  padding: 1.4rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.project-list li:first-child {
+  padding-top: 0;
+}
+
+.project-list li:last-child {
+  border-bottom: 0;
+}
+
+.project-list .post-link-title {
+  font-weight: 700;
+}
+
 .post-link {
   display: grid;
   gap: 0.15rem;
@@ -1024,25 +1045,25 @@ h3 {
   background: var(--surface);
 }
 
-:root[data-blog-case="lower"] .post-article .post-title,
-:root[data-blog-case="lower"] .post-article .post-date,
-:root[data-blog-case="lower"] .post-article .prose p,
-:root[data-blog-case="lower"] .post-article .prose li,
-:root[data-blog-case="lower"] .post-article .prose h1,
-:root[data-blog-case="lower"] .post-article .prose h2,
-:root[data-blog-case="lower"] .post-article .prose h3,
-:root[data-blog-case="lower"] .post-article .prose th,
-:root[data-blog-case="lower"] .post-article .prose td,
-:root[data-blog-case="lower"] .post-article .prose blockquote,
-:root[data-blog-case="lower"] .post-article .prose .sidenote {
+:root[data-blog-case="lower"] .blog-article .post-title,
+:root[data-blog-case="lower"] .blog-article .post-date,
+:root[data-blog-case="lower"] .blog-article .prose p,
+:root[data-blog-case="lower"] .blog-article .prose li,
+:root[data-blog-case="lower"] .blog-article .prose h1,
+:root[data-blog-case="lower"] .blog-article .prose h2,
+:root[data-blog-case="lower"] .blog-article .prose h3,
+:root[data-blog-case="lower"] .blog-article .prose th,
+:root[data-blog-case="lower"] .blog-article .prose td,
+:root[data-blog-case="lower"] .blog-article .prose blockquote,
+:root[data-blog-case="lower"] .blog-article .prose .sidenote {
   text-transform: lowercase;
 }
 
-:root[data-blog-case="lower"] .post-article .prose pre,
-:root[data-blog-case="lower"] .post-article .prose code,
-:root[data-blog-case="lower"] .post-article .prose iframe,
-:root[data-blog-case="lower"] .post-article .mermaid-diagram,
-:root[data-blog-case="lower"] .post-article .mermaid-diagram * {
+:root[data-blog-case="lower"] .blog-article .prose pre,
+:root[data-blog-case="lower"] .blog-article .prose code,
+:root[data-blog-case="lower"] .blog-article .prose iframe,
+:root[data-blog-case="lower"] .blog-article .mermaid-diagram,
+:root[data-blog-case="lower"] .blog-article .mermaid-diagram * {
   text-transform: none;
 }
 
