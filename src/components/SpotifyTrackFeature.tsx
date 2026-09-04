@@ -9,6 +9,7 @@ type SpotifyTrackFeatureProps = {
   readonly url: string | null;
   readonly imageUrl: string | null;
   readonly fallback: string;
+  readonly labelTone?: 'warn';
 };
 
 export function formatArtists(artists: readonly string[]): string {
@@ -36,7 +37,7 @@ export function SpotifyTrackFeature(track: SpotifyTrackFeatureProps) {
     <>
       <span className={styles.art}>{renderArtwork(track)}</span>
       <span className={styles.featureCopy}>
-        <span className={styles.label}>{track.label}</span>
+        <span className={`${styles.label} ${track.labelTone === 'warn' ? styles.warn : ''}`}>{track.label}</span>
         <strong className={styles.title}>{track.title}</strong>
         <span className={styles.meta}>{formatArtists(track.artists)}</span>
       </span>

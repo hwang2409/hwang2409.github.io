@@ -25,7 +25,7 @@ function statusCopy(status: SpotifyStats['status']): string {
 export function playbackLabel(now: SpotifyNow): string {
   switch (now.playbackKind) {
     case 'current':
-      return 'currently playing';
+      return 'STREAMING';
     case 'recent':
       return 'last played';
     case 'empty':
@@ -53,6 +53,7 @@ function NowBlock({ now }: { readonly now: SpotifyNow }) {
       url={now.track.url}
       imageUrl={now.track.imageUrl}
       fallback="now"
+      labelTone={now.playbackKind === 'current' ? 'warn' : undefined}
     />
   );
 }
@@ -81,6 +82,27 @@ function artistCoverItem(artist: SpotifyArtist): MusicCoverItem {
     url: artist.url,
     fallback: String(artist.rank),
   };
+}
+
+function albumCoverItems(stats: SpotifyStats): MusicCoverItem[] {
+  const albums = new Map<string, SpotifyTrack>();
+
+  for (const track of stats.topTracks) {
+    if (!albums.has(track.album)) {
+      albums.set(track.album, track);
+    }
+  }
+
+  return Array.from(albums, ([album, track]) => ({
+    key: `album-${album}`,
+    rank: track.rank,
+    title: album,
+    subtitle: formatArtists(track.artists),
+    meta: 'top album',
+    imageUrl: track.imageUrl,
+    url: track.url,
+    fallback: String(track.rank),
+  }));
 }
 
 function TopTracks({ stats }: { readonly stats: SpotifyStats }) {
@@ -166,12 +188,42 @@ function StatusGrid({
 
 export function MusicPlaybackPanel({ now }: { readonly now: SpotifyNow }) {
   return (
-    <section className={`${styles.musicSection} ${styles.playbackPanel}`} aria-labelledby="music-now">
-      <div className={styles.header}>
-        <h2 id="music-now">playback</h2>
-        <span>{playbackLabel(now)}</span>
-      </div>
+    <div className={`${styles.musicSection} ${styles.playbackPanel}`}>
       <NowBlock now={now} />
+    </div>
+  );
+}
+
+export function MusicFilesPanel({ stats }: { readonly stats: SpotifyStats }) {
+  return (
+    <section className={`${styles.musicSection} ${styles.filesPanel}`} aria-labelledby="music-files">
+      <h2 id="music-files">FILES</h2>
+      <dl className={styles.fileList}>
+        <div>
+          <dt>albums</dt>
+          <dd>
+            {stats.status === 'ok' ? (
+              <MusicCoverShelf
+                items={albumCoverItems(stats)}
+                empty="spotify returned no top albums yet."
+                variant="tagged"
+              />
+            ) : <p className={styles.empty}>{stats.note}</p>}
+          </dd>
+        </div>
+        <div>
+          <dt>artists</dt>
+          <dd>
+            {stats.status === 'ok' ? (
+              <MusicCoverShelf
+                items={stats.topArtists.map(artistCoverItem)}
+                empty="spotify returned no top artists yet."
+                variant="tagged"
+              />
+            ) : <p className={styles.empty}>{stats.note}</p>}
+          </dd>
+        </div>
+      </dl>
     </section>
   );
 }

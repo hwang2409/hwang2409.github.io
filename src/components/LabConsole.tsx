@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import BrowserModelPanel from '@/components/BrowserModelPanel';
 import LocalSearchPanel from '@/components/LocalSearchPanel';
 import type { SearchDocument } from '@/lib/siteIndex';
@@ -56,6 +56,7 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
   const [tokenResult, setTokenResult] = useState<NextTokenResponse | null>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [traceSteps, setTraceSteps] = useState<TraceStep[]>([]);
+  const tokenRequestGeneration = useRef(0);
 
   const topPrediction = tokenResult?.predictions[0] ?? null;
   const matchedContext =
@@ -119,6 +120,7 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
 
   async function submitTokenProbe(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const requestGeneration = ++tokenRequestGeneration.current;
     const started = performance.now();
     setTokenState('loading');
     setTokenError(null);
@@ -142,6 +144,7 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
       }
 
       const data = (await response.json()) as NextTokenResponse;
+      if (requestGeneration !== tokenRequestGeneration.current) return;
       const decodedAt = performance.now();
       const backendMs = data.latency_ms;
       const fetchMs = responseAt - serializedAt;
@@ -172,6 +175,7 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
       ]);
       setTokenState('ok');
     } catch (error) {
+      if (requestGeneration !== tokenRequestGeneration.current) return;
       setTokenState('error');
       setTokenError(error instanceof Error ? error.message : 'request failed');
       setTraceSteps([
@@ -182,6 +186,15 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
         },
       ]);
     }
+  }
+
+  function resetTokenProbe() {
+    tokenRequestGeneration.current += 1;
+    setContext(EXAMPLE_CONTEXTS[0]);
+    setTokenState('idle');
+    setTokenResult(null);
+    setTokenError(null);
+    setTraceSteps([]);
   }
 
   const maxTraceDuration = Math.max(...traceSteps.map((step) => step.durationMs), 1);
@@ -246,13 +259,18 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
               </div>
             </details>
 
-            <button
-              className="lab-run-button"
-              type="submit"
-              disabled={tokenState === 'loading' || context.trim().length === 0}
-            >
-              {tokenState === 'loading' ? 'predicting' : 'predict next token'}
-            </button>
+            <div className="lab-actions">
+              <button
+                className="lab-run-button"
+                type="submit"
+                disabled={tokenState === 'loading' || context.trim().length === 0}
+              >
+                {tokenState === 'loading' ? '[running]' : '[run]'}
+              </button>
+              <button className="lab-reset-button" type="button" onClick={resetTokenProbe}>
+                [reset]
+              </button>
+            </div>
           </form>
 
           <div className="lab-output" aria-live="polite">

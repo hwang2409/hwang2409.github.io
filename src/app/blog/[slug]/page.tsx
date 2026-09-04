@@ -9,6 +9,7 @@ import BlogCaseToggle from '@/components/BlogCaseToggle';
 import SourceMapToggle from '@/components/SourceMapToggle';
 import BlogTokenGhost from '@/components/BlogTokenGhost';
 import { getClientNGramModel } from '@/lib/siteData';
+import ManualChrome from '@/components/ManualChrome';
 
 export async function generateMetadata({
   params,
@@ -33,35 +34,37 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const htmlContent = await markdownToHtml(post.content, { slug: post.slug });
+  const htmlContent = await markdownToHtml(post.content, {
+    slug: post.slug,
+    manualSections: true,
+  });
   const tokenModel = getClientNGramModel();
 
   return (
+    <>
+    <ManualChrome name="WIKI(7)" title="Miscellaneous Manual" status="wiki(7)" />
     <article className="post-article blog-article">
-      <header className="post-header">
-        <h1 className="post-title">{post.title}</h1>
-        <div className="post-tools">
+      <h1 className="post-title page-title">{post.title}</h1>
+      <section className="man-section">
+        <h2>NAME</h2>
+        <div className="man-indent post-header">
+          <p>{post.title} — {post.excerpt}</p>
+          <div className="post-tools">
           <p className="post-date">
-            {new Date(post.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+            {post.date} · {post.kind} · {post.readingMinutes} min read
           </p>
           <BlogCaseToggle />
           <SourceMapToggle />
           <BlogTokenGhost model={tokenModel} />
+          </div>
         </div>
-      </header>
-
-      <div
-        className="prose"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
+      </section>
+      <div className="prose blog-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
       <MermaidRenderer />
       <IframeResizer />
       <CodeTokenInspector />
     </article>
+    </>
   );
 }
 

@@ -68,7 +68,8 @@ function scoreDocument(document: SearchDocument, terms: string[]): SearchHit | n
 
 export default function LocalSearchPanel({ documents }: { documents: SearchDocument[] }) {
   const [query, setQuery] = useState('cuda memory');
-  const terms = useMemo(() => queryTerms(query), [query]);
+  const [submittedQuery, setSubmittedQuery] = useState('cuda memory');
+  const terms = useMemo(() => queryTerms(submittedQuery), [submittedQuery]);
   const hits = useMemo(
     () =>
       documents
@@ -89,7 +90,13 @@ export default function LocalSearchPanel({ documents }: { documents: SearchDocum
         <span>{documents.length} docs</span>
       </div>
 
-      <div className="lab-search">
+      <form
+        className="lab-search"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSubmittedQuery(query);
+        }}
+      >
         <label htmlFor="site-search-query">query</label>
         <input
           id="site-search-query"
@@ -98,7 +105,20 @@ export default function LocalSearchPanel({ documents }: { documents: SearchDocum
           autoComplete="off"
           spellCheck={false}
         />
-      </div>
+        <div className="lab-actions">
+          <button className="lab-run-button" type="submit">[search]</button>
+          <button
+            className="lab-reset-button"
+            type="button"
+            onClick={() => {
+              setQuery('');
+              setSubmittedQuery('');
+            }}
+          >
+            [reset]
+          </button>
+        </div>
+      </form>
 
       <ol className="search-hit-list">
         {hits.length > 0 ? (

@@ -29,9 +29,10 @@ src/
 ## CONVENTIONS
 
 - Use `@/*` imports for `src/*`.
-- New UI must follow `../DESIGN.md`: tiny lowercase sans, flat canvas, dashed rules, single accent, no boxes or shadows.
-- Base type is 13px; preserve visible focus states.
-- Everything is one narrow left-offset column; structure with whitespace and dashed rules, not panels.
+- New UI must follow `../DESIGN.md`: the HENRY(1) manual system uses shared tokens, mono type, and a flat canvas.
+- Base type is 14px mono; use uppercase section heads, lowercase content, and visible focus states.
+- Everything is one narrow left-offset column; use whitespace, indent grammar, and functional borders for structure.
+- Every page uses the manual header and inverse statusline, including its live reading position when needed.
 - Client components start with `'use client'`; keep server route files thin when possible.
 - The site is static-exported. Browser-only behavior must tolerate build-time rendering and hydration.
 - `next/image` is configured unoptimized. External images must still specify dimensions.
