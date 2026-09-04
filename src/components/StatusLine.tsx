@@ -27,9 +27,12 @@ export default function StatusLine({ label }: { readonly label: string }) {
     };
 
     update();
+    const observer = new ResizeObserver(onScroll);
+    observer.observe(document.body);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', update);
     return () => {
+      observer.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', update);
       if (frame) window.cancelAnimationFrame(frame);

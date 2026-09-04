@@ -32,6 +32,10 @@ type MusicData = {
   readonly insights: SpotifyInsights;
 };
 
+type MusicStatsProps = {
+  readonly onNowChange?: (now: SpotifyNow) => void;
+};
+
 type MusicState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'ready'; readonly data: MusicData }
@@ -106,7 +110,7 @@ function renderMusicState(state: MusicState) {
   }
 }
 
-export default function MusicStats() {
+export default function MusicStats({ onNowChange }: MusicStatsProps) {
   const [state, setState] = useState<MusicState>({ kind: 'loading' });
 
   useEffect(() => {
@@ -137,6 +141,7 @@ export default function MusicStats() {
           observeSpotifyPlayback(),
         ]);
         if (!cancelled) {
+          onNowChange?.(now);
           setState({ kind: 'ready', data: { now, stats, insights } });
         }
       } catch (error) {
@@ -158,6 +163,7 @@ export default function MusicStats() {
       Promise.all([fetchSpotifyNow(), observeSpotifyPlayback()])
         .then(([now, insights]) => {
           if (!cancelled) {
+            onNowChange?.(now);
             setLiveData(now, insights);
           }
         })
@@ -172,10 +178,10 @@ export default function MusicStats() {
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, []);
+  }, [onNowChange]);
 
   return (
-    <section className={styles.music} aria-labelledby="music-title">
+    <section className={styles.music} aria-label="music">
       <div className={`${styles.header} ${styles.musicHeader}`}>
         <span>spotify</span>
       </div>

@@ -6,6 +6,8 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeStringify from 'rehype-stringify';
 import type { Element, Root, Text } from 'hast';
 
+type RawNode = Extract<Root['children'][number] | Element['children'][number], { type: 'raw' }>;
+
 type MarkdownSource = {
   slug: string;
   manualSections?: boolean;
@@ -349,22 +351,69 @@ function rehypeFigures() {
   return (tree: Root) => {
     let figureCount = 0;
 
-    visitElements(tree, (node, parent) => {
-      if (node.tagName !== 'img' || !parent) return;
+    function isCaptionNode(
+      node: Root['children'][number] | Element['children'][number],
+    ): node is RawNode {
+      return node.type === 'raw' && /^<figcaption\b[\s\S]*<\/figcaption>$/i.test(node.value.trim());
+    }
 
-      const imageIndex = parent.children.indexOf(node);
-      if (imageIndex === -1) return;
+    function isImageParagraph(node: Element) {
+      return (
+        node.tagName === 'p' &&
+        node.children.some((child) => isElement(child) && child.tagName === 'img') &&
+        node.children.every(
+          (child) => child.type === 'text' && child.value.trim().length === 0 ||
+            isElement(child) && child.tagName === 'img',
+        )
+      );
+    }
 
-      figureCount += 1;
-      const alt = node.properties?.alt;
-      const caption = typeof alt === 'string' && alt.length > 0 ? alt : 'untitled image';
-      const figure = createElement('figure', {}, [
-        node,
-        createElement('figcaption', {}, [createText(`fig. ${figureCount} — ${caption}`)]),
-      ]);
+    function transform(parent: Root | Element) {
+      const children = parent.children as Array<
+        Root['children'][number] | Element['children'][number]
+      >;
 
-      parent.children.splice(imageIndex, 1, figure);
-    });
+      for (let index = 0; index < children.length; index += 1) {
+        const child = children[index];
+        if (!isElement(child)) continue;
+
+        if (isImageParagraph(child)) {
+          const image = child.children.find(
+            (candidate): candidate is Element => isElement(candidate) && candidate.tagName === 'img',
+          );
+          if (!image) continue;
+
+          figureCount += 1;
+          const alt = image.properties?.alt;
+          const caption = typeof alt === 'string' && alt.length > 0 ? alt : 'untitled image';
+          let captionNode: RawNode | null = null;
+          let captionIndex = -1;
+
+          for (let nextIndex = index + 1; nextIndex < children.length; nextIndex += 1) {
+            const next = children[nextIndex];
+            if (next.type === 'text' && next.value.trim().length === 0) continue;
+            if (isCaptionNode(next)) {
+              captionNode = next;
+              captionIndex = nextIndex;
+            }
+            break;
+          }
+
+          children[index] = createElement('figure', {}, [
+            image,
+            captionNode ?? createElement('figcaption', {}, [
+              createText(`fig. ${figureCount} — ${caption}`),
+            ]),
+          ]);
+          if (captionIndex !== -1) children.splice(captionIndex, 1);
+          continue;
+        }
+
+        transform(child);
+      }
+    }
+
+    transform(tree);
   };
 }
 

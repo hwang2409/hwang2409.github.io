@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type ModelState = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -36,6 +36,7 @@ export default function BrowserModelPanel() {
   const [result, setResult] = useState<ModelResult | null>(null);
   const [artifactBytes, setArtifactBytes] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const modelRequestGeneration = useRef(0);
   const vectorText = useMemo(() => sampleVector.map((value) => value.toFixed(2)).join(', '), []);
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function BrowserModelPanel() {
   }, []);
 
   async function runModel() {
+    const requestGeneration = ++modelRequestGeneration.current;
     setState('loading');
     setError(null);
 
@@ -76,6 +78,7 @@ export default function BrowserModelPanel() {
       }
 
       const logit = score(...sampleVector) as number;
+      if (requestGeneration !== modelRequestGeneration.current) return;
       setResult({
         logit,
         probability: sigmoid(logit),
@@ -83,12 +86,14 @@ export default function BrowserModelPanel() {
       });
       setState('ready');
     } catch (modelError) {
+      if (requestGeneration !== modelRequestGeneration.current) return;
       setError(modelError instanceof Error ? modelError.message : 'wasm failed');
       setState('error');
     }
   }
 
   function resetModel() {
+    modelRequestGeneration.current += 1;
     setState('idle');
     setResult(null);
     setError(null);
