@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import SiteNav from '@/components/SiteNav';
-import ThemeToggle from '@/components/ThemeToggle';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -38,15 +36,12 @@ export default function RootLayout({
         <Link href="/" className="site-name">
           hw
         </Link>
-        <header className="site-header">
-          <SiteNav />
-          <ThemeToggle />
-        </header>
         <div className="site-shell">
           <main className="site-main">{children}</main>
 
           <footer className="site-footer">
             <div className="site-links">
+              <span className="site-footer-label">COLOPHON</span>
               <a href="mailto:h352wang@uwaterloo.ca">email</a>
               <a
                 href="https://github.com/hwang2409"
@@ -70,7 +65,7 @@ export default function RootLayout({
                 x
               </a>
             </div>
-            <span className="site-copyright">© 2026 henry wang</span>
+            <span className="site-copyright">© 2026 henry wang. this page is intentionally quiet.</span>
           </footer>
         </div>
       </body>

@@ -1,3 +1,5 @@
+import ManualChrome from '@/components/ManualChrome';
+
 export const metadata = {
   title: 'resume',
 };
@@ -53,15 +55,17 @@ function Entry({
 
 export default function Resume() {
   return (
-    <section>
+    <>
+    <ManualChrome name="HENRY-RESUME(1)" title="General Commands Manual" status="henry-resume(1) — rev 2026 — press cmd+p for paper" />
+    <section className="resume-page page-section">
       <div className="resume-header">
-        <h1 className="page-title">resume</h1>
+        <h1 className="page-title">NAME</h1>
         <a href="/Resume.pdf" target="_blank" rel="noopener noreferrer">
           pdf
         </a>
       </div>
 
-      <Section label="education">
+      <Section label="EDUCATION">
         <div className="entry-heading">
           <span className="entry-title">University of Waterloo</span>
           <span className="entry-meta">Expected April 2026</span>
@@ -69,7 +73,7 @@ export default function Resume() {
         <p className="muted">Bachelor of Software Engineering (BSE)</p>
       </Section>
 
-      <Section label="experience">
+      <Section label="EXPERIENCE">
         <Entry
           title="Software Engineer Intern"
           sub="Fish Audio"
@@ -94,7 +98,7 @@ export default function Resume() {
         />
       </Section>
 
-      <Section label="projects">
+      <Section label="PROJECTS">
         <Entry
           title="Neuronic"
           sub="React, FastAPI, PostgreSQL, Redis, Celery, AWS"
@@ -118,7 +122,7 @@ export default function Resume() {
         />
       </Section>
 
-      <Section label="skills">
+      <Section label="SKILLS">
         <div className="skill-lines">
           <p>
             <strong>Languages:</strong>{' '}
@@ -141,7 +145,7 @@ export default function Resume() {
         </div>
       </Section>
 
-      <Section label="awards">
+      <Section label="AWARDS">
         <ul className="plain-list">
           <li>National Champion of the Hypatia Math Contest (1/5627)</li>
           <li>Score of 124.5 on the AMC12 (Top 5% out of 140,000 participants)</li>
@@ -149,5 +153,6 @@ export default function Resume() {
         </ul>
       </Section>
     </section>
+    </>
   );
 }

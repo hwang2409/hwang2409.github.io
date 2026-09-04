@@ -90,7 +90,7 @@
   content: "";
   flex: 1;
   order: 1;
-  border-top: 1px dashed var(--border);
+  border-top: 0;
 }
 
 .header span {
@@ -158,6 +158,10 @@
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.6;
+}
+
+.warn {
+  color: var(--warn);
 }
 
 .title {
@@ -364,7 +368,7 @@
   height: 5.5rem;
   align-items: end;
   padding: 0 0 1px;
-  border-bottom: 1px dashed var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .timelineBucket {
@@ -421,7 +425,7 @@
 .metricSection h3::after {
   content: "";
   flex: 1;
-  border-top: 1px dashed var(--border);
+  border-top: 0;
 }
 
 .metricGrid {
@@ -478,4 +482,21 @@
     flex-direction: column;
     gap: 0.2rem;
   }
+}
+
+/* manual pages use solid functional rules and no decorative panel headers. */
+.header::after,
+.metricSection h3::after {
+  content: none;
+  border-top: 0;
+}
+
+.header h2,
+.metricSection h3 {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.timelineStrip {
+  border-bottom: 1px solid var(--border);
 }

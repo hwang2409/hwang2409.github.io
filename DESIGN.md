@@ -1,115 +1,75 @@
-# Henry's Personal Website Design System
+# HENRY(1) design system
 
-## 1. Atmosphere & Identity
+The site is a man(1) manual page. It uses one format on every route: a manual
+header, uppercase section names, indented bodies, tagged lists, and an inverse
+pager statusline. The format is the site's identity.
 
-A quiet, mostly-empty page in the spirit of small hand-made personal sites. One narrow text column sits left of center on a flat off-white canvas. Type is tiny, lowercase, and unadorned; structure comes from thin dashed rules, not boxes. A single cyan accent carries all interactivity, and a small pixel snowboarder on the home page is the only ornament.
+## color tokens
 
-## 2. Color
+The default theme is `paper`. `xterm` is the same page in a dark pager.
 
-### Palette
+| role | paper | xterm |
+| --- | --- | --- |
+| `--background` | `#F9F7F1` | `#121417` |
+| `--foreground` | `#1E1E1E` | `#D9DEE5` |
+| `--muted` | `#67665F` | `#8E97A3` |
+| `--accent` | `#00507A` | `#7CB8E4` |
+| `--warn` | `#8A4B00` | `#D2A452` |
+| `--code` | `#EFECE2` | `#1A1D21` |
+| `--border` | `#D9D5C9` | `#2A2E34` |
+| status background | `#1E1E1E` | `#D9DEE5` |
+| status text | `#F9F7F1` | `#121417` |
 
-| Role | Token | Light | Dark | Usage |
-|------|-------|-------|------|-------|
-| Canvas | `--background` | `#F4F4F4` | `#111111` | The only surface; no panels |
-| Text/primary | `--foreground` | `#1C1C1C` | `#E8E8E8` | Body, headings, nav |
-| Text/secondary | `--muted` | `#6B6B6B` | `#828282` | Notes, dates, metadata, footer |
-| Rule | `--border` | `#C6C6C6` | `#3A3A3A` | 1px dashed rules, image borders |
-| Accent | `--accent` | `#0A7580` | `#4FD6E3` | Links, active nav, meters, mascot board |
-| Code block | `--code` | `#EAEAEA` | `#1D1D1D` | Code backgrounds, image fallbacks |
-| Surface alias | `--surface` | `#F4F4F4` | `#111111` | Legacy alias of the canvas; kept for iframes |
+Links use `--accent`. `--warn` is for real exceptional states only. The
+statusline always uses inverse video. Focus uses a 1px accent outline with a
+2px offset. Selection uses accent background and canvas text.
 
-Syntax tones (`--syntax-*`) are monochrome ramps used inside code blocks; every tone clears WCAG AA (4.5:1) against `--code` in both themes.
+## typography and layout
 
-### Rules
+All text uses `ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace`.
+The base size is 14px with a 1.75 line height. Hierarchy comes from case,
+weight, and position. Section names are bold uppercase. Body text stays casual
+and lowercase when the source uses lowercase.
 
-- One accent. Every interactive or highlighted element uses `--accent`; no second hue.
-- No cards, panels, gradients, radii, or shadows. Structure is dashed 1px rules only.
-- Solid 1px `--border` is reserved for functional edges: images, inputs, meter frames, tables.
-- Text selection is accent-on-canvas.
+The content column is `min(42rem, calc(100vw - clamp(1.5rem, 15vw, 17rem) - 7rem))`
+with `margin-left: clamp(1.5rem, 15vw, 17rem)`. Section bodies use a 2.5rem
+indent. Tagged lists use a 9rem label column and stack below 560px. The bottom
+statusline has 3.5rem of content clearance.
 
-## 3. Typography
+There are no cards, shadows, rounded corners, gradients, or decorative dashed
+rules. Solid borders are for functional edges: images, inputs, tables, meters,
+and focused source markers.
 
-### Scale
+## page mappings
 
-| Level | Size | Weight | Usage |
-|-------|------|--------|-------|
-| Base | `13px` (1rem) | 400 | Everything: body, headings, nav, hero |
-| Bold | `1rem` | 700 | Post titles, entry titles, emphasis |
-| Small | `0.92rem` | 400 | Nav links, page notes, chips |
-| Meta | `0.85rem` | 400 | Dates, excerpts, labels, footer links |
-| Tiny | `0.77rem` | 400 | Copyright, ranks, tooltips, cover captions |
+- `/` is `HENRY(1)`: NAME, SYNOPSIS, DESCRIPTION, PROJECTS, EXAMPLES, MUSIC,
+  SEE ALSO, and COLOPHON.
+- `/blog` is `HENRY-BLOG(7)`: ENTRIES uses dates, titles, excerpts, and kind tags.
+- `/blog/[slug]` is `WIKI(7)`: NAME and DESCRIPTION wrap the existing post tools
+  and markdown output. Markdown headings become uppercase manual sections.
+- `/projects` is `HENRY-PROJECTS(7)`: an `apropos henry` list.
+- `/projects/[slug]` is a full manual with NAME, SYNOPSIS, DESCRIPTION, HISTORY,
+  and SEE ALSO.
+- `/music` is `HENRY-MUSIC(7)`: NOW PLAYING and the existing Spotify shelves.
+- `/lab` and `/labs` are `HENRY-LAB(8)`: EXAMPLES and dense terminal controls.
+- `/now` is `HENRY-NOW(5)`: newest append-only entries first.
+- `/resume` is `HENRY-RESUME(1)`: NAME, EXPERIENCE, EDUCATION, SKILLS, and print output.
 
-### Font Stack
+## shell and motion
 
-- Primary: `Verdana, "DejaVu Sans", Geneva, Tahoma, sans-serif`
-- Code: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, ... monospace` (self-hosted Consolas woff2)
+`hw(1)` links home. There is no fixed navigation stack. Home SYNOPSIS is the
+primary navigation. Subpages use their header and SEE ALSO links.
 
-### Rules
+The fixed statusline contains page status, a live discrete line counter, a
+blinking block cursor, and the `TERM=paper` / `TERM=xterm` theme toggle. Theme
+state persists in local storage and applies before the page paints.
 
-- There is no display type. Hierarchy comes from position, rules, and whitespace, not size.
-- Headings and nav are lowercase (`text-transform: lowercase`). Prose body keeps its own case.
-- Monospace appears only inside code fragments and code blocks.
-- Line height is 1.7 sitewide.
+The cursor blinks at 1.06 seconds with `steps(1)`. Scroll position updates on an
+animation frame. Lab meters use stepped transitions. Links use a 120ms underline
+transition. The mascot keeps its 0.7 second frame swap and 17 second traverse.
+Reduced motion makes the cursor solid, freezes the mascot, and jumps meters to
+their final state. The line counter still updates because it carries information.
 
-## 4. Spacing & Layout
-
-### Grid
-
-- Content column: `min(640px, calc(100vw - clamp(1.5rem, 15vw, 17rem) - 7rem))`
-- Column offset: `margin-left: clamp(1.5rem, 15vw, 17rem)` — left of center, never centered
-- Page top: `--page-top: clamp(6rem, 18vh, 11rem)` (13rem under 560px to clear the fixed nav)
-- Breakpoints: `560px` (stack), `760px` (lab/table adjustments), `1240px` (blog sidenotes float)
-
-### Rhythm
-
-| Amount | Usage |
-|--------|-------|
-| `42vh` | Between home sections (`.home-section`) |
-| `24vh` | Above the footer |
-| `3.5rem` | Between sections on content pages |
-| `2rem` | Between list items (blog) |
-| `1rem` and below | Inside components |
-
-### Rules
-
-- The page should feel mostly empty. When in doubt, add vertical space, not chrome.
-- Everything is a single column. No sidebars, no multi-column dashboards.
-- The first screen of the home page holds only the hero statement, the mascot, and the nav.
-
-## 5. Components
-
-### Shell
-- **Nav**: fixed top-right, vertically stacked, right-aligned, tiny lowercase links. Active link is accent. Theme toggle sits under it in muted tiny type.
-- **Site mark**: fixed top-left `hw`, muted, accent on hover.
-- **Footer**: one muted tiny line — social links left, `© year henry wang` right.
-
-### Section heading
-Lowercase heading with a dashed rule filling the rest of the line (`display: flex` + `::after` rule). Used for page titles, resume sections, prose h1/h2, and music panel headers.
-
-### Hero + mascot
-Full-viewport first screen with the statement `henry wang — software engineer`. Below it, an original pixel snowboarder (box-shadow pixel art, two frames) carves along a dashed slope: frame swap at ~0.7s, full traverse ~17s. `prefers-reduced-motion` pins it to a static frame at rest.
-
-### Lists
-Bare text lines. Blog: accent title + muted date and excerpt, no markers, no boxes. Resume and plain lists: no bullets, muted body. The now page: dashed rules between entries, muted dates in a left column.
-
-### Data widgets (lab, music)
-Keep their functional grids but drop all chrome: dashed dividers between regions, accent for actions/active states, meters as 1px-bordered tracks with accent fill, album art with plain 1px borders.
-
-## 6. Motion & Interaction
-
-| Type | Duration | Usage |
-|------|----------|-------|
-| Micro | 120-160ms ease | Metadata reveals, meter fills |
-| Mascot frames | 0.7s square-wave | Two-frame sprite swap |
-| Mascot traverse | 17s linear loop | Carve across the column |
-
-### Rules
-
-- Links: accent color, underline only on hover/focus. Nav and quiet controls shift to accent instead.
-- Focus is always visible: 1px accent outline, offset 3px.
-- Animate only opacity and transform (the mascot's `left` traverse is the one sanctioned exception).
-- Every animation must have a `prefers-reduced-motion` fallback; the mascot freezes to a static frame.
-
-## 7. Depth & Surface
-
-There is no depth. The canvas is the only surface; nothing floats above it except the fixed nav and the token-ghost tooltip, both of which sit on plain canvas with a dashed border at most. Do not reintroduce shadows, radii, gradients, or filled panels.
+Images retain 1px frames and `fig. N — description` captions. Code keeps the
+monochrome syntax ramp on a `--code` surface. Mermaid diagrams use the site
+tokens, with accent color only for emphasis.

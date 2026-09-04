@@ -184,6 +184,14 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
     }
   }
 
+  function resetTokenProbe() {
+    setContext(EXAMPLE_CONTEXTS[0]);
+    setTokenState('idle');
+    setTokenResult(null);
+    setTokenError(null);
+    setTraceSteps([]);
+  }
+
   const maxTraceDuration = Math.max(...traceSteps.map((step) => step.durationMs), 1);
 
   return (
@@ -246,13 +254,18 @@ export default function LabConsole({ searchDocuments }: { searchDocuments: Searc
               </div>
             </details>
 
-            <button
-              className="lab-run-button"
-              type="submit"
-              disabled={tokenState === 'loading' || context.trim().length === 0}
-            >
-              {tokenState === 'loading' ? 'predicting' : 'predict next token'}
-            </button>
+            <div className="lab-actions">
+              <button
+                className="lab-run-button"
+                type="submit"
+                disabled={tokenState === 'loading' || context.trim().length === 0}
+              >
+                {tokenState === 'loading' ? '[running]' : '[run]'}
+              </button>
+              <button className="lab-reset-button" type="button" onClick={resetTokenProbe}>
+                [reset]
+              </button>
+            </div>
           </form>
 
           <div className="lab-output" aria-live="polite">

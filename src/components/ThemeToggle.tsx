@@ -43,7 +43,7 @@ export default function ThemeToggle() {
       }}
       aria-label={`Switch to ${nextTheme} mode`}
     >
-      {nextTheme} mode
+      TERM={theme === 'light' ? 'paper' : 'xterm'}
     </button>
   );
 }

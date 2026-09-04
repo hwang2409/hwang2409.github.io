@@ -9,6 +9,7 @@ import BlogCaseToggle from '@/components/BlogCaseToggle';
 import SourceMapToggle from '@/components/SourceMapToggle';
 import BlogTokenGhost from '@/components/BlogTokenGhost';
 import { getClientNGramModel } from '@/lib/siteData';
+import ManualChrome from '@/components/ManualChrome';
 
 export async function generateMetadata({
   params,
@@ -37,31 +38,32 @@ export default async function BlogPostPage({
   const tokenModel = getClientNGramModel();
 
   return (
+    <>
+    <ManualChrome name="WIKI(7)" title="Miscellaneous Manual" status="wiki(7)" />
     <article className="post-article blog-article">
-      <header className="post-header">
-        <h1 className="post-title">{post.title}</h1>
-        <div className="post-tools">
+      <section className="man-section">
+        <h2>NAME</h2>
+        <div className="man-indent post-header">
+          <h1 className="post-title">{post.title} — {post.excerpt}</h1>
+          <div className="post-tools">
           <p className="post-date">
-            {new Date(post.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+            {post.date} · {post.kind} · {post.readingMinutes} min read
           </p>
           <BlogCaseToggle />
           <SourceMapToggle />
           <BlogTokenGhost model={tokenModel} />
+          </div>
         </div>
-      </header>
-
-      <div
-        className="prose"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
+      </section>
+      <section className="man-section">
+        <h2>DESCRIPTION</h2>
+        <div className="man-indent prose" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </section>
       <MermaidRenderer />
       <IframeResizer />
       <CodeTokenInspector />
     </article>
+    </>
   );
 }
 
