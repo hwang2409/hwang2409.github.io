@@ -541,6 +541,27 @@ h3 {
   list-style: none;
 }
 
+.project-list {
+  gap: 0;
+}
+
+.project-list li {
+  padding: 1.4rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.project-list li:first-child {
+  padding-top: 0;
+}
+
+.project-list li:last-child {
+  border-bottom: 0;
+}
+
+.project-list .post-link-title {
+  font-weight: 700;
+}
+
 .post-link {
   display: grid;
   gap: 0.15rem;
