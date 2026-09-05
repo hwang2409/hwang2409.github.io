@@ -1,5 +1,6 @@
 import PixelMascot from '@/components/PixelMascot';
 import SpotifyNow from '@/components/SpotifyNow';
+import { navigationItems } from '@/components/ManNav';
 import Link from 'next/link';
 import ManualChrome from '@/components/ManualChrome';
 
@@ -15,7 +16,7 @@ export default function Home() {
 
       <section className="man-section" aria-labelledby="synopsis-title">
         <h2 id="synopsis-title">SYNOPSIS</h2>
-        <p className="man-indent"><strong>henry</strong> [<Link href="/blog">blog</Link>] [<Link href="/projects">projects</Link>] [<Link href="/music">music</Link>] [<Link href="/lab">lab</Link>] [<Link href="/now">now</Link>] [<Link href="/resume">resume</Link>]</p>
+        <p className="man-indent"><strong>henry</strong>{navigationItems.map((item) => <span key={item.key}> [<Link href={item.href}>{item.label}</Link>]</span>)}</p>
       </section>
 
       <section className="man-section" aria-labelledby="description-title">

@@ -1,5 +1,5 @@
 import { getBlogPost, getAllBlogPosts } from '@/lib/blog';
-import { getMarkdownSections, markdownToHtml } from '@/lib/markdown';
+import { markdownToHtmlWithSections } from '@/lib/markdown';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -36,11 +36,10 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const htmlContent = await markdownToHtml(post.content, {
+  const { html: htmlContent, sections } = await markdownToHtmlWithSections(post.content, {
     slug: post.slug,
     manualSections: true,
   });
-  const sections = getMarkdownSections(post.content);
   const tokenModel = getClientNGramModel();
   const posts = getAllBlogPosts();
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug);

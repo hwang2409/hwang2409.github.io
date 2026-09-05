@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProject, getProjects } from '@/lib/projects';
-import { getMarkdownSections, markdownToHtml } from '@/lib/markdown';
+import { markdownToHtmlWithSections } from '@/lib/markdown';
 import ManualChrome from '@/components/ManualChrome';
 import ManualContents from '@/components/ManualContents';
 
@@ -26,8 +26,7 @@ export default async function ProjectPage({
   const project = getProject(slug);
 
   if (!project) notFound();
-  const htmlContent = await markdownToHtml(project.content, { slug: project.slug });
-  const sections = getMarkdownSections(project.content);
+  const { html: htmlContent, sections } = await markdownToHtmlWithSections(project.content, { slug: project.slug });
 
   return (
     <>

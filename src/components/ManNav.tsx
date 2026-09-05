@@ -9,13 +9,13 @@ export type SiteSection =
   | 'now'
   | 'resume';
 
-type NavigationItem = {
+export type NavigationItem = {
   readonly key: Exclude<SiteSection, 'home'>;
   readonly label: string;
   readonly href: string;
 };
 
-const navigationItems: readonly NavigationItem[] = [
+export const navigationItems: readonly NavigationItem[] = [
   { key: 'blog', label: 'blog', href: '/blog' },
   { key: 'projects', label: 'projects', href: '/projects' },
   { key: 'music', label: 'music', href: '/music' },
@@ -50,9 +50,15 @@ function NavigationItemView({
 }
 
 export default function ManNav({ currentSection }: { readonly currentSection: SiteSection }) {
+  const homeLabel = currentSection === 'home' ? (
+    <strong className="man-nav-current" aria-current="page">henry</strong>
+  ) : (
+    <Link href="/">henry</Link>
+  );
+
   return (
     <nav className="man-nav" aria-label="site">
-      <span className="man-nav-prefix">henry</span>
+      <span className="man-nav-prefix">{homeLabel}</span>
       {navigationItems.map((item) => (
         <NavigationItemView
           key={item.key}

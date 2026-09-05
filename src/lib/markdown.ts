@@ -149,28 +149,6 @@ function uniqueHeadingId(base: string, usedIds: Set<string>) {
   return id;
 }
 
-export function getMarkdownSections(markdown: string): MarkdownSection[] {
-  const sections: MarkdownSection[] = [];
-  const usedIds = new Set<string>();
-  let fenced = false;
-
-  for (const line of markdown.split('\n')) {
-    if (/^\s*(```|~~~)/u.test(line)) {
-      fenced = !fenced;
-      continue;
-    }
-    if (fenced) continue;
-
-    const match = line.match(/^##(?!#)\s+(.+?)\s*$/u);
-    if (!match?.[1]) continue;
-
-    const title = cleanHeadingText(match[1]);
-    sections.push({ id: uniqueHeadingId(headingSlug(title), usedIds), title });
-  }
-
-  return sections;
-}
-
 function getClassNames(node: Element): string[] {
   const className = node.properties?.className;
   if (!Array.isArray(className)) return [];
@@ -413,18 +391,21 @@ function rehypeMonochromeSyntax() {
   };
 }
 
-function rehypeHeadingIds() {
+function rehypeHeadingIds(sections?: MarkdownSection[]) {
   return (tree: Root) => {
     const usedIds = new Set<string>();
 
     visitElements(tree, (node) => {
       if (!/^h[1-6]$/u.test(node.tagName)) return;
 
-      const id = uniqueHeadingId(headingSlug(getElementText(node)), usedIds);
+      const title = cleanHeadingText(getElementText(node));
+      const id = uniqueHeadingId(headingSlug(title), usedIds);
       node.properties = {
         ...node.properties,
         id,
       };
+
+      if (node.tagName === 'h2') sections?.push({ id, title });
     });
   };
 }
@@ -633,16 +614,17 @@ function rehypeManualSections(enabled: boolean) {
   };
 }
 
-export async function markdownToHtml(
+async function processMarkdown(
   markdown: string,
-  source?: MarkdownSource
+  source?: MarkdownSource,
+  sections?: MarkdownSection[],
 ): Promise<string> {
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeHighlight, { plainText: ['mermaid'] })
-    .use(rehypeHeadingIds)
+    .use(rehypeHeadingIds, sections)
     .use(rehypeMonochromeSyntax)
     .use(rehypeFigures)
     .use(rehypeSidenotes)
@@ -651,4 +633,20 @@ export async function markdownToHtml(
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();
+}
+
+export async function markdownToHtml(
+  markdown: string,
+  source?: MarkdownSource,
+): Promise<string> {
+  return processMarkdown(markdown, source);
+}
+
+export async function markdownToHtmlWithSections(
+  markdown: string,
+  source?: MarkdownSource,
+): Promise<{ html: string; sections: MarkdownSection[] }> {
+  const sections: MarkdownSection[] = [];
+  const html = await processMarkdown(markdown, source, sections);
+  return { html, sections };
 }
