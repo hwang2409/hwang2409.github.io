@@ -33,11 +33,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <a href="#main-content" className="skip-link">skip to content</a>
         <Link href="/" className="site-name">
           hw(1)
         </Link>
         <div className="site-shell">
-          <main className="site-main">{children}</main>
+          <main id="main-content" className="site-main">{children}</main>
 
           <footer className="site-footer">
             <div className="site-links">

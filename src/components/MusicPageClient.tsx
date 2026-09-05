@@ -19,7 +19,7 @@ export default function MusicPageClient() {
 
   return (
     <>
-      <ManualChrome name="HENRY-MUSIC(7)" title="Miscellaneous Manual" status={statusLabel(now)} />
+      <ManualChrome name="HENRY-MUSIC(7)" title="Miscellaneous Manual" status={statusLabel(now)} currentSection="music" sectionHref="/music" />
       <section className={`${styles.musicPage} page-section`}>
         <header className={styles.musicPageIntro}>
           <h1 className="page-title">music</h1>

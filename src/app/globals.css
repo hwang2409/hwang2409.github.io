@@ -46,7 +46,7 @@ html {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 15px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -120,9 +120,25 @@ h3 {
 .site-shell {
   display: flex;
   flex-direction: column;
-  width: min(42rem, calc(100vw - clamp(1.5rem, 15vw, 17rem) - 7rem));
+  width: min(46rem, calc(100vw - 2 * clamp(1.25rem, 5vw, 3rem)));
   min-height: 100vh;
-  margin-left: clamp(1.5rem, 15vw, 17rem);
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.35rem 0.55rem;
+  background: var(--foreground);
+  color: var(--background);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  text-decoration: none;
 }
 
 .site-name {
@@ -169,6 +185,38 @@ h3 {
 
 .man-header-title {
   text-align: center;
+}
+
+.man-header-link {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.man-header-link:hover,
+.man-header-link:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.man-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.35rem;
+  margin: 0.65rem 0 1.4rem;
+  line-height: 1.6;
+}
+
+.man-nav-item {
+  white-space: nowrap;
+}
+
+.man-nav-bracket {
+  color: var(--muted);
+}
+
+.man-nav-current {
+  color: var(--foreground);
 }
 
 .site-main {
@@ -643,6 +691,20 @@ h3 {
   margin: 0 0 0.8rem;
 }
 
+.manual-contents {
+  margin-top: 0;
+}
+
+.contents-list {
+  margin-top: 0.8rem;
+}
+
+.post-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.3rem;
+}
+
 .tagged-list .post-link-row {
   grid-template-columns: 9rem minmax(0, 1fr);
 }
@@ -837,6 +899,12 @@ h3 {
 
 .prose h3 {
   font-weight: 400;
+}
+
+.prose h2 {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-wrap: balance;
 }
 
 .prose h3::after {
@@ -1687,7 +1755,7 @@ h3 {
 
 /* --------------------------------------------------------------- media */
 
-@media (min-width: 1240px) {
+@media (min-width: 1150px) {
   .prose .sidenote {
     float: right;
     clear: right;
@@ -1757,11 +1825,6 @@ h3 {
 @media (max-width: 560px) {
   :root {
     --page-top: 3rem;
-  }
-
-  .site-shell {
-    width: calc(100vw - 2.5rem);
-    margin-left: 1.25rem;
   }
 
   .site-name {

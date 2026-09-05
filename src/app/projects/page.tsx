@@ -11,7 +11,7 @@ export default function Projects() {
 
   return (
     <>
-    <ManualChrome name="HENRY-PROJECTS(7)" title="Miscellaneous Manual" status="henry-projects(7) — 3 write-ups" />
+    <ManualChrome name="HENRY-PROJECTS(7)" title="Miscellaneous Manual" status="henry-projects(7) — 3 write-ups" currentSection="projects" sectionHref="/projects" />
     <section className="man-section page-section">
       <h1 className="page-title">APROPOS HENRY</h1>
       <ul className="project-list">

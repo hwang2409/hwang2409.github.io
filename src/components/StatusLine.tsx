@@ -6,7 +6,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 type Position = { current: number; total: number; percent: number; atEnd: boolean };
 
 function readPosition(): Position {
-  const lineHeight = 14 * 1.75;
+  const lineHeight = 15 * 1.75;
   const total = Math.max(1, Math.ceil(document.documentElement.scrollHeight / lineHeight));
   const current = Math.min(total, Math.max(1, Math.ceil((window.scrollY + 1) / lineHeight)));
   const percent = total <= 1 ? 100 : Math.min(100, Math.round((current / total) * 100));

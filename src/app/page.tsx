@@ -6,7 +6,7 @@ import ManualChrome from '@/components/ManualChrome';
 export default function Home() {
   return (
     <>
-      <ManualChrome name="HENRY(1)" title="General Commands Manual" status="Manual page henry(1)" />
+      <ManualChrome name="HENRY(1)" title="General Commands Manual" status="Manual page henry(1)" currentSection="home" />
       <h1 className="page-title home-title">henry wang</h1>
       <section className="man-section home-hero" aria-labelledby="home-name">
         <h2>NAME</h2>

@@ -13,6 +13,11 @@ type MarkdownSource = {
   manualSections?: boolean;
 };
 
+export type MarkdownSection = {
+  readonly id: string;
+  readonly title: string;
+};
+
 type SyntaxClass = {
   matches: string[];
   tone: string;
@@ -114,6 +119,57 @@ const fallbackLiterals = new Set([
 ]);
 
 const punctuationChars = new Set('{}[]()<>+-=*/%!:.,;|&?~^');
+
+function cleanHeadingText(value: string) {
+  return value
+    .replace(/\s+#+\s*$/u, '')
+    .replace(/[`*_~]/gu, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/gu, '$1')
+    .trim();
+}
+
+function headingSlug(value: string) {
+  const slug = cleanHeadingText(value)
+    .toLowerCase()
+    .replace(/[^\w\s-]/gu, '')
+    .replace(/\s+/gu, '-')
+    .replace(/-+/gu, '-')
+    .replace(/^-|-$/gu, '');
+  return slug || 'section';
+}
+
+function uniqueHeadingId(base: string, usedIds: Set<string>) {
+  let id = base;
+  let suffix = 2;
+  while (usedIds.has(id)) {
+    id = `${base}-${suffix}`;
+    suffix += 1;
+  }
+  usedIds.add(id);
+  return id;
+}
+
+export function getMarkdownSections(markdown: string): MarkdownSection[] {
+  const sections: MarkdownSection[] = [];
+  const usedIds = new Set<string>();
+  let fenced = false;
+
+  for (const line of markdown.split('\n')) {
+    if (/^\s*(```|~~~)/u.test(line)) {
+      fenced = !fenced;
+      continue;
+    }
+    if (fenced) continue;
+
+    const match = line.match(/^##(?!#)\s+(.+?)\s*$/u);
+    if (!match?.[1]) continue;
+
+    const title = cleanHeadingText(match[1]);
+    sections.push({ id: uniqueHeadingId(headingSlug(title), usedIds), title });
+  }
+
+  return sections;
+}
 
 function getClassNames(node: Element): string[] {
   const className = node.properties?.className;
@@ -304,6 +360,16 @@ function getTextContent(node: Element) {
     .join('');
 }
 
+function getElementText(node: Element): string {
+  return node.children
+    .map((child) => {
+      if (child.type === 'text') return child.value;
+      if (child.type === 'element') return getElementText(child);
+      return '';
+    })
+    .join('');
+}
+
 function visitElements(
   node: Root | Element,
   visitor: (node: Element, parent: Root | Element | null) => void,
@@ -342,6 +408,22 @@ function rehypeMonochromeSyntax() {
         ...node.properties,
         dataTone: syntax.tone,
         dataToken: syntax.token,
+      };
+    });
+  };
+}
+
+function rehypeHeadingIds() {
+  return (tree: Root) => {
+    const usedIds = new Set<string>();
+
+    visitElements(tree, (node) => {
+      if (!/^h[1-6]$/u.test(node.tagName)) return;
+
+      const id = uniqueHeadingId(headingSlug(getElementText(node)), usedIds);
+      node.properties = {
+        ...node.properties,
+        id,
       };
     });
   };
@@ -560,6 +642,7 @@ export async function markdownToHtml(
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeHighlight, { plainText: ['mermaid'] })
+    .use(rehypeHeadingIds)
     .use(rehypeMonochromeSyntax)
     .use(rehypeFigures)
     .use(rehypeSidenotes)
