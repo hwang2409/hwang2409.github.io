@@ -11,7 +11,7 @@ export default function LabPage() {
 
   return (
     <>
-    <ManualChrome name="HENRY-LAB(8)" title="System Administration Manual" status="henry-lab(8) — 2 models loaded — runs locally" />
+    <ManualChrome name="HENRY-LAB(8)" title="System Administration Manual" status="henry-lab(8) — 2 models loaded — runs locally" currentSection="lab" sectionHref="/lab" />
     <section className="lab-page">
       <div className="lab-page-header">
         <h1 className="page-title">EXAMPLES</h1>

@@ -27,13 +27,14 @@ statusline always uses inverse video. Focus uses a 1px accent outline with a
 ## typography and layout
 
 All text uses `ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace`.
-The base size is 14px with a 1.75 line height. Hierarchy comes from case,
+The base size is 15px with a 1.75 line height. Hierarchy comes from case,
 weight, and position. Section names are bold uppercase. Body text stays casual
 and lowercase when the source uses lowercase.
 
-The content column is `min(42rem, calc(100vw - clamp(1.5rem, 15vw, 17rem) - 7rem))`
-with `margin-left: clamp(1.5rem, 15vw, 17rem)`. Section bodies use a 2.5rem
-indent. Tagged lists use a 9rem label column and stack below 560px. The bottom
+The content column is `min(46rem, calc(100vw - 2 * clamp(1.25rem, 5vw, 3rem)))`
+with `margin-inline: auto`. Section bodies use a 2.5rem indent. Tagged lists
+use a 9rem label column and stack below 560px. Blog margin notes hang in a
+12rem gutter at viewports 1150px and wider, then fold inline. The bottom
 statusline has 3.5rem of content clearance.
 
 There are no cards, shadows, rounded corners, gradients, or decorative dashed
@@ -57,8 +58,16 @@ and focused source markers.
 
 ## shell and motion
 
-`hw(1)` links home. There is no fixed navigation stack. Home SYNOPSIS is the
-primary navigation. Subpages use their header and SEE ALSO links.
+`hw(1)` links home. Every route has a quiet SYNOPSIS-style navigation row with
+links for blog, projects, music, lab, now, and resume. The current section is
+bold text with `aria-current="page"`. Home SYNOPSIS remains the primary home
+navigation. A skip-to-content link is the first focusable element.
+
+Sub-page man-headers link their left and right name fields to the section index.
+Blog posts and project pages with at least three level-two headings get a
+tagged-list CONTENTS section after NAME. Markdown headings receive stable ids
+for those links. Blog posts end with SEE ALSO links for adjacent posts and
+`henry-blog(7)`.
 
 The fixed statusline contains page status, a live discrete line counter, a
 blinking block cursor, and the `TERM=paper` / `TERM=xterm` theme toggle. Theme

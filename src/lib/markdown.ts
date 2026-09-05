@@ -13,6 +13,11 @@ type MarkdownSource = {
   manualSections?: boolean;
 };
 
+export type MarkdownSection = {
+  readonly id: string;
+  readonly title: string;
+};
+
 type SyntaxClass = {
   matches: string[];
   tone: string;
@@ -114,6 +119,35 @@ const fallbackLiterals = new Set([
 ]);
 
 const punctuationChars = new Set('{}[]()<>+-=*/%!:.,;|&?~^');
+
+function cleanHeadingText(value: string) {
+  return value
+    .replace(/\s+#+\s*$/u, '')
+    .replace(/[`*_~]/gu, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/gu, '$1')
+    .trim();
+}
+
+function headingSlug(value: string) {
+  const slug = cleanHeadingText(value)
+    .toLowerCase()
+    .replace(/[^\w\s-]/gu, '')
+    .replace(/\s+/gu, '-')
+    .replace(/-+/gu, '-')
+    .replace(/^-|-$/gu, '');
+  return slug || 'section';
+}
+
+function uniqueHeadingId(base: string, usedIds: Set<string>) {
+  let id = base;
+  let suffix = 2;
+  while (usedIds.has(id)) {
+    id = `${base}-${suffix}`;
+    suffix += 1;
+  }
+  usedIds.add(id);
+  return id;
+}
 
 function getClassNames(node: Element): string[] {
   const className = node.properties?.className;
@@ -304,6 +338,16 @@ function getTextContent(node: Element) {
     .join('');
 }
 
+function getElementText(node: Element): string {
+  return node.children
+    .map((child) => {
+      if (child.type === 'text') return child.value;
+      if (child.type === 'element') return getElementText(child);
+      return '';
+    })
+    .join('');
+}
+
 function visitElements(
   node: Root | Element,
   visitor: (node: Element, parent: Root | Element | null) => void,
@@ -343,6 +387,25 @@ function rehypeMonochromeSyntax() {
         dataTone: syntax.tone,
         dataToken: syntax.token,
       };
+    });
+  };
+}
+
+function rehypeHeadingIds(sections?: MarkdownSection[]) {
+  return (tree: Root) => {
+    const usedIds = new Set<string>();
+
+    visitElements(tree, (node) => {
+      if (!/^h[1-6]$/u.test(node.tagName)) return;
+
+      const title = cleanHeadingText(getElementText(node));
+      const id = uniqueHeadingId(headingSlug(title), usedIds);
+      node.properties = {
+        ...node.properties,
+        id,
+      };
+
+      if (node.tagName === 'h2') sections?.push({ id, title });
     });
   };
 }
@@ -551,15 +614,17 @@ function rehypeManualSections(enabled: boolean) {
   };
 }
 
-export async function markdownToHtml(
+async function processMarkdown(
   markdown: string,
-  source?: MarkdownSource
+  source?: MarkdownSource,
+  sections?: MarkdownSection[],
 ): Promise<string> {
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeHighlight, { plainText: ['mermaid'] })
+    .use(rehypeHeadingIds, sections)
     .use(rehypeMonochromeSyntax)
     .use(rehypeFigures)
     .use(rehypeSidenotes)
@@ -568,4 +633,20 @@ export async function markdownToHtml(
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();
+}
+
+export async function markdownToHtml(
+  markdown: string,
+  source?: MarkdownSource,
+): Promise<string> {
+  return processMarkdown(markdown, source);
+}
+
+export async function markdownToHtmlWithSections(
+  markdown: string,
+  source?: MarkdownSource,
+): Promise<{ html: string; sections: MarkdownSection[] }> {
+  const sections: MarkdownSection[] = [];
+  const html = await processMarkdown(markdown, source, sections);
+  return { html, sections };
 }

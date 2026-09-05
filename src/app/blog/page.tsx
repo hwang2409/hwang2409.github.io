@@ -11,7 +11,7 @@ export default function Blog() {
 
   return (
     <>
-    <ManualChrome name="HENRY-BLOG(7)" title="Miscellaneous Manual" status="henry-blog(7) — 7 entries" />
+    <ManualChrome name="HENRY-BLOG(7)" title="Miscellaneous Manual" status="henry-blog(7) — 7 entries" currentSection="blog" sectionHref="/blog" />
     <section className="man-section page-section">
       <h1 className="page-title">ENTRIES</h1>
       <p className="man-indent page-note">notes and projects</p>
