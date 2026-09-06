@@ -48,7 +48,7 @@ function configureMermaid(theme: SiteTheme) {
       clusterBkg: background,
       clusterBorder: border,
       edgeLabelBackground: background,
-      fontFamily: 'Consolas, Inconsolata, ui-monospace, monospace',
+      fontFamily: 'Consolas, "Consolas for Powerline", Inconsolata, ui-monospace, monospace',
       fontSize: '12px',
     },
   });
