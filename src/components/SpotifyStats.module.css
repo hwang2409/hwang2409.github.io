@@ -3,10 +3,6 @@
   gap: var(--space-3);
 }
 
-.spotify .header h2 {
-  font-weight: 400;
-}
-
 .musicPage {
   display: grid;
   gap: 0;
@@ -30,55 +26,15 @@
   gap: var(--space-5);
 }
 
-.musicDashboard {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
-}
-
-.musicMainColumn,
-.musicMetricRail,
-.musicHeroGrid,
-.musicPrimaryShelves {
-  display: grid;
-  gap: var(--space-5);
-  min-width: 0;
-}
-
-.musicMetricsBand {
-  min-width: 0;
-}
-
 .musicSection {
   display: grid;
   gap: var(--space-3);
   min-width: 0;
 }
 
-.nowPlayingSection > h2,
-.filesPanel > h2,
-.metricsSection > h2 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.7;
-}
-
-.playbackPanel,
-.statusPanel,
-.tracksPanel,
-.artistsPanel,
-.genresPanel,
-.localPanel,
-.realCountsPanel,
-.skipPanel,
-.timelinePanel {
-  min-width: 0;
-}
-
 .header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.8rem;
 }
 
@@ -89,17 +45,20 @@
   line-height: 1.7;
 }
 
-.header span {
-  order: 2;
-}
-
 .header span,
 .meta,
-.note,
 .empty {
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.6;
+}
+
+.header span {
+  margin-left: auto;
+}
+
+.empty {
+  margin: 0;
 }
 
 .feature {
@@ -117,31 +76,26 @@
   text-underline-offset: 3px;
 }
 
-.playbackPanel .feature {
-  grid-template-columns: 7.5rem minmax(0, 1fr);
-}
-
 .art {
   display: grid;
   width: 4rem;
   aspect-ratio: 1;
   place-items: center;
+  overflow: hidden;
   border: 1px solid var(--border);
   background: var(--code);
   color: var(--foreground);
   font-size: 0.77rem;
-  overflow: hidden;
 }
 
-.playbackPanel .art {
-  width: 7.5rem;
-}
-
-.art img {
+.art img,
+.coverArt img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  outline-offset: -1px;
 }
 
 .featureCopy {
@@ -169,28 +123,9 @@
 }
 
 .meta {
+  display: block;
   margin: 0.1rem 0 0;
   overflow-wrap: anywhere;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.2rem 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.chips li {
-  color: var(--foreground);
-  font-size: 0.92rem;
-  line-height: 1.7;
-}
-
-.note,
-.empty {
-  margin: 0;
 }
 
 .musicLink {
@@ -198,64 +133,10 @@
   font-size: 0.85rem;
 }
 
-.statusGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-  gap: var(--space-2) var(--space-3);
-  margin: 0;
-}
-
-.statusGrid div {
-  min-width: 0;
-}
-
-.statusGrid dt {
-  color: var(--muted);
-  font-size: 0.77rem;
-  line-height: 1.5;
-}
-
-.statusGrid dd {
-  margin: 0.1rem 0 0;
-  overflow-wrap: anywhere;
-  font-variant-numeric: tabular-nums;
-}
-
-.localPanel .statusGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.localPanel .statusGrid div:last-child {
-  grid-column: span 2;
-}
-
 .coverShelf {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
   gap: 1rem;
-}
-
-.coverShelfWall {
-  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
-}
-
-.coverShelfCompact {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
-}
-
-.coverShelfTagged {
-  grid-template-columns: 1fr;
-  gap: 0.7rem;
-}
-
-.coverShelfTagged .coverTile {
-  grid-template-columns: 9rem minmax(0, 1fr);
-  gap: 1rem;
-  align-items: center;
-}
-
-.coverShelfTagged .coverArt {
-  width: 9rem;
 }
 
 .coverTile {
@@ -288,19 +169,11 @@
 }
 
 .coverArt {
-  position: relative;
   display: block;
   overflow: hidden;
   aspect-ratio: 1;
   border: 1px solid var(--border);
   background: var(--code);
-}
-
-.coverArt img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .coverFallback {
@@ -311,20 +184,6 @@
   color: var(--foreground);
 }
 
-.coverRank {
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-width: 1.35rem;
-  padding: 0 0.25rem;
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 0.77rem;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.5;
-  text-align: center;
-}
-
 .coverCaption {
   display: grid;
   gap: 0.05rem;
@@ -332,8 +191,7 @@
 }
 
 .coverCaption strong,
-.coverCaption span,
-.coverCaption em {
+.coverCaption span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -346,180 +204,15 @@
   line-height: 1.5;
 }
 
-.coverCaption span,
-.coverCaption em {
+.coverCaption span {
   color: var(--muted);
   font-size: 0.77rem;
-  font-style: normal;
   line-height: 1.5;
 }
 
-.timelineBlock {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.timelineTitle,
-.timelineLegend {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+.genres {
+  margin: 0;
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.6;
-}
-
-.timelineTitle span:first-child {
-  color: var(--foreground);
-}
-
-.timelineStrip {
-  display: grid;
-  grid-template-columns: repeat(20, minmax(0, 1fr));
-  gap: 2px;
-  height: 5.5rem;
-  align-items: end;
-  padding: 0 0 1px;
-  border-bottom: 1px solid var(--border);
-}
-
-.timelineBucket {
-  position: relative;
-  display: grid;
-  align-items: end;
-  height: 100%;
-  min-width: 0;
-}
-
-.listenBar,
-.skipBar {
-  display: block;
-  align-self: end;
-  width: 100%;
-  background: var(--foreground);
-}
-
-.skipBar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background: var(--muted);
-  opacity: 0.55;
-}
-
-.metricSections {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-5);
-}
-
-.musicMetricsBand .metricSections {
-  align-items: start;
-}
-
-.metricSection {
-  display: grid;
-  gap: var(--space-3);
-  min-width: 0;
-}
-
-.metricSection h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.7;
-}
-
-.metricGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: var(--space-2) var(--space-3);
-  margin: 0;
-}
-
-.metricGrid div {
-  min-width: 0;
-}
-
-.metricGrid dt {
-  color: var(--muted);
-  font-size: 0.77rem;
-  line-height: 1.5;
-}
-
-.metricGrid dd {
-  margin: 0.1rem 0 0;
-  overflow-wrap: anywhere;
-  font-variant-numeric: tabular-nums;
-}
-
-.metricGrid p {
-  margin: 0.25rem 0 0;
-  color: var(--muted);
-  font-size: 0.77rem;
-  line-height: 1.5;
-}
-
-.fileList {
-  display: grid;
-  gap: var(--space-4);
-  margin: 0;
-}
-
-.fileList > div {
-  display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr);
-  gap: var(--space-3);
-  align-items: start;
-}
-
-.fileList dt {
-  font-weight: 700;
-}
-
-.fileList dd {
-  min-width: 0;
-  margin: 0;
-}
-
-@media (max-width: 560px) {
-  .coverShelfWall,
-  .coverShelfCompact {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .playbackPanel .feature {
-    grid-template-columns: 1fr;
-  }
-
-  .playbackPanel .art {
-    width: min(12rem, 100%);
-  }
-
-  .statusGrid,
-  .metricGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .coverShelfTagged .coverTile {
-    grid-template-columns: 7rem minmax(0, 1fr);
-  }
-
-  .coverShelfTagged .coverArt {
-    width: 7rem;
-  }
-
-  .fileList > div {
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
-  }
-
-  .timelineLegend,
-  .timelineTitle {
-    flex-direction: column;
-    gap: 0.2rem;
-  }
 }
