@@ -53,7 +53,7 @@ function NowBlock({ now }: { readonly now: SpotifyNow }) {
       url={now.track.url}
       imageUrl={now.track.imageUrl}
       fallback="now"
-      labelTone={now.playbackKind === 'current' ? 'warn' : undefined}
+      emphasizeLabel={now.playbackKind === 'current'}
     />
   );
 }

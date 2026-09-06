@@ -12,7 +12,7 @@ export default function Home() {
         <p>interests: ML systems, computer graphics, game theory, snowboarding, and music.</p>
       </section>
 
-      <section aria-labelledby="projects-title">
+      <section className="home-section" aria-labelledby="projects-title">
         <h2 id="projects-title">projects</h2>
         <ul className="project-list home-projects">
           <li><Link href="/projects/wiki">wiki</Link><span>a local markdown vault and agent workspace</span></li>
@@ -21,17 +21,15 @@ export default function Home() {
         </ul>
       </section>
 
-      <section className="home-mascot" aria-label="pixel mascot">
+      <section className="home-section home-mascot" aria-label="pixel mascot">
         <PixelMascot />
       </section>
 
-      <section aria-labelledby="music-title">
-        <h2 id="music-title">music</h2>
+      <section className="home-section" aria-label="music">
         <SpotifyNow />
       </section>
 
-      <section aria-labelledby="contact-title">
-        <h2 id="contact-title">contact</h2>
+      <section className="home-section" aria-label="contact">
         <p><a href="mailto:h352wang@uwaterloo.ca">email</a>, <a href="https://github.com/hwang2409" target="_blank" rel="noopener noreferrer">github</a>, <a href="https://linkedin.com/in/henry-w-se" target="_blank" rel="noopener noreferrer">linkedin</a>, <a href="https://x.com/oreaooaoaoaoa" target="_blank" rel="noopener noreferrer">x</a></p>
       </section>
 

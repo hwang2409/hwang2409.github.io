@@ -101,8 +101,7 @@ export default function SpotifyNow() {
   return (
     <section className={styles.spotify} aria-labelledby="spotify-title">
       <div className={styles.header}>
-        <h2 id="spotify-title">listening now</h2>
-        <span>{state.kind === 'ready' ? playbackLabel(state.now) : 'spotify'}</span>
+        <h2 id="spotify-title">listening now · spotify</h2>
       </div>
 
       {renderSpotifyState(state)}

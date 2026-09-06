@@ -173,9 +173,6 @@ export default function MusicStats() {
 
   return (
     <section className={styles.music} aria-label="music">
-      <div className={`${styles.header} ${styles.musicHeader}`}>
-        <span>spotify</span>
-      </div>
       {renderMusicState(state)}
     </section>
   );

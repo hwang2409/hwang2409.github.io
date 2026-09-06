@@ -26,7 +26,7 @@ export default function SiteNav() {
 
   return (
     <header className="site-header">
-      <Link href="/" className="site-name" aria-current={section === 'home' ? 'page' : undefined}>henry wang</Link>
+      {section !== 'home' && <Link href="/" className="site-name">henry wang</Link>}
       <nav className="site-nav" aria-label="site">
         {navigationItems.map((item) => (
           item.section === section ? (
