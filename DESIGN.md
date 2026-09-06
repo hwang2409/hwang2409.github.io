@@ -5,15 +5,15 @@ and small functional controls. it does not use a manual-page metaphor.
 
 ## tokens
 
-| role | light | dark |
-| --- | --- | --- |
-| `--background` | `#FFFFFF` | `#000000` |
-| `--foreground` | `#111111` | `#E5E5E5` |
-| `--muted` | `#555555` | `#AAAAAA` |
-| `--border` | `#CCCCCC` | `#444444` |
-| `--code` | `#F2F2F2` | `#111111` |
+| role | value |
+| --- | --- |
+| `--background` | `#FFFFFF` |
+| `--foreground` | `#111111` |
+| `--muted` | `#555555` |
+| `--border` | `#CCCCCC` |
+| `--code` | `#F2F2F2` |
 
-the dark palette comes from `prefers-color-scheme`. there is no theme toggle or
+the site is light mode only. there is no dark palette, no theme toggle, and no
 theme storage. every color is neutral grayscale. links use the text color and
 keep an underline. focus uses a one-pixel `currentColor` outline. selection
 inverts the foreground and background.
