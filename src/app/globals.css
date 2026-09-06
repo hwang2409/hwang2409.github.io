@@ -14,17 +14,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #e5e5e5;
-    --muted: #aaaaaa;
-    --border: #444444;
-    --code: #111111;
-    color-scheme: dark;
-  }
-}
-
 * {
   box-sizing: border-box;
 }
@@ -598,12 +587,6 @@ dd {
     padding-left: 0.75rem;
     border-left: 1px solid var(--border);
     font-size: 0.8rem;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .prose img {
-    outline-color: rgba(255, 255, 255, 0.1);
   }
 }
 

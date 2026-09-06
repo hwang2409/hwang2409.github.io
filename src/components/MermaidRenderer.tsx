@@ -3,16 +3,8 @@
 import { useEffect } from 'react';
 import mermaid from 'mermaid';
 
-type SiteTheme = 'light' | 'dark';
-
-function getTheme(): SiteTheme {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-function configureMermaid(theme: SiteTheme) {
-  const isDark = theme === 'dark';
+function configureMermaid() {
   // Colors come from the globals.css tokens so diagrams follow the site theme.
-  // render() re-runs when the system color scheme changes.
   const styles = getComputedStyle(document.documentElement);
   const token = (name: string) => styles.getPropertyValue(name).trim();
 
@@ -35,7 +27,7 @@ function configureMermaid(theme: SiteTheme) {
       useMaxWidth: true,
     },
     themeVariables: {
-      darkMode: isDark,
+      darkMode: false,
       background,
       primaryColor: code,
       primaryTextColor: foreground,
@@ -114,7 +106,7 @@ export default function MermaidRenderer() {
         } catch {}
       }
 
-      configureMermaid(getTheme());
+      configureMermaid();
       const ts = Date.now();
 
       for (let i = 0; i < targets.length; i++) {
@@ -152,12 +144,9 @@ export default function MermaidRenderer() {
     }
 
     render();
-    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    colorScheme.addEventListener('change', render);
 
     return () => {
       cancelled = true;
-      colorScheme.removeEventListener('change', render);
     };
   }, []);
 
