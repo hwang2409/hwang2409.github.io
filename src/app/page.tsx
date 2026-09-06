@@ -30,6 +30,11 @@ export default function Home() {
         <SpotifyNow />
       </section>
 
+      <blockquote className="home-epigraph">
+        <p>“There’s no such thing as a bad idea, Morty; it’s about execution”</p>
+        <cite>— Rick Sanchez</cite>
+      </blockquote>
+
       <section aria-labelledby="contact-title">
         <h2 id="contact-title">contact</h2>
         <p><a href="mailto:h352wang@uwaterloo.ca">email</a>, <a href="https://github.com/hwang2409" target="_blank" rel="noopener noreferrer">github</a>, <a href="https://linkedin.com/in/henry-w-se" target="_blank" rel="noopener noreferrer">linkedin</a>, <a href="https://x.com/oreaooaoaoaoa" target="_blank" rel="noopener noreferrer">x</a></p>

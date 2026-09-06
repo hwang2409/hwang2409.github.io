@@ -280,6 +280,20 @@ dd {
   min-height: 5rem;
 }
 
+.home-epigraph {
+  margin: 0 0 4.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.home-epigraph p {
+  margin-bottom: 0.35rem;
+}
+
+.home-epigraph cite {
+  font-style: normal;
+}
+
 .post-list {
   margin: 0;
   padding: 0;
