@@ -2,34 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import {
-  MusicLocalPanel,
-  MusicMetricSections,
-  MusicRealCountsPanel,
-  MusicSkipPanel,
-  MusicTimelinePanel,
-} from '@/components/MusicInsightPanels';
-import {
+  MusicAlbumsPanel,
   MusicArtistsPanel,
-  MusicFilesPanel,
   MusicGenresPanel,
   MusicPlaybackPanel,
-  MusicStatusPanel,
   MusicTracksPanel,
 } from '@/components/MusicSpotifyPanels';
 import styles from '@/components/SpotifyStats.module.css';
-import {
-  fetchSpotifyNow,
-  fetchSpotifyStats,
-  observeSpotifyPlayback,
-  type SpotifyInsights,
-  type SpotifyNow,
-  type SpotifyStats,
-} from '@/lib/spotify';
+import { fetchSpotifyNow, fetchSpotifyStats, type SpotifyNow, type SpotifyStats } from '@/lib/spotify';
 
 type MusicData = {
   readonly now: SpotifyNow;
   readonly stats: SpotifyStats;
-  readonly insights: SpotifyInsights;
 };
 
 type MusicState =
@@ -44,16 +28,20 @@ function assertNever(value: never): never {
 function unavailableMusicState(message: string) {
   return (
     <>
-      <section className={`${styles.musicSection} ${styles.nowPlayingSection}`}>
-        <h2>now playing</h2>
+      <section className={styles.musicSection} aria-labelledby="music-now-playing">
+        <h2 id="music-now-playing">now playing</h2>
         <p className={styles.empty}>{message}</p>
       </section>
-      <section className={`${styles.musicSection} ${styles.filesPanel}`}>
-        <h2>files</h2>
+      <section className={styles.musicSection} aria-labelledby="music-tracks">
+        <h2 id="music-tracks">top tracks</h2>
         <p className={styles.empty}>{message}</p>
       </section>
-      <section className={`${styles.musicSection} ${styles.metricsSection}`}>
-        <h2>metrics</h2>
+      <section className={styles.musicSection} aria-labelledby="music-artists">
+        <h2 id="music-artists">top artists</h2>
+        <p className={styles.empty}>{message}</p>
+      </section>
+      <section className={styles.musicSection} aria-labelledby="music-albums">
+        <h2 id="music-albums">top albums</h2>
         <p className={styles.empty}>{message}</p>
       </section>
     </>
@@ -67,36 +55,14 @@ function renderMusicState(state: MusicState) {
     case 'ready':
       return (
         <>
-          <section className={`${styles.musicSection} ${styles.nowPlayingSection}`} aria-labelledby="music-now-playing">
+          <section className={styles.musicSection} aria-labelledby="music-now-playing">
             <h2 id="music-now-playing">now playing</h2>
             <MusicPlaybackPanel now={state.data.now} />
           </section>
-
-          <MusicFilesPanel stats={state.data.stats} />
-
-          <section className={`${styles.musicSection} ${styles.metricsSection}`} aria-labelledby="music-metrics">
-            <h2 id="music-metrics">metrics</h2>
-            <div className={styles.musicDashboard}>
-              <div className={styles.musicMainColumn}>
-                <MusicTimelinePanel insights={state.data.insights} />
-                <MusicRealCountsPanel insights={state.data.insights} />
-                <MusicTracksPanel stats={state.data.stats} />
-                <MusicArtistsPanel stats={state.data.stats} />
-                <MusicMetricSections insights={state.data.insights} />
-              </div>
-
-              <aside className={styles.musicMetricRail} aria-label="Music behavior metrics">
-                <MusicStatusPanel
-                  now={state.data.now}
-                  stats={state.data.stats}
-                  insights={state.data.insights}
-                />
-                <MusicLocalPanel insights={state.data.insights} />
-                <MusicSkipPanel insights={state.data.insights} />
-                <MusicGenresPanel stats={state.data.stats} />
-              </aside>
-            </div>
-          </section>
+          <MusicTracksPanel stats={state.data.stats} />
+          <MusicArtistsPanel stats={state.data.stats} />
+          <MusicAlbumsPanel stats={state.data.stats} />
+          <MusicGenresPanel stats={state.data.stats} />
         </>
       );
     case 'error':
@@ -112,7 +78,7 @@ export default function MusicStats() {
   useEffect(() => {
     let cancelled = false;
 
-    function setLiveData(now: SpotifyNow, insights: SpotifyInsights) {
+    function setLiveData(now: SpotifyNow) {
       setState((current) => {
         if (current.kind !== 'ready') {
           return current;
@@ -123,7 +89,6 @@ export default function MusicStats() {
           data: {
             ...current.data,
             now,
-            insights,
           },
         };
       });
@@ -131,13 +96,9 @@ export default function MusicStats() {
 
     async function loadMusic() {
       try {
-        const [now, stats, insights] = await Promise.all([
-          fetchSpotifyNow(),
-          fetchSpotifyStats(),
-          observeSpotifyPlayback(),
-        ]);
+        const [now, stats] = await Promise.all([fetchSpotifyNow(), fetchSpotifyStats()]);
         if (!cancelled) {
-          setState({ kind: 'ready', data: { now, stats, insights } });
+          setState({ kind: 'ready', data: { now, stats } });
         }
       } catch {
         if (!cancelled) {
@@ -152,10 +113,10 @@ export default function MusicStats() {
         return;
       }
 
-      Promise.all([fetchSpotifyNow(), observeSpotifyPlayback()])
-        .then(([now, insights]) => {
+      fetchSpotifyNow()
+        .then((now) => {
           if (!cancelled) {
-            setLiveData(now, insights);
+            setLiveData(now);
           }
         })
         .catch(() => {
