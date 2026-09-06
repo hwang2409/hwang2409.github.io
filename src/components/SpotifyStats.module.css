@@ -25,10 +25,6 @@
   margin-bottom: 3.5rem;
 }
 
-.musicPageIntro h1 {
-  text-transform: lowercase;
-}
-
 .music {
   display: grid;
   gap: 3.5rem;
@@ -71,7 +67,6 @@
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.7;
-  text-transform: uppercase;
 }
 
 .playbackPanel,
@@ -97,7 +92,6 @@
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.7;
-  text-transform: uppercase;
 }
 
 .header span {
@@ -441,7 +435,6 @@
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.7;
-  text-transform: uppercase;
 }
 
 .metricGrid {

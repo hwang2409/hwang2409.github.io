@@ -10,8 +10,7 @@ import BlogCaseToggle from '@/components/BlogCaseToggle';
 import SourceMapToggle from '@/components/SourceMapToggle';
 import BlogTokenGhost from '@/components/BlogTokenGhost';
 import { getClientNGramModel } from '@/lib/siteData';
-import ManualChrome from '@/components/ManualChrome';
-import ManualContents from '@/components/ManualContents';
+import Contents from '@/components/Contents';
 
 export async function generateMetadata({
   params,
@@ -38,7 +37,6 @@ export default async function BlogPostPage({
 
   const { html: htmlContent, sections } = await markdownToHtmlWithSections(post.content, {
     slug: post.slug,
-    manualSections: true,
   });
   const tokenModel = getClientNGramModel();
   const posts = getAllBlogPosts();
@@ -48,37 +46,28 @@ export default async function BlogPostPage({
 
   return (
     <>
-    <ManualChrome name="WIKI(7)" title="Miscellaneous Manual" status="wiki(7)" currentSection="blog" sectionHref="/blog" />
     <article className="post-article blog-article">
       <h1 className="post-title page-title">{post.title}</h1>
-      <section className="man-section">
-        <h2>NAME</h2>
-        <div className="man-indent post-header">
-          <p>{post.title} — {post.excerpt}</p>
-          <div className="post-tools">
-          <p className="post-date">
-            {post.date} · {post.kind} · {post.readingMinutes} min read
-          </p>
+      <div className="post-header">
+        <p className="post-meta"><time dateTime={post.date}>{post.date}</time> · {post.kind} · {post.readingMinutes} min read</p>
+        <p className="post-excerpt">{post.excerpt}</p>
+        <div className="post-tools">
           <BlogCaseToggle />
           <SourceMapToggle />
           <BlogTokenGhost model={tokenModel} />
-          </div>
         </div>
-      </section>
-      <ManualContents sections={sections} />
+      </div>
+      <Contents sections={sections} />
       <div className="prose blog-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-      <section className="man-section post-see-also">
-        <h2>SEE ALSO</h2>
-        <div className="man-indent post-pager">
+      <nav className="post-pager" aria-label="post navigation">
           {previousPost && (
             <span><span className="fine-print">previous:</span> <Link href={`/blog/${previousPost.slug}`}>{previousPost.title}</Link></span>
           )}
           {nextPost && (
             <span><span className="fine-print">next:</span> <Link href={`/blog/${nextPost.slug}`}>{nextPost.title}</Link></span>
           )}
-          <Link href="/blog">henry-blog(7)</Link>
-        </div>
-      </section>
+          <Link href="/blog">all posts</Link>
+      </nav>
       <MermaidRenderer />
       <IframeResizer />
       <CodeTokenInspector />

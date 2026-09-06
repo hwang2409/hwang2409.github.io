@@ -197,7 +197,7 @@ export function MusicPlaybackPanel({ now }: { readonly now: SpotifyNow }) {
 export function MusicFilesPanel({ stats }: { readonly stats: SpotifyStats }) {
   return (
     <section className={`${styles.musicSection} ${styles.filesPanel}`} aria-labelledby="music-files">
-      <h2 id="music-files">FILES</h2>
+      <h2 id="music-files">files</h2>
       <dl className={styles.fileList}>
         <div>
           <dt>albums</dt>

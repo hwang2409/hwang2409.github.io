@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import SiteNav from '@/components/SiteNav';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,38 +11,21 @@ export const metadata: Metadata = {
     'Software engineering student at the University of Waterloo.',
 };
 
-const themeScript = `
-try {
-  var theme = window.localStorage.getItem('theme');
-  if (theme === 'dark' || theme === 'light') {
-    document.documentElement.dataset.theme = theme;
-  }
-  var blogCase = window.localStorage.getItem('blog-case');
-  if (blogCase === 'lower') {
-    document.documentElement.dataset.blogCase = blogCase;
-  }
-} catch (_) {}
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <a href="#main-content" className="skip-link">skip to content</a>
-        <Link href="/" className="site-name">
-          hw(1)
-        </Link>
         <div className="site-shell">
+          <SiteNav />
           <main id="main-content" className="site-main">{children}</main>
 
           <footer className="site-footer">
             <div className="site-links">
-              <span className="site-footer-label">COLOPHON</span>
               <a href="mailto:h352wang@uwaterloo.ca">email</a>
               <a
                 href="https://github.com/hwang2409"
@@ -66,7 +49,7 @@ export default function RootLayout({
                 x
               </a>
             </div>
-            <span className="site-copyright">© 2026 henry wang. this page is intentionally quiet.</span>
+            <span className="site-copyright">© 2026 henry wang</span>
           </footer>
         </div>
       </body>

@@ -32,14 +32,10 @@ type MusicData = {
   readonly insights: SpotifyInsights;
 };
 
-type MusicStatsProps = {
-  readonly onNowChange?: (now: SpotifyNow) => void;
-};
-
 type MusicState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'ready'; readonly data: MusicData }
-  | { readonly kind: 'error'; readonly message: string };
+  | { readonly kind: 'error' };
 
 function assertNever(value: never): never {
   throw new Error(`Unexpected Spotify state: ${JSON.stringify(value)}`);
@@ -49,15 +45,15 @@ function unavailableMusicState(message: string) {
   return (
     <>
       <section className={`${styles.musicSection} ${styles.nowPlayingSection}`}>
-        <h2>NOW PLAYING</h2>
+        <h2>now playing</h2>
         <p className={styles.empty}>{message}</p>
       </section>
       <section className={`${styles.musicSection} ${styles.filesPanel}`}>
-        <h2>FILES</h2>
+        <h2>files</h2>
         <p className={styles.empty}>{message}</p>
       </section>
       <section className={`${styles.musicSection} ${styles.metricsSection}`}>
-        <h2>METRICS</h2>
+        <h2>metrics</h2>
         <p className={styles.empty}>{message}</p>
       </section>
     </>
@@ -72,14 +68,14 @@ function renderMusicState(state: MusicState) {
       return (
         <>
           <section className={`${styles.musicSection} ${styles.nowPlayingSection}`} aria-labelledby="music-now-playing">
-            <h2 id="music-now-playing">NOW PLAYING</h2>
+            <h2 id="music-now-playing">now playing</h2>
             <MusicPlaybackPanel now={state.data.now} />
           </section>
 
           <MusicFilesPanel stats={state.data.stats} />
 
           <section className={`${styles.musicSection} ${styles.metricsSection}`} aria-labelledby="music-metrics">
-            <h2 id="music-metrics">METRICS</h2>
+            <h2 id="music-metrics">metrics</h2>
             <div className={styles.musicDashboard}>
               <div className={styles.musicMainColumn}>
                 <MusicTimelinePanel insights={state.data.insights} />
@@ -104,13 +100,13 @@ function renderMusicState(state: MusicState) {
         </>
       );
     case 'error':
-      return unavailableMusicState(state.message);
+      return unavailableMusicState('spotify unavailable.');
     default:
       return assertNever(state);
   }
 }
 
-export default function MusicStats({ onNowChange }: MusicStatsProps) {
+export default function MusicStats() {
   const [state, setState] = useState<MusicState>({ kind: 'loading' });
 
   useEffect(() => {
@@ -141,15 +137,11 @@ export default function MusicStats({ onNowChange }: MusicStatsProps) {
           observeSpotifyPlayback(),
         ]);
         if (!cancelled) {
-          onNowChange?.(now);
           setState({ kind: 'ready', data: { now, stats, insights } });
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
-          setState({
-            kind: 'error',
-            message: error instanceof Error ? error.message : 'spotify request failed',
-          });
+          setState({ kind: 'error' });
         }
       }
     }
@@ -163,7 +155,6 @@ export default function MusicStats({ onNowChange }: MusicStatsProps) {
       Promise.all([fetchSpotifyNow(), observeSpotifyPlayback()])
         .then(([now, insights]) => {
           if (!cancelled) {
-            onNowChange?.(now);
             setLiveData(now, insights);
           }
         })
@@ -178,7 +169,7 @@ export default function MusicStats({ onNowChange }: MusicStatsProps) {
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [onNowChange]);
+  }, []);
 
   return (
     <section className={styles.music} aria-label="music">

@@ -1,61 +1,44 @@
 import PixelMascot from '@/components/PixelMascot';
 import SpotifyNow from '@/components/SpotifyNow';
-import { navigationItems } from '@/components/ManNav';
 import Link from 'next/link';
-import ManualChrome from '@/components/ManualChrome';
 
 export default function Home() {
   return (
     <>
-      <ManualChrome name="HENRY(1)" title="General Commands Manual" status="Manual page henry(1)" currentSection="home" />
-      <h1 className="page-title home-title">henry wang</h1>
-      <section className="man-section home-hero" aria-labelledby="home-name">
-        <h2>NAME</h2>
-        <p className="man-indent" id="home-name"><strong>henry wang</strong> — software engineer</p>
+      <section className="home-intro" aria-labelledby="home-name">
+        <h1 id="home-name">henry wang</h1>
+        <p className="home-role">software engineer</p>
+        <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering at <a href="https://phoebe.work/" target="_blank" rel="noopener noreferrer">phoebe.work</a>; previously <a href="https://fish.audio" target="_blank" rel="noopener noreferrer">fish.audio</a> and <a href="https://www.nationgraph.com/" target="_blank" rel="noopener noreferrer">nationgraph</a>.</p>
+        <p>interests: ML systems, computer graphics, game theory, snowboarding, and music.</p>
       </section>
 
-      <section className="man-section" aria-labelledby="synopsis-title">
-        <h2 id="synopsis-title">SYNOPSIS</h2>
-        <p className="man-indent"><strong>henry</strong>{navigationItems.map((item) => <span key={item.key}> [<Link href={item.href}>{item.label}</Link>]</span>)}</p>
+      <section aria-labelledby="projects-title">
+        <h2 id="projects-title">projects</h2>
+        <ul className="project-list home-projects">
+          <li><Link href="/projects/wiki">wiki</Link><span>a local markdown vault and agent workspace</span></li>
+          <li><Link href="/projects/zeta">zeta</Link><span>an agent harness that owns the loop</span></li>
+          <li><Link href="/projects/newt-chimy2">newt+chimy2</Link><span>deterministic physics engine and software renderer</span></li>
+        </ul>
       </section>
 
-      <section className="man-section" aria-labelledby="description-title">
-        <h2 id="description-title">DESCRIPTION</h2>
-        <p className="man-indent">software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering at <a href="https://phoebe.work/" target="_blank" rel="noopener noreferrer">phoebe.work</a>; previously <a href="https://fish.audio" target="_blank" rel="noopener noreferrer">fish.audio</a> and <a href="https://www.nationgraph.com/" target="_blank" rel="noopener noreferrer">nationgraph</a>.</p>
-        <dl className="tag-list">
-          <div><dt>--interests</dt><dd>ML, computer graphics, game theory</dd></div>
-          <div><dt>--also</dt><dd>snowboarding, music</dd></div>
-        </dl>
+      <section className="home-mascot" aria-label="pixel mascot">
+        <PixelMascot />
       </section>
 
-      <section className="man-section" aria-labelledby="projects-title">
-        <h2 id="projects-title">PROJECTS</h2>
-        <dl className="tag-list">
-          <div><dt><Link href="/projects/wiki">wiki</Link></dt><dd>a local markdown vault and agent workspace</dd></div>
-          <div><dt><Link href="/projects/zeta">zeta</Link></dt><dd>an agent harness that owns the loop</dd></div>
-          <div><dt><Link href="/projects/newt-chimy2">newt+chimy2</Link></dt><dd>deterministic physics engine and software renderer</dd></div>
-        </dl>
+      <section aria-labelledby="music-title">
+        <h2 id="music-title">music</h2>
+        <SpotifyNow />
       </section>
 
-      <section className="man-section home-examples" aria-labelledby="examples-title">
-        <h2 id="examples-title">EXAMPLES</h2>
-        <div className="man-indent"><PixelMascot /><p className="fine-print">fig. 1 — the author, descending</p></div>
+      <section aria-labelledby="contact-title">
+        <h2 id="contact-title">contact</h2>
+        <p><a href="mailto:h352wang@uwaterloo.ca">email</a>, <a href="https://github.com/hwang2409" target="_blank" rel="noopener noreferrer">github</a>, <a href="https://linkedin.com/in/henry-w-se" target="_blank" rel="noopener noreferrer">linkedin</a>, <a href="https://x.com/oreaooaoaoaoa" target="_blank" rel="noopener noreferrer">x</a></p>
       </section>
 
-      <section className="man-section home-music" aria-labelledby="music-title">
-        <h2 id="music-title">MUSIC</h2>
-        <div className="man-indent"><SpotifyNow /></div>
-      </section>
-
-      <section className="man-section" aria-labelledby="see-also-title">
-        <h2 id="see-also-title">SEE ALSO</h2>
-        <p className="man-indent"><a href="https://github.com/hwang2409" target="_blank" rel="noopener noreferrer">github(1)</a>, <a href="mailto:h352wang@uwaterloo.ca">mail(1)</a>, <Link href="/music">spotify(7)</Link></p>
-      </section>
-
-      <section className="man-section" aria-labelledby="colophon-title">
-        <h2 id="colophon-title">COLOPHON</h2>
-        <p className="man-indent fine-print">© 2026 henry wang. this page is intentionally quiet.</p>
-      </section>
+      <blockquote className="home-epigraph">
+        <p>“There’s no such thing as a bad idea, Morty; it’s about execution”</p>
+        <cite>— Rick Sanchez</cite>
+      </blockquote>
     </>
   );
 }

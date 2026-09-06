@@ -1,4 +1,3 @@
-import ManualChrome from '@/components/ManualChrome';
 
 export const metadata = {
   title: 'resume',
@@ -56,16 +55,15 @@ function Entry({
 export default function Resume() {
   return (
     <>
-    <ManualChrome name="HENRY-RESUME(1)" title="General Commands Manual" status="henry-resume(1) — rev 2026 — press cmd+p for paper" currentSection="resume" sectionHref="/resume" />
     <section className="resume-page page-section">
       <div className="resume-header">
-        <h1 className="page-title">NAME</h1>
+        <h1 className="page-title">resume</h1>
         <a href="/Resume.pdf" target="_blank" rel="noopener noreferrer">
           pdf
         </a>
       </div>
 
-      <Section label="EDUCATION">
+      <Section label="Education">
         <div className="entry-heading">
           <span className="entry-title">University of Waterloo</span>
           <span className="entry-meta">Expected April 2026</span>
@@ -73,7 +71,7 @@ export default function Resume() {
         <p className="muted">Bachelor of Software Engineering (BSE)</p>
       </Section>
 
-      <Section label="EXPERIENCE">
+      <Section label="Experience">
         <Entry
           title="Software Engineer Intern"
           sub="Fish Audio"
@@ -98,7 +96,7 @@ export default function Resume() {
         />
       </Section>
 
-      <Section label="PROJECTS">
+      <Section label="Projects">
         <Entry
           title="Neuronic"
           sub="React, FastAPI, PostgreSQL, Redis, Celery, AWS"
@@ -122,7 +120,7 @@ export default function Resume() {
         />
       </Section>
 
-      <Section label="SKILLS">
+      <Section label="Skills">
         <div className="skill-lines">
           <p>
             <strong>Languages:</strong>{' '}
@@ -145,7 +143,7 @@ export default function Resume() {
         </div>
       </Section>
 
-      <Section label="AWARDS">
+      <Section label="Awards">
         <ul className="plain-list">
           <li>National Champion of the Hypatia Math Contest (1/5627)</li>
           <li>Score of 124.5 on the AMC12 (Top 5% out of 140,000 participants)</li>

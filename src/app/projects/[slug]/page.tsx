@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProject, getProjects } from '@/lib/projects';
 import { markdownToHtmlWithSections } from '@/lib/markdown';
-import ManualChrome from '@/components/ManualChrome';
-import ManualContents from '@/components/ManualContents';
+import Contents from '@/components/Contents';
 
 export async function generateMetadata({
   params,
@@ -30,15 +29,13 @@ export default async function ProjectPage({
 
   return (
     <>
-    <ManualChrome name="HENRY-PROJECTS(7)" title="Miscellaneous Manual" status="henry-projects(7)" currentSection="projects" sectionHref="/projects" />
     <article className="post-article project-article">
       <h1 className="post-title page-title">{project.title}</h1>
-      <section className="man-section"><h2>NAME</h2><p className="man-indent"><strong>{project.title}</strong> — {project.excerpt}</p></section>
-      <ManualContents sections={sections} />
-      <section className="man-section"><h2>SYNOPSIS</h2><p className="man-indent"><strong>{project.title.toLowerCase().replaceAll(' ', '-')}</strong> — {project.excerpt}</p></section>
-      <section className="man-section"><h2>DESCRIPTION</h2><div className="man-indent prose" dangerouslySetInnerHTML={{ __html: htmlContent }} /></section>
-      <section className="man-section"><h2>HISTORY</h2><p className="man-indent">published {project.date}; work continues in public.</p></section>
-      <section className="man-section"><h2>SEE ALSO</h2><p className="man-indent"><Link href="/projects">henry-projects(7)</Link>, <a href="https://github.com/hwang2409" target="_blank" rel="noopener noreferrer">github(1)</a></p></section>
+      <p className="post-meta">{project.date}</p>
+      <p className="post-excerpt">{project.excerpt}</p>
+      <Contents sections={sections} />
+      <div className="prose" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <nav className="post-pager" aria-label="project navigation"><Link href="/projects">all projects</Link></nav>
     </article>
     </>
   );
