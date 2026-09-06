@@ -10,7 +10,6 @@ type RawNode = Extract<Root['children'][number] | Element['children'][number], {
 
 type MarkdownSource = {
   slug: string;
-  manualSections?: boolean;
 };
 
 export type MarkdownSection = {
@@ -581,39 +580,6 @@ function rehypeSourceMap(source?: MarkdownSource) {
   };
 }
 
-function rehypeManualSections(enabled: boolean) {
-  return (tree: Root) => {
-    if (!enabled) return;
-
-    const sections: Element[] = [];
-    let currentBody: Element | null = null;
-
-    function startSection(heading: Element): Element {
-      const body = createElement('div', { className: ['man-indent'] });
-      currentBody = body;
-      sections.push(
-        createElement('section', { className: ['man-section'] }, [heading, body]),
-      );
-      return body;
-    }
-
-    function startDescription(): Element {
-      return startSection(createElement('h2', {}, [createText('DESCRIPTION')]));
-    }
-
-    for (const child of tree.children) {
-      if (isElement(child) && child.tagName === 'h2') {
-        startSection(child);
-      } else {
-        const body = currentBody ?? startDescription();
-        if (child.type !== 'doctype') body.children.push(child);
-      }
-    }
-
-    tree.children = sections;
-  };
-}
-
 async function processMarkdown(
   markdown: string,
   source?: MarkdownSource,
@@ -629,7 +595,6 @@ async function processMarkdown(
     .use(rehypeFigures)
     .use(rehypeSidenotes)
     .use(rehypeSourceMap, source)
-    .use(rehypeManualSections, source?.manualSections === true)
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
   return result.toString();

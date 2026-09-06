@@ -1,4 +1,3 @@
-import ManualChrome from '@/components/ManualChrome';
 
 export const metadata = {
   title: 'resume',
@@ -56,10 +55,9 @@ function Entry({
 export default function Resume() {
   return (
     <>
-    <ManualChrome name="HENRY-RESUME(1)" title="General Commands Manual" status="henry-resume(1) — rev 2026 — press cmd+p for paper" currentSection="resume" sectionHref="/resume" />
     <section className="resume-page page-section">
       <div className="resume-header">
-        <h1 className="page-title">NAME</h1>
+        <h1 className="page-title">resume</h1>
         <a href="/Resume.pdf" target="_blank" rel="noopener noreferrer">
           pdf
         </a>

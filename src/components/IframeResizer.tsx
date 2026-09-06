@@ -6,9 +6,10 @@ export default function IframeResizer() {
   useEffect(() => {
     const iframes = Array.from(document.querySelectorAll('iframe'));
 
+    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
     const syncIframeThemes = () => {
-      const theme =
-        document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+      const theme = colorScheme.matches ? 'dark' : 'light';
 
       document.querySelectorAll('iframe').forEach((iframe) => {
         iframe.contentWindow?.postMessage(
@@ -34,7 +35,7 @@ export default function IframeResizer() {
     };
 
     window.addEventListener('message', handler);
-    window.addEventListener('site-theme-change', syncIframeThemes);
+    colorScheme.addEventListener('change', syncIframeThemes);
     iframes.forEach((iframe) => {
       iframe.addEventListener('load', syncIframeThemes);
     });
@@ -42,7 +43,7 @@ export default function IframeResizer() {
 
     return () => {
       window.removeEventListener('message', handler);
-      window.removeEventListener('site-theme-change', syncIframeThemes);
+      colorScheme.removeEventListener('change', syncIframeThemes);
       iframes.forEach((iframe) => {
         iframe.removeEventListener('load', syncIframeThemes);
       });

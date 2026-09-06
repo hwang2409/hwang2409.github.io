@@ -6,13 +6,13 @@ import mermaid from 'mermaid';
 type SiteTheme = 'light' | 'dark';
 
 function getTheme(): SiteTheme {
-  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function configureMermaid(theme: SiteTheme) {
   const isDark = theme === 'dark';
   // Colors come from the globals.css tokens so diagrams follow the site theme.
-  // render() re-runs on site-theme-change, so tokens are re-read after a toggle.
+  // render() re-runs when the system color scheme changes.
   const styles = getComputedStyle(document.documentElement);
   const token = (name: string) => styles.getPropertyValue(name).trim();
 
@@ -152,11 +152,12 @@ export default function MermaidRenderer() {
     }
 
     render();
-    window.addEventListener('site-theme-change', render);
+    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    colorScheme.addEventListener('change', render);
 
     return () => {
       cancelled = true;
-      window.removeEventListener('site-theme-change', render);
+      colorScheme.removeEventListener('change', render);
     };
   }, []);
 
