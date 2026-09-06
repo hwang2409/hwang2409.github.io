@@ -129,12 +129,6 @@ flowchart TD
     G -. "downstream" .-> K["Feed insights tab<br/><small>definitions, formulas, tags</small>"]
     I -. "downstream" .-> L["Run automations<br/><small>flashcards, todos, etc.</small>"]
 
-    style A fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style D fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style F fill:#1a1a1a,stroke:#f47068,color:#f47068
-    style G fill:#1a1a1a,stroke:#e8a855,color:#e8a855
-    style H fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
-    style I fill:#1a1a1a,stroke:#58a6ff,color:#58a6ff
 ```
 
 Steps 3-5 run concurrently. The embedding is computed locally via FastEmbed (BAAI/bge-small-en-v1.5, 384 dimensions), so there is no external API call. Claude analysis runs in parallel and fans out to four consumers: concept sync, analysis storage, review scheduling, and the automation event bus.
@@ -159,11 +153,6 @@ flowchart LR
     C --> E["SCHEDULE<br/>next_review"]
     D --> E
 
-    style A fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style B fill:#1a1a1a,stroke:#58a6ff,color:#58a6ff
-    style C fill:#1a1a1a,stroke:#f47068,color:#f47068
-    style D fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
-    style E fill:#1a1a1a,stroke:#c4a759,color:#c4a759
 ```
 
 **Example interval progression:**
@@ -201,8 +190,6 @@ flowchart LR
 
     KG -. "prerequisite<br/>analysis" .-> GAP["GAP DETECTION<br/>Prerequisite not yet studied?<br/>→ Surface in dashboard<br/>→ One-click generate"]
 
-    style M fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style GAP fill:#1a1a1a,stroke:#f47068,color:#f47068
 ```
 
 Gap detection compares a note's prerequisites against your known concepts. If you're studying eigenvalues but have never touched linear algebra, the dashboard shows that gap and gives you a button to generate a prerequisite note with Claude.
@@ -229,13 +216,6 @@ flowchart LR
 
     RANK --> RAG["RAG<br/>Claude + context"]
 
-    style Q fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style EMB fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
-    style SEM fill:#1a1a1a,stroke:#58a6ff,color:#58a6ff
-    style KEY fill:#1a1a1a,stroke:#e8a855,color:#e8a855
-    style REC fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
-    style RANK fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style RAG fill:#1a1a1a,stroke:#c4a759,color:#c4a759
 ```
 
 ---
@@ -274,9 +254,6 @@ flowchart LR
 
     EXEC --> LOG["LOG<br/><small>audit trail</small>"]
 
-    style EV fill:#1a1a1a,stroke:#58a6ff,color:#58a6ff
-    style MATCH fill:#1a1a1a,stroke:#c4a759,color:#c4a759
-    style EXEC fill:#1a1a1a,stroke:#56d6a0,color:#56d6a0
 ```
 
 Events process asynchronously via `fire_event()`. Every rule match is logged, and failed actions retry with exponential backoff.
