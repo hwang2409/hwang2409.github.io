@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
+import { Inconsolata } from 'next/font/google';
 import SiteNav from '@/components/SiteNav';
 import './globals.css';
+
+const inconsolata = Inconsolata({
+  subsets: ['latin'],
+  variable: '--font-inconsolata',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={inconsolata.variable}>
       <body>
         <a href="#main-content" className="skip-link">skip to content</a>
         <div className="site-shell">
