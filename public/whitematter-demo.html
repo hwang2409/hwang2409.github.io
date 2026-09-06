@@ -32,14 +32,16 @@
             color-scheme: light;
         }
 
-        :root[data-theme="dark"] {
-            --background: #111;
-            --foreground: #eee;
-            --muted: #aaa;
-            --border: #777;
-            --code: #242424;
-            --bar: #aaa;
-            color-scheme: dark;
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #111;
+                --foreground: #eee;
+                --muted: #aaa;
+                --border: #777;
+                --code: #242424;
+                --bar: #aaa;
+                color-scheme: dark;
+            }
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -110,22 +112,6 @@
     <p id="status">Loading model...</p>
 
     <script>
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-        document.documentElement.dataset.theme = savedTheme;
-    }
-    window.addEventListener('message', (event) => {
-        if (event.origin !== window.location.origin) return;
-        if (event.data?.type === 'site-theme') {
-            document.documentElement.dataset.theme = event.data.theme;
-        }
-    });
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'theme' && (event.newValue === 'dark' || event.newValue === 'light')) {
-            document.documentElement.dataset.theme = event.newValue;
-        }
-    });
-
     const CLASSES = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck'];
     const MEAN = [0.4914, 0.4822, 0.4465];
     const STD  = [0.2470, 0.2435, 0.2616];

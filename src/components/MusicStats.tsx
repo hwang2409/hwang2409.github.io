@@ -35,7 +35,7 @@ type MusicData = {
 type MusicState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'ready'; readonly data: MusicData }
-  | { readonly kind: 'error'; readonly message: string };
+  | { readonly kind: 'error' };
 
 function assertNever(value: never): never {
   throw new Error(`Unexpected Spotify state: ${JSON.stringify(value)}`);
@@ -100,7 +100,7 @@ function renderMusicState(state: MusicState) {
         </>
       );
     case 'error':
-      return unavailableMusicState(state.message);
+      return unavailableMusicState('spotify unavailable.');
     default:
       return assertNever(state);
   }
@@ -139,12 +139,9 @@ export default function MusicStats() {
         if (!cancelled) {
           setState({ kind: 'ready', data: { now, stats, insights } });
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
-          setState({
-            kind: 'error',
-            message: error instanceof Error ? error.message : 'spotify request failed',
-          });
+          setState({ kind: 'error' });
         }
       }
     }

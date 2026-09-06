@@ -63,7 +63,7 @@ export default function Resume() {
         </a>
       </div>
 
-      <Section label="EDUCATION">
+      <Section label="Education">
         <div className="entry-heading">
           <span className="entry-title">University of Waterloo</span>
           <span className="entry-meta">Expected April 2026</span>
@@ -71,7 +71,7 @@ export default function Resume() {
         <p className="muted">Bachelor of Software Engineering (BSE)</p>
       </Section>
 
-      <Section label="EXPERIENCE">
+      <Section label="Experience">
         <Entry
           title="Software Engineer Intern"
           sub="Fish Audio"
@@ -96,7 +96,7 @@ export default function Resume() {
         />
       </Section>
 
-      <Section label="PROJECTS">
+      <Section label="Projects">
         <Entry
           title="Neuronic"
           sub="React, FastAPI, PostgreSQL, Redis, Celery, AWS"
@@ -120,7 +120,7 @@ export default function Resume() {
         />
       </Section>
 
-      <Section label="SKILLS">
+      <Section label="Skills">
         <div className="skill-lines">
           <p>
             <strong>Languages:</strong>{' '}
@@ -143,7 +143,7 @@ export default function Resume() {
         </div>
       </Section>
 
-      <Section label="AWARDS">
+      <Section label="Awards">
         <ul className="plain-list">
           <li>National Champion of the Hypatia Math Contest (1/5627)</li>
           <li>Score of 124.5 on the AMC12 (Top 5% out of 140,000 participants)</li>

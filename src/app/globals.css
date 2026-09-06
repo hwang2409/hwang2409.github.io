@@ -281,7 +281,7 @@ dd {
 }
 
 .home-epigraph {
-  margin: 0 0 4.5rem;
+  margin: 4.5rem 0 0;
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -399,6 +399,28 @@ dd {
 
 .prose {
   max-width: 38rem;
+}
+
+:root[data-blog-case="lower"] .post-article .post-title,
+:root[data-blog-case="lower"] .post-article .post-date,
+:root[data-blog-case="lower"] .post-article .prose p,
+:root[data-blog-case="lower"] .post-article .prose li,
+:root[data-blog-case="lower"] .post-article .prose h1,
+:root[data-blog-case="lower"] .post-article .prose h2,
+:root[data-blog-case="lower"] .post-article .prose h3,
+:root[data-blog-case="lower"] .post-article .prose th,
+:root[data-blog-case="lower"] .post-article .prose td,
+:root[data-blog-case="lower"] .post-article .prose blockquote,
+:root[data-blog-case="lower"] .post-article .prose .sidenote {
+  text-transform: lowercase;
+}
+
+:root[data-blog-case="lower"] .post-article .prose pre,
+:root[data-blog-case="lower"] .post-article .prose code,
+:root[data-blog-case="lower"] .post-article .prose iframe,
+:root[data-blog-case="lower"] .post-article .mermaid-diagram,
+:root[data-blog-case="lower"] .post-article .mermaid-diagram * {
+  text-transform: none;
 }
 
 .prose h1,
@@ -567,7 +589,7 @@ dd {
 
 @media (min-width: 75rem) {
   .blog-content {
-    margin-right: 11rem;
+    margin-right: 0;
   }
 
   .blog-content .sidenote {
@@ -922,15 +944,19 @@ dd {
 /* mascot */
 
 .mascot-track {
-  width: 100%;
-  overflow: hidden;
+  position: relative;
+  height: 34px;
+  margin-top: 4.5rem;
+  border-bottom: 1px dashed var(--border);
 }
 
 .mascot {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  animation: mascot-traverse 17s linear infinite;
+  position: absolute;
+  bottom: 0;
+  left: -56px;
+  width: 52px;
+  height: 28px;
+  animation: mascot-carve 17s linear infinite;
 }
 
 .mascot-f1,
@@ -938,38 +964,119 @@ dd {
   position: absolute;
   top: 0;
   left: 0;
-  width: 32px;
-  height: 32px;
-  background: var(--foreground);
-  clip-path: polygon(25% 0, 75% 0, 75% 12.5%, 87.5% 12.5%, 87.5% 25%,
-    100% 25%, 100% 75%, 87.5% 75%, 87.5% 87.5%, 75% 87.5%, 75% 100%,
-    25% 100%, 25% 87.5%, 12.5% 87.5%, 12.5% 75%, 0 75%, 0 25%,
-    12.5% 25%, 12.5% 12.5%, 25% 12.5%);
-  image-rendering: pixelated;
+  width: 4px;
+  height: 4px;
+  background: transparent;
 }
 
+/* pixel snowboarder, frame 1: standing tall */
+.mascot-f1 {
+  animation: mascot-frame-a 0.7s linear infinite;
+  box-shadow:
+    /* head */
+    32px 0 0 0 var(--foreground),
+    36px 0 0 0 var(--foreground),
+    32px 4px 0 0 var(--foreground),
+    /* goggle */
+    36px 4px 0 0 var(--accent),
+    /* torso and arms */
+    24px 8px 0 0 var(--foreground),
+    28px 8px 0 0 var(--foreground),
+    32px 8px 0 0 var(--foreground),
+    28px 12px 0 0 var(--foreground),
+    32px 12px 0 0 var(--foreground),
+    36px 12px 0 0 var(--foreground),
+    /* legs */
+    24px 16px 0 0 var(--foreground),
+    32px 16px 0 0 var(--foreground),
+    24px 20px 0 0 var(--foreground),
+    32px 20px 0 0 var(--foreground),
+    /* board */
+    12px 20px 0 0 var(--accent),
+    48px 20px 0 0 var(--accent),
+    12px 24px 0 0 var(--accent),
+    16px 24px 0 0 var(--accent),
+    20px 24px 0 0 var(--accent),
+    24px 24px 0 0 var(--accent),
+    28px 24px 0 0 var(--accent),
+    32px 24px 0 0 var(--accent),
+    36px 24px 0 0 var(--accent),
+    40px 24px 0 0 var(--accent),
+    44px 24px 0 0 var(--accent),
+    48px 24px 0 0 var(--accent);
+}
+
+/* pixel snowboarder, frame 2: crouched carve with spray */
 .mascot-f2 {
-  clip-path: polygon(25% 0, 75% 0, 75% 12.5%, 100% 12.5%, 100% 25%,
-    87.5% 25%, 87.5% 75%, 100% 75%, 100% 87.5%, 75% 87.5%, 75% 100%,
-    25% 100%, 25% 87.5%, 0 87.5%, 0 75%, 12.5% 75%, 12.5% 25%,
-    0 25%, 0 12.5%, 25% 12.5%);
   opacity: 0;
-  animation: mascot-frame 0.7s steps(1) infinite;
+  animation: mascot-frame-b 0.7s linear infinite;
+  box-shadow:
+    /* head */
+    32px 4px 0 0 var(--foreground),
+    36px 4px 0 0 var(--foreground),
+    32px 8px 0 0 var(--foreground),
+    /* goggle */
+    36px 8px 0 0 var(--accent),
+    /* torso and arms */
+    24px 12px 0 0 var(--foreground),
+    28px 12px 0 0 var(--foreground),
+    32px 12px 0 0 var(--foreground),
+    28px 16px 0 0 var(--foreground),
+    32px 16px 0 0 var(--foreground),
+    36px 16px 0 0 var(--foreground),
+    /* legs */
+    24px 20px 0 0 var(--foreground),
+    32px 20px 0 0 var(--foreground),
+    /* board */
+    12px 20px 0 0 var(--accent),
+    48px 20px 0 0 var(--accent),
+    12px 24px 0 0 var(--accent),
+    16px 24px 0 0 var(--accent),
+    20px 24px 0 0 var(--accent),
+    24px 24px 0 0 var(--accent),
+    28px 24px 0 0 var(--accent),
+    32px 24px 0 0 var(--accent),
+    36px 24px 0 0 var(--accent),
+    40px 24px 0 0 var(--accent),
+    44px 24px 0 0 var(--accent),
+    48px 24px 0 0 var(--accent),
+    /* spray */
+    8px 20px 0 0 var(--muted),
+    4px 24px 0 0 var(--muted);
 }
 
-@keyframes mascot-traverse {
-  from { transform: translateX(-2rem); }
-  to { transform: translateX(calc(100vw - 4rem)); }
+@keyframes mascot-carve {
+  from { left: -56px; }
+  to { left: 100%; }
 }
 
-@keyframes mascot-frame {
-  50% { opacity: 1; }
+@keyframes mascot-frame-a {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes mascot-frame-b {
+  0%, 49% { opacity: 0; }
+  50%, 100% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mascot,
+  .mascot {
+    animation: none;
+    left: 12%;
+  }
+
+  .mascot-f1,
   .mascot-f2 {
     animation: none;
+  }
+
+  .mascot-f1 {
+    opacity: 1;
+  }
+
+  .mascot-f2 {
+    opacity: 0;
   }
 }
 

@@ -9,7 +9,7 @@ import { fetchSpotifyNow, type SpotifyNow as SpotifyNowData } from '@/lib/spotif
 type SpotifyNowState =
   | { readonly kind: 'loading' }
   | { readonly kind: 'ready'; readonly now: SpotifyNowData }
-  | { readonly kind: 'error'; readonly message: string };
+  | { readonly kind: 'error' };
 
 function assertNever(value: never): never {
   throw new Error(`Unexpected Spotify state: ${JSON.stringify(value)}`);
@@ -66,7 +66,7 @@ function renderSpotifyState(state: SpotifyNowState) {
     case 'ready':
       return <ReadyNow now={state.now} />;
     case 'error':
-      return <p className={styles.empty}>{state.message}</p>;
+      return <p className={styles.empty}>not playing.</p>;
     default:
       return assertNever(state);
   }
@@ -84,12 +84,9 @@ export default function SpotifyNow() {
         if (!cancelled) {
           setState({ kind: 'ready', now });
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
-          setState({
-            kind: 'error',
-            message: error instanceof Error ? error.message : 'spotify request failed',
-          });
+          setState({ kind: 'error' });
         }
       }
     }
