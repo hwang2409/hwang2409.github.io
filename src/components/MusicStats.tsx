@@ -77,6 +77,7 @@ export default function MusicStats() {
 
   useEffect(() => {
     let cancelled = false;
+    let intervalId: number | undefined;
 
     function setLiveData(now: SpotifyNow) {
       setState((current) => {
@@ -94,21 +95,7 @@ export default function MusicStats() {
       });
     }
 
-    async function loadMusic() {
-      try {
-        const [now, stats] = await Promise.all([fetchSpotifyNow(), fetchSpotifyStats()]);
-        if (!cancelled) {
-          setState({ kind: 'ready', data: { now, stats } });
-        }
-      } catch {
-        if (!cancelled) {
-          setState({ kind: 'error' });
-        }
-      }
-    }
-
-    loadMusic();
-    const intervalId = window.setInterval(() => {
+    function pollNow() {
       if (document.hidden) {
         return;
       }
@@ -124,11 +111,29 @@ export default function MusicStats() {
             return;
           }
         });
-    }, 10_000);
+    }
+
+    async function loadMusic() {
+      try {
+        const [now, stats] = await Promise.all([fetchSpotifyNow(), fetchSpotifyStats()]);
+        if (!cancelled) {
+          setState({ kind: 'ready', data: { now, stats } });
+          intervalId = window.setInterval(pollNow, 10_000);
+        }
+      } catch {
+        if (!cancelled) {
+          setState({ kind: 'error' });
+        }
+      }
+    }
+
+    loadMusic();
 
     return () => {
       cancelled = true;
-      window.clearInterval(intervalId);
+      if (intervalId !== undefined) {
+        window.clearInterval(intervalId);
+      }
     };
   }, []);
 

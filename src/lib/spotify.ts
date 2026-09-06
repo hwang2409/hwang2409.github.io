@@ -52,62 +52,6 @@ export type SpotifyNow = {
   readonly note: string;
 };
 
-export type SpotifyInsightTrack = {
-  readonly rank: number;
-  readonly title: string;
-  readonly artists: readonly string[];
-  readonly album: string;
-  readonly url: string | null;
-  readonly imageUrl: string | null;
-  readonly plays: number;
-  readonly completions: number;
-  readonly skips: number;
-  readonly completionRate: number;
-  readonly skipRate: number;
-  readonly averageSkipPercent: number | null;
-};
-
-export type SpotifyTimelineBucket = {
-  readonly index: number;
-  readonly startPercent: number;
-  readonly endPercent: number;
-  readonly listens: number;
-  readonly skips: number;
-};
-
-export type SpotifyTimeline = {
-  readonly title: string;
-  readonly artists: readonly string[];
-  readonly album: string;
-  readonly buckets: readonly SpotifyTimelineBucket[];
-};
-
-export type SpotifyInsightMetric = {
-  readonly label: string;
-  readonly value: string;
-  readonly note: string;
-};
-
-export type SpotifyInsightSection = {
-  readonly title: string;
-  readonly eyebrow: string;
-  readonly metrics: readonly SpotifyInsightMetric[];
-};
-
-export type SpotifyInsights = {
-  readonly status: SpotifyStatus;
-  readonly configured: boolean;
-  readonly generatedAt: string;
-  readonly observedSamples: number;
-  readonly totalPlays: number;
-  readonly activeDays: number;
-  readonly topPlayed: readonly SpotifyInsightTrack[];
-  readonly skipProfile: readonly SpotifyInsightTrack[];
-  readonly timeline: SpotifyTimeline | null;
-  readonly sections: readonly SpotifyInsightSection[];
-  readonly note: string;
-};
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -234,83 +178,6 @@ function parseSpotifyNow(value: unknown): SpotifyNow {
   };
 }
 
-function parseInsightTrack(value: Record<string, unknown>): SpotifyInsightTrack {
-  return {
-    rank: readNumber(value.rank, 0),
-    title: readString(value.title),
-    artists: readStringArray(value.artists),
-    album: readString(value.album),
-    url: readNullableString(value.url),
-    imageUrl: readNullableString(value.image_url),
-    plays: readNumber(value.plays, 0),
-    completions: readNumber(value.completions, 0),
-    skips: readNumber(value.skips, 0),
-    completionRate: readNumber(value.completion_rate, 0),
-    skipRate: readNumber(value.skip_rate, 0),
-    averageSkipPercent:
-      typeof value.average_skip_percent === 'number' ? value.average_skip_percent : null,
-  };
-}
-
-function parseTimelineBucket(value: Record<string, unknown>): SpotifyTimelineBucket {
-  return {
-    index: readNumber(value.index, 0),
-    startPercent: readNumber(value.start_percent, 0),
-    endPercent: readNumber(value.end_percent, 0),
-    listens: readNumber(value.listens, 0),
-    skips: readNumber(value.skips, 0),
-  };
-}
-
-function parseTimeline(value: unknown): SpotifyTimeline | null {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  return {
-    title: readString(value.title),
-    artists: readStringArray(value.artists),
-    album: readString(value.album),
-    buckets: readRecordArray(value.buckets).map(parseTimelineBucket),
-  };
-}
-
-function parseMetric(value: Record<string, unknown>): SpotifyInsightMetric {
-  return {
-    label: readString(value.label),
-    value: readString(value.value),
-    note: readString(value.note),
-  };
-}
-
-function parseSection(value: Record<string, unknown>): SpotifyInsightSection {
-  return {
-    title: readString(value.title),
-    eyebrow: readString(value.eyebrow),
-    metrics: readRecordArray(value.metrics).map(parseMetric),
-  };
-}
-
-function parseSpotifyInsights(value: unknown): SpotifyInsights {
-  if (!isRecord(value)) {
-    throw new Error('Spotify insights response was not an object');
-  }
-
-  return {
-    status: readStatus(value.status),
-    configured: readBoolean(value.configured),
-    generatedAt: readString(value.generated_at),
-    observedSamples: readNumber(value.observed_samples, 0),
-    totalPlays: readNumber(value.total_plays, 0),
-    activeDays: readNumber(value.active_days, 0),
-    topPlayed: readRecordArray(value.top_played).map(parseInsightTrack),
-    skipProfile: readRecordArray(value.skip_profile).map(parseInsightTrack),
-    timeline: parseTimeline(value.timeline),
-    sections: readRecordArray(value.sections).map(parseSection),
-    note: readString(value.note),
-  };
-}
-
 async function fetchSpotifyJson(path: string, init?: RequestInit): Promise<unknown> {
   const response = await fetch(`${LAB_API_URL}${path}`, {
     ...init,
@@ -335,12 +202,4 @@ export async function fetchSpotifyStats(): Promise<SpotifyStats> {
 
 export async function fetchSpotifyNow(): Promise<SpotifyNow> {
   return parseSpotifyNow(await fetchSpotifyJson('/spotify/now'));
-}
-
-export async function fetchSpotifyInsights(): Promise<SpotifyInsights> {
-  return parseSpotifyInsights(await fetchSpotifyJson('/spotify/insights'));
-}
-
-export async function observeSpotifyPlayback(): Promise<SpotifyInsights> {
-  return parseSpotifyInsights(await fetchSpotifyJson('/spotify/observe', { method: 'POST' }));
 }
