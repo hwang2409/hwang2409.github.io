@@ -50,3 +50,8 @@ next-env.d.ts
 
 # worktrees
 .worktrees/
+
+# local agent artifacts
+.playwright-mcp/
+.omo/
+/*.png
