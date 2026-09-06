@@ -4,7 +4,7 @@
   --muted: #555555;
   --border: #cccccc;
   --code: #f2f2f2;
-  --font-mono: Consolas, var(--font-inconsolata), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-mono: Consolas, "Consolas for Powerline", var(--font-inconsolata), ui-monospace, "SF Mono", Menlo, monospace;
   --space-1: 0.35rem;
   --space-2: 0.7rem;
   --space-3: 1.25rem;

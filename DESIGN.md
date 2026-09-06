@@ -20,9 +20,11 @@ inverts the foreground and background.
 
 ## type and layout
 
-the primary stack is `Consolas, Inconsolata, ui-monospace, "SF Mono", Menlo,
-monospace`. inconsolata is bundled with `next/font/google`, so non-windows
-platforms do not fall back to a system mono font. the base size is 16px and the
+the primary stack is `Consolas, "Consolas for Powerline", Inconsolata,
+ui-monospace, "SF Mono", Menlo, monospace`. inconsolata is bundled with
+`next/font/google`, so non-windows platforms do not fall back to a system mono
+font. "Consolas for Powerline" matches the patched Consolas builds common on
+developer machines, whose family name differs from plain Consolas. the base size is 16px and the
 line height is 1.7. the centered content column is 40rem wide at most, with one
 rem of side padding.
 
