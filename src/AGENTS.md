@@ -21,10 +21,10 @@ src/
 | Homepage | `app/page.tsx` | Personal facts plus Spotify stats widget. |
 | Blog pages | `app/blog/`, `app/blog/[slug]/page.tsx` | Pull from `lib/blog.ts` and `content/blog/`. |
 | Blog rendering | `lib/blog.ts` | Remark/Rehype pipeline, syntax tones, sidenotes, source map. |
-| Lab page | `app/lab/page.tsx` | Uses local search, local n-gram model, WASM/browser panel. |
+| Lab page | `app/lab/page.tsx` | Indexes the interactive demos. |
 | `/labs` alias | `app/labs/page.tsx` | Re-exports `/lab`; keep behavior aligned. |
 | Components | `components/` | Client components usually own their own state. |
-| Site corpus/search | `lib/siteData.ts`, `lib/localNgram.ts`, `lib/siteIndex.ts` | Build-time local data helpers. |
+| Site corpus | `lib/siteData.ts`, `lib/localNgram.ts` | Build-time n-gram data helpers for blog tools. |
 
 ## CONVENTIONS
 
@@ -45,10 +45,8 @@ src/
 | `BlogPostPage` | `app/blog/[slug]/page.tsx` | Dynamic markdown post page. |
 | `getAllBlogPosts` | `lib/blog.ts` | Reads all markdown posts from disk. |
 | `markdownToHtml` | `lib/blog.ts` | Converts markdown to HTML with custom transforms. |
-| `getSearchDocuments` | `lib/siteData.ts` | Builds local search documents. |
 | `getClientNGramModel` | `lib/siteData.ts` | Builds browser n-gram model from site corpus. |
 | `SpotifyStats` | `components/SpotifyStats.tsx` | Fetches backend Spotify stats and renders compact states. |
-| `LocalSearchPanel` | `components/LocalSearchPanel.tsx` | Client-side blog search experiment. |
 
 ## ANTI-PATTERNS
 
