@@ -8,6 +8,8 @@ export interface Project {
   date: string;
   excerpt: string;
   order: number;
+  image?: string;
+  blog?: string;
   content: string;
 }
 
@@ -82,6 +84,11 @@ function readProject(slug: string): Project | null {
   }
 
   const order = data.order;
+  const imagePath = data.image ? String(data.image).trim() : '';
+  const image = imagePath && fs.existsSync(path.join(process.cwd(), 'public', imagePath.replace(/^\/+/, '')))
+    ? imagePath
+    : undefined;
+  const blog = data.blog ? String(data.blog).trim() : undefined;
 
   return {
     slug,
@@ -89,6 +96,8 @@ function readProject(slug: string): Project | null {
     date,
     excerpt,
     order,
+    image,
+    blog,
     content: content.trim(),
   };
 }

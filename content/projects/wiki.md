@@ -3,13 +3,13 @@ title: wiki
 excerpt: a local markdown vault and agent workspace that keeps my coding work moving
 date: 09/04/2026
 order: 1
+image: /projects/wiki-1.png
+blog: wiki
 ---
 
 Wiki is the place where I keep my notes and run my coding agents. It started as a local Markdown vault. It is now a browser app, a native macOS shell, and an agent supervisor around the same files.
 
 I built it because my workflow kept breaking at the handoffs. A fresh session did not know what an earlier session had learned. A worker could finish while I was looking at another window. A growing set of terminal panes made it hard to know which task was live. I did not need another general project-management tool. I needed a small surface that matched the way I already worked.
-
-![wiki workspace with a rendered note and live agent runs](/projects/wiki-1.png)
 
 ## the vault comes first
 
