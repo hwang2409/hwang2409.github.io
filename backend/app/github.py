@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 import os
 import re
 import socket
+import threading
 import time
 from html.parser import HTMLParser
 from typing import Final, Generic, Literal, TypeVar
@@ -25,6 +26,9 @@ GITHUB_SEARCH_URL: Final = "https://api.github.com/search/issues"
 GITHUB_USER_AGENT: Final = "hwang2409.github.io/1.0 (+https://github.com/hwang2409)"
 DEFAULT_CONTRIBUTIONS_CACHE_SECONDS: Final = 3_600.0
 DEFAULT_GITHUB_API_CACHE_SECONDS: Final = 600.0
+DEFAULT_GITHUB_FAILURE_CACHE_SECONDS: Final = 60.0
+MIN_CONTRIBUTION_DAYS: Final = 363
+MAX_CONTRIBUTION_DAYS: Final = 373
 
 _COUNT_PATTERN: Final = re.compile(r"\b([\d,]+)\s+contributions?\b", re.IGNORECASE)
 _LIMITS: Final = httpx2.Limits(
@@ -73,19 +77,47 @@ class _CacheEntry(Generic[GithubActivityValue]):
 @dataclass(slots=True)
 class _ResponseCache(Generic[GithubActivityValue]):
     ttl_seconds: float
+    failure_ttl_seconds: float = DEFAULT_GITHUB_FAILURE_CACHE_SECONDS
     entry: _CacheEntry[GithubActivityValue] | None = None
+    failure_expires_at: float | None = None
+    fetching: bool = False
+    condition: threading.Condition = field(default_factory=threading.Condition)
 
-    def get(self) -> GithubActivityValue | None:
-        if self.entry is None or time.monotonic() >= self.entry.expires_at:
-            self.entry = None
-            return None
-        return self.entry.value
+    def get_or_fetch(
+        self,
+        client: httpx2.Client,
+        fetch: Callable[[httpx2.Client], GithubActivityValue],
+    ) -> GithubActivityValue | None:
+        with self.condition:
+            while True:
+                now = time.monotonic()
+                if self.entry is not None and now < self.entry.expires_at:
+                    return self.entry.value
+                if self.failure_expires_at is not None and now < self.failure_expires_at:
+                    return self.entry.value if self.entry is not None else None
+                if not self.fetching:
+                    self.fetching = True
+                    stale_value = self.entry.value if self.entry is not None else None
+                    break
+                self.condition.wait()
 
-    def remember(self, value: GithubActivityValue) -> GithubActivityValue:
-        self.entry = _CacheEntry(
-            value=value,
-            expires_at=time.monotonic() + self.ttl_seconds,
-        )
+        try:
+            value = fetch(client)
+        except Exception:
+            with self.condition:
+                self.failure_expires_at = time.monotonic() + self.failure_ttl_seconds
+                self.fetching = False
+                self.condition.notify_all()
+            return stale_value
+
+        with self.condition:
+            self.entry = _CacheEntry(
+                value=value,
+                expires_at=time.monotonic() + self.ttl_seconds,
+            )
+            self.failure_expires_at = None
+            self.fetching = False
+            self.condition.notify_all()
         return value
 
 
@@ -108,17 +140,29 @@ _CONTRIBUTIONS_CACHE: Final[_ResponseCache[_ContributionCacheValue]] = _Response
         "GITHUB_CONTRIBUTIONS_CACHE_SECONDS",
         DEFAULT_CONTRIBUTIONS_CACHE_SECONDS,
     ),
+    failure_ttl_seconds=_cache_ttl_seconds(
+        "GITHUB_FAILURE_CACHE_SECONDS",
+        DEFAULT_GITHUB_FAILURE_CACHE_SECONDS,
+    ),
 )
 _PUSH_CACHE: Final[_ResponseCache[GithubLatestPush]] = _ResponseCache(
     ttl_seconds=_cache_ttl_seconds(
         "GITHUB_EVENTS_CACHE_SECONDS",
         DEFAULT_GITHUB_API_CACHE_SECONDS,
     ),
+    failure_ttl_seconds=_cache_ttl_seconds(
+        "GITHUB_FAILURE_CACHE_SECONDS",
+        DEFAULT_GITHUB_FAILURE_CACHE_SECONDS,
+    ),
 )
 _OPEN_PRS_CACHE: Final[_ResponseCache[int]] = _ResponseCache(
     ttl_seconds=_cache_ttl_seconds(
         "GITHUB_OPEN_PRS_CACHE_SECONDS",
         DEFAULT_GITHUB_API_CACHE_SECONDS,
+    ),
+    failure_ttl_seconds=_cache_ttl_seconds(
+        "GITHUB_FAILURE_CACHE_SECONDS",
+        DEFAULT_GITHUB_FAILURE_CACHE_SECONDS,
     ),
 )
 
@@ -238,6 +282,30 @@ def _weeks_from_days(
     )
 
 
+def _validate_contribution_days(days: list[GithubContributionDay]) -> None:
+    if not days:
+        raise GithubUpstreamError("GitHub contributions had no day data")
+
+    try:
+        parsed_dates = [date.fromisoformat(day.date) for day in days]
+    except ValueError as error:
+        raise GithubUpstreamError("GitHub contributions had an invalid date") from error
+
+    unique_dates = set(parsed_dates)
+    if len(unique_dates) != len(parsed_dates):
+        raise GithubUpstreamError("GitHub contributions had duplicate dates")
+
+    ordered_dates = sorted(unique_dates)
+    span_days = (ordered_dates[-1] - ordered_dates[0]).days + 1
+    if not MIN_CONTRIBUTION_DAYS <= span_days <= MAX_CONTRIBUTION_DAYS:
+        raise GithubUpstreamError("GitHub contributions did not cover one full year")
+    if any(
+        current != previous + timedelta(days=1)
+        for previous, current in zip(ordered_dates, ordered_dates[1:])
+    ):
+        raise GithubUpstreamError("GitHub contributions had missing dates")
+
+
 def _fetch_contributions(
     client: httpx2.Client,
 ) -> tuple[int, tuple[tuple[GithubContributionDay, ...], ...]]:
@@ -250,6 +318,7 @@ def _fetch_contributions(
     parser.feed(response.text)
     parser.close()
     days = parser.days()
+    _validate_contribution_days(days)
     weeks = _weeks_from_days(days)
     return sum(day.count for day in days), weeks
 
@@ -350,13 +419,7 @@ def _cached_value(
     client: httpx2.Client,
     fetch: Callable[[httpx2.Client], GithubActivityValue],
 ) -> GithubActivityValue | None:
-    cached = cache.get()
-    if cached is not None:
-        return cached
-    try:
-        return cache.remember(fetch(client))
-    except GithubUpstreamError:
-        return None
+    return cache.get_or_fetch(client, fetch)
 
 
 router = APIRouter(prefix="/github", tags=["github"])

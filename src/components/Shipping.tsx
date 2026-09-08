@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import styles from '@/components/Shipping.module.css';
 import { fetchGithubActivity, type GithubActivity, type GithubContributionDay } from '@/lib/github';
 
@@ -11,7 +11,6 @@ const MONTHS = [
   'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
 ] as const;
 const WEEKDAY_LABELS = ['', 'mon', '', 'wed', '', 'fri', ''];
-const GRID_GUTTER_REM = 2.5;
 
 type Ramp = readonly string[];
 type ShippingState =
@@ -35,16 +34,22 @@ function isFirstMonthDay(day: GithubContributionDay): boolean {
 function monthLabel(
   week: readonly GithubContributionDay[],
   index: number,
-  seenMonths: Set<number>,
+  seenMonths: Set<string>,
 ): string {
   const firstDate = parseDate(week[0]?.date ?? '');
   const monthStart = week.find((day) => isFirstMonthDay(day));
   const monthStartDate = parseDate(monthStart?.date ?? '');
-  const month = monthStartDate?.getUTCMonth() ?? firstDate?.getUTCMonth();
-  if (month === undefined || seenMonths.has(month) || (index !== 0 && monthStartDate === null)) {
+  const labelDate = monthStartDate ?? firstDate;
+  const month = labelDate?.getUTCMonth();
+  const year = labelDate?.getUTCFullYear();
+  if (month === undefined || year === undefined || (index !== 0 && monthStartDate === null)) {
     return '';
   }
-  seenMonths.add(month);
+  const monthKey = `${year}-${month}`;
+  if (seenMonths.has(monthKey)) {
+    return '';
+  }
+  seenMonths.add(monthKey);
   return MONTHS[month];
 }
 
@@ -76,80 +81,103 @@ function relativeTime(value: string): string {
   return `${days}d ago`;
 }
 
-function measureRamp(element: HTMLElement): Ramp {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (context === null) {
-    return RAMP;
-  }
+function measureRamp(element: HTMLElement): { readonly ramp: Ramp; readonly width: number } {
   const styles = getComputedStyle(element);
-  context.font = `${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
-  const widths = RAMP.map((glyph) => context.measureText(glyph).width);
-  const width = widths[0];
-  if (width !== undefined && widths.every((candidate) => Math.abs(candidate - width) < 0.1)) {
-    return RAMP;
-  }
-  return FALLBACK_RAMP;
+  const probe = document.createElement('span');
+  probe.style.position = 'absolute';
+  probe.style.visibility = 'hidden';
+  probe.style.whiteSpace = 'pre';
+  probe.style.font = styles.font;
+  element.append(probe);
+
+  const widths = RAMP.map((glyph) => {
+    probe.textContent = glyph;
+    return probe.getBoundingClientRect().width;
+  });
+  const firstWidth = widths[0] ?? 0;
+  const ramp = firstWidth > 0 && widths.every(
+    (candidate) => Math.abs(candidate - firstWidth) < 0.1,
+  ) ? RAMP : FALLBACK_RAMP;
+  const width = Math.max(...ramp.map((glyph) => {
+    probe.textContent = glyph;
+    return probe.getBoundingClientRect().width;
+  }));
+  probe.remove();
+  return { ramp, width: Math.max(width, 1) };
 }
 
 function useVisibleWeeks(
-  containerRef: React.RefObject<HTMLDivElement | null>,
+  containerRef: RefObject<HTMLDivElement | null>,
+  gridRef: RefObject<HTMLDivElement | null>,
   weekTotal: number,
-): { readonly count: number; readonly ramp: Ramp } {
-  const [visibleWeekCount, setVisibleWeekCount] = useState(weekTotal);
+): {
+  readonly count: number;
+  readonly ramp: Ramp;
+  readonly cellWidth: number | null;
+  readonly labelWidth: number | null;
+} {
+  const [visibleWeekCount, setVisibleWeekCount] = useState(Math.min(weekTotal, 1));
   const [ramp, setRamp] = useState<Ramp>(RAMP);
+  const [cellWidth, setCellWidth] = useState<number | null>(null);
+  const [labelWidth, setLabelWidth] = useState<number | null>(null);
 
   useEffect(() => {
     const element = containerRef.current;
-    if (element === null) {
+    const grid = gridRef.current;
+    if (element === null || grid === null) {
       return undefined;
     }
-    const target = element;
+    const targetGrid = grid;
     let active = true;
 
     function measure() {
       if (!active) {
         return;
       }
-      const nextRamp = measureRamp(target);
-      const fontSize = parseFloat(getComputedStyle(target).fontSize) || 15;
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      if (context === null) {
+      const metrics = measureRamp(targetGrid);
+      const gridWidth = targetGrid.getBoundingClientRect().width;
+      const gutter = targetGrid.firstElementChild?.getBoundingClientRect().width ?? 0;
+      const gap = parseFloat(getComputedStyle(targetGrid).columnGap) || 0;
+      if (gridWidth <= 0 || gutter <= 0 || metrics.width <= 0) {
         return;
       }
-      const styles = getComputedStyle(target);
-      context.font = `${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
-      const cellWidth = Math.max(...nextRamp.map((glyph) => context.measureText(glyph).width));
-      const gap = fontSize * 0.35;
-      const availableWidth = target.getBoundingClientRect().width - fontSize * GRID_GUTTER_REM;
+      const availableWidth = gridWidth - gutter;
       const count = Math.max(
         1,
-        Math.min(weekTotal, Math.floor((availableWidth + gap) / (cellWidth + gap))),
+        Math.min(weekTotal, Math.floor((availableWidth + gap) / (metrics.width + gap))),
       );
-      setRamp(nextRamp);
+      setRamp(metrics.ramp);
       setVisibleWeekCount(count);
+      setCellWidth(metrics.width);
+      setLabelWidth(gutter);
     }
 
     const observer = new ResizeObserver(measure);
-    observer.observe(target);
+    observer.observe(element);
     measure();
     document.fonts?.ready.then(measure);
     return () => {
       active = false;
       observer.disconnect();
     };
-  }, [containerRef, weekTotal]);
+  }, [containerRef, gridRef, weekTotal]);
 
-  return { count: visibleWeekCount, ramp };
+  return { count: visibleWeekCount, ramp, cellWidth, labelWidth };
 }
 
 function Calendar({ weeks }: { readonly weeks: readonly (readonly GithubContributionDay[])[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { count, ramp } = useVisibleWeeks(containerRef, weeks.length);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const { count, ramp, cellWidth, labelWidth } = useVisibleWeeks(
+    containerRef,
+    gridRef,
+    weeks.length,
+  );
   const visibleWeeks = weeks.slice(-count);
-  const seenMonths = new Set<number>();
-  const gridTemplateColumns = `2.5rem repeat(${visibleWeeks.length}, 1ch)`;
+  const seenMonths = new Set<string>();
+  const labelTrack = labelWidth === null ? '2.5rem' : `${labelWidth}px`;
+  const cellTrack = cellWidth === null ? '1ch' : `${cellWidth}px`;
+  const gridTemplateColumns = `${labelTrack} repeat(${visibleWeeks.length}, ${cellTrack})`;
 
   return (
     <div className={styles.calendar} ref={containerRef}>
@@ -167,6 +195,7 @@ function Calendar({ weeks }: { readonly weeks: readonly (readonly GithubContribu
       </div>
       <div
         className={styles.grid}
+        ref={gridRef}
         style={{ gridTemplateColumns }}
         aria-hidden="true"
       >
@@ -212,11 +241,15 @@ export default function Shipping() {
     };
   }, []);
 
-  if (
-    state.kind === 'error'
-    || (state.kind === 'ready' && state.activity.status === 'unavailable')
-  ) {
-    return null;
+  if (state.kind === 'error' || (state.kind === 'ready' && state.activity.status === 'unavailable')) {
+    return (
+      <section className={styles.shipping} aria-labelledby="shipping-title">
+        <div className={styles.header}>
+          <h2 id="shipping-title">shipping</h2>
+        </div>
+        <p className={styles.empty}>not shipping.</p>
+      </section>
+    );
   }
   if (state.kind === 'loading') {
     return (

@@ -19,11 +19,16 @@
 }
 
 .header span,
+.empty,
 .meta,
 .activityLines p + p {
   color: var(--muted);
   font-size: var(--text-sm);
   line-height: 1.6;
+}
+
+.empty {
+  margin: 0;
 }
 
 .header span {
@@ -75,12 +80,12 @@
 }
 
 .week {
-  min-width: 1ch;
+  min-width: 0;
 }
 
 .cell {
   display: block;
-  width: 1ch;
+  width: 100%;
   height: 1.25em;
   color: var(--foreground);
   font-size: var(--text-sm);
