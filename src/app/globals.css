@@ -517,6 +517,15 @@ dd {
   line-height: 1.5;
 }
 
+/* Wide diagrams may use the shell's spare width beyond the 52rem prose cap;
+   guarded so narrow viewports (where the cap is not binding) never overflow. */
+@media (min-width: 56rem) {
+  .prose pre {
+    max-width: none;
+    margin-inline-end: calc(52rem - var(--page-width));
+  }
+}
+
 .prose pre code {
   display: block;
   min-width: max-content;
