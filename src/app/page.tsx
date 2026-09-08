@@ -13,8 +13,8 @@ export default function Home() {
       <section className="home-section" aria-labelledby="projects-title">
         <h2 id="projects-title">projects</h2>
         <ul className="project-list home-projects">
-          <li><Link href="/projects/wiki">wiki</Link><span>a local markdown vault and agent workspace</span></li>
-          <li><Link href="/projects/zeta">zeta</Link><span>an agent harness that owns the loop</span></li>
+          <li><Link href="/projects/wiki">wiki</Link><span>my agent workspace</span></li>
+          <li><Link href="/projects/zeta">zeta</Link><span>working on a harness that owns the loop</span></li>
           <li><Link href="/projects/newt-chimy2">newt+chimy2</Link><span>deterministic physics engine and software renderer</span></li>
         </ul>
       </section>
