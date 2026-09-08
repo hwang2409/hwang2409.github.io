@@ -231,3 +231,76 @@ assert.equal(relaxed.activation, 0);
 assert.deepEqual(active, activeReplay, 'coupled muscle stages replay deterministically');
 assert.ok(Math.abs(active.state.q2 - relaxed.state.q2) > 0.3, 'activation moves the gravity-loaded elbow');
 console.log(`composed checks passed; playground peak ${peakEnergy.toFixed(2)}/${initialEnergy.toFixed(2)} J; sweep ${broad.count}/780 pairs`);
+
+const { simulateSoftContact, contactStiffness, BALL_RADIUS } = await physics('softContact');
+const { tendonWrap, ANCHOR, PEG_RADIUS } = await physics('tendonWrap');
+const { simulateWarmStart, WARM_TOLERANCE } = await physics('warmStart');
+const { simulateInverse, inverseTorque, stepDrivenArm } = await physics('inverseDynamics');
+let previousPeak = 0;
+for (let level = 0; level <= 20; level += 1) {
+  const trace = simulateSoftContact(level / 20);
+  assert.deepEqual(trace, simulateSoftContact(level / 20), 'contact drop replays exactly');
+  const peak = Math.max(...trace.map(p => p.penetration));
+  assert.ok(peak > previousPeak, `penetration increases with softness ${level / 20}`);
+  previousPeak = peak;
+  assert.ok(trace.every(p => Number.isFinite(p.height) && p.penetration >= 0));
+  assert.ok(trace.some((p, i) => i > 0 && trace[i - 1].penetration > p.penetration && p.penetration > 0), 'contact springs back');
+  const final = trace.at(-1);
+  assert.ok(Math.abs(final.penetration - 9.81 / contactStiffness(level / 20)) < 0.004, 'static compression approaches mg/k');
+  assert.equal(trace[0].height - BALL_RADIUS, 1.32);
+}
+
+let lastWrap = tendonWrap(25 * Math.PI / 180), switches = 0;
+for (let angle = 25.01; angle <= 110; angle += 0.01) {
+  const path = tendonWrap(angle * Math.PI / 180);
+  const endpointMove = Math.hypot(path.end.x - lastWrap.end.x, path.end.y - lastWrap.end.y);
+  assert.ok(Math.abs(path.length - lastWrap.length) <= endpointMove + 1e-9, 'wrap length stays continuous, including engagement');
+  assert.ok(path.length >= Math.hypot(path.end.x - ANCHOR.x, path.end.y - ANCHOR.y) - 1e-12);
+  if (path.wrapped !== lastWrap.wrapped) switches += 1;
+  if (path.wrapped) {
+    const ta = { x: PEG_RADIUS * Math.cos(path.startAngle), y: PEG_RADIUS * Math.sin(path.startAngle) };
+    const tb = { x: PEG_RADIUS * Math.cos(path.endAngle), y: PEG_RADIUS * Math.sin(path.endAngle) };
+    assert.ok(Math.abs(ta.x * (ANCHOR.x - ta.x) + ta.y * (ANCHOR.y - ta.y)) < 1e-12, 'anchor segment is tangent');
+    assert.ok(Math.abs(tb.x * (path.end.x - tb.x) + tb.y * (path.end.y - tb.y)) < 1e-12, 'link segment is tangent');
+    const drawnLength = Math.hypot(ANCHOR.x - ta.x, ANCHOR.y - ta.y) + PEG_RADIUS * Math.abs(path.endAngle - path.startAngle) + Math.hypot(path.end.x - tb.x, path.end.y - tb.y);
+    assert.ok(Math.abs(drawnLength - path.length) < 1e-12, 'readout matches the drawn path');
+  }
+  lastWrap = path;
+}
+assert.equal(switches, 1, 'the slider crosses the wrap engagement boundary');
+
+const coldKick = simulateWarmStart(false, true), warmKick = simulateWarmStart(true, true);
+assert.deepEqual(warmKick, simulateWarmStart(true, true));
+assert.ok(warmKick[120].iterations < coldKick[120].iterations, 'warm start converges sooner on the perturbed frame');
+assert.ok(warmKick[119].iterations < coldKick[119].iterations, 'warm start reuses a settled frame');
+for (let i = 1; i < warmKick.length; i += 1) {
+  for (const trace of [coldKick, warmKick]) {
+    assert.ok(trace[i].residual <= WARM_TOLERANCE, 'both methods reach the same residual tolerance');
+    for (let box = 0; box < 4; box += 1) assert.ok(Math.abs(trace[i].heights[box] - (box + 0.5)) < 1e-5, 'the converged stack maintains support');
+  }
+}
+
+// Independent static gravity anchor and a nonzero-velocity round trip across
+// the complete slider range; neither can pass with a copied torque readout.
+const staticTorque = inverseTorque({ q1: Math.PI / 2, q2: 0, v1: 0, v2: 0 }, 0, 0);
+assert.ok(Math.abs(staticTorque.shoulder - 29.43) < 1e-12);
+assert.ok(Math.abs(staticTorque.elbow - 9.81) < 1e-12);
+let recoveryError = 0;
+for (let amplitude = 0; amplitude <= 8; amplitude += 0.5) {
+  const trace = simulateInverse(amplitude);
+  assert.deepEqual(trace, simulateInverse(amplitude));
+  for (const p of trace) {
+    assert.ok([p.q1, p.q2, p.v1, p.v2, p.error].every(Number.isFinite));
+    recoveryError = Math.max(recoveryError, p.error);
+    assert.ok(p.error < 1e-11, `inverse recovery at amplitude ${amplitude}`);
+  }
+}
+console.log(`build-story checks passed; kick sweeps ${coldKick[120].iterations} cold / ${warmKick[120].iterations} warm; inverse error ${recoveryError.toExponential(2)}`);
+
+const drivenStart = { q1: 0.6, q2: 0.8, v1: 0.3, v2: -0.4 };
+const drivenStep = stepDrivenArm(drivenStart, 0.7, 8, 1 / 240);
+let drivenReference = drivenStart;
+for (let i = 0; i < 64; i += 1) drivenReference = stepDrivenArm(drivenReference, 0.7 + i / (240 * 64), 8, 1 / (240 * 64));
+for (const key of ['q1', 'q2', 'v1', 'v2']) {
+  assert.ok(Math.abs(drivenStep[key] - drivenReference[key]) < 1e-9, `time-dependent torque integration: ${key}`);
+}

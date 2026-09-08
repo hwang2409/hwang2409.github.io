@@ -1,3 +1,7 @@
+import ContactSoftnessWidget from './ContactSoftnessWidget';
+import TendonWrapWidget from './TendonWrapWidget';
+import WarmStartWidget from './WarmStartWidget';
+import InverseDynamicsWidget from './InverseDynamicsWidget';
 import IntegratorsWidget from './IntegratorsWidget';
 import SpringWidget from './SpringWidget';
 import TimestepWidget from './TimestepWidget';
@@ -20,6 +24,10 @@ import BroadPhaseWidget from './BroadPhaseWidget';
 import MuscleArmWidget from './MuscleArmWidget';
 
 const widgets = {
+  'contact-softness': ContactSoftnessWidget,
+  'tendon-wrap': TendonWrapWidget,
+  'warm-start': WarmStartWidget,
+  'inverse-dynamics': InverseDynamicsWidget,
   playground: PlaygroundWidget,
   'projectile-stack': ProjectileStackWidget,
   'broad-phase': BroadPhaseWidget,

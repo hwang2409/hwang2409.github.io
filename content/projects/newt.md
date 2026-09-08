@@ -19,7 +19,7 @@ small scene to work.
 
 <!-- widget: playground -->
 
-<p class="project-demo-note">these eleven dependency-free typescript demos explain the math. they do not run newt, use wasm, or establish MuJoCo parity. newt itself is a CPU engine; a separate renderer consumes its poses.</p>
+<p class="project-demo-note">these fifteen dependency-free typescript demos explain the math. they do not run newt, use wasm, or establish MuJoCo parity. newt itself is a CPU engine; a separate renderer consumes its poses.</p>
 
 ## a body and a step
 
@@ -92,6 +92,16 @@ with RK4. newt uses Featherstone's ABA: an outward velocity pass, an inward
 articulated-inertia pass, then outward acceleration recovery. CRB mass matrices
 and RNE inverse dynamics supply independent round-trip checks.
 
+give the arm a torque, calculate acceleration, then ask what torque would
+produce it. newt checks ABA against an independent RNE pass. the browser
+version below checks coupled equations against cartesian forces and moments.
+
+<!-- widget: inverse-dynamics -->
+
+the lines should overlap. this is an instantaneous dynamics check along a
+simulated trajectory, not proof that the integrator has no time-step error.
+newt's documented round-trip tolerance is `5e-4`; browser arithmetic is f64.
+
 ## finding what touches
 
 broad phase chooses pairs; narrow phase finds contact geometry. the visualizer
@@ -115,6 +125,12 @@ v1 added soft constraints. a Jacobian maps joint velocity into contact motion;
 allows finite compliance, so a small overlap under load can be intentional.
 friction bounds tangential force by `μN`.
 
+drop the ball with hard contact, then soften it. finite stiffness permits
+penetration before the restoring force wins. this spring model exposes that
+tradeoff; newt's regularized constraints use a different force law.
+
+<!-- widget: contact-softness -->
+
 <!-- widget: friction-cone -->
 
 raise the incline until `tan(θ)` exceeds `μ`. the required support leaves the
@@ -135,6 +151,16 @@ the playground and wall share its mass-weighted correction, extended to 2d
 contacts with rotation, friction, and restitution impulses. newt also ships
 Newton with a dense Hessian and line search; CG is not counted as implemented,
 and the documented Newton path rejects elliptic cones.
+
+a solver can also remember its last answer. warm start applies the prior
+frame's impulses before the first sweep. cold start has to rebuild the
+support forces from zero, even when the stack barely changed.
+
+<!-- widget: warm-start -->
+
+this velocity-space comparison adds warm start to the same four-box setup.
+it illustrates a solver technique, not a claim that newt implements caching.
+a small kick changes the answer; reuse still reduces the measured work here.
 
 ## put the pieces under load
 
@@ -164,6 +190,15 @@ this demo uses newt's documented active curve shapes with a simple straight
 tendon and damped two-link dynamics; it omits passive muscle force. newt also
 supports fixed and spatial tendons, wrapping, and length Jacobians. its muscle
 loader requires a length range instead of discovering one automatically.
+
+a straight tendon is only the first case. swing the link below: the tendon
+finds two tangent points and an arc around the peg. when it clears the peg,
+the arc shrinks to zero and the length stays continuous.
+
+<!-- widget: tendon-wrap -->
+
+newt extends this construction to sphere and cylinder wraps. length derivatives
+turn tendon tension into joint torque, so a routing error becomes a force error.
 
 ## a model you can inspect
 
