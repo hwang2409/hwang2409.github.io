@@ -36,7 +36,7 @@ music, and now. the `/resume` route stays live but unlisted, shared by URL
 only. on home, the header shows only navigation, so the
 page has one semantic `h1` instead of a repeated name. the header wraps on small
 screens. every page has the same small muted footer with email, github, linkedin,
-x, and copyright.
+x, and copyright; it stays pinned to the viewport bottom while the page scrolls.
 
 ## page content
 
