@@ -7,19 +7,28 @@ import { simulateProjectile, type ProjectilePoint } from '@/lib/physics/integrat
 
 const duration = 2.5;
 const dt = 0.17;
+const velocityXRange = { min: 2, max: 10 };
+const velocityYRange = { min: 2, max: 12 };
 
-function drawGrid(context: CanvasRenderingContext2D, width: number, height: number) {
+type PlotBounds = {
+  maxX: number;
+  maxY: number;
+};
+
+function drawGrid(context: CanvasRenderingContext2D, width: number, height: number, bounds: PlotBounds) {
   const floor = height - 34;
+  const gridStepX = bounds.maxX / 7;
+  const gridStepY = bounds.maxY / 6;
   context.strokeStyle = colors.border;
   context.lineWidth = 1;
   context.beginPath();
-  for (let x = 0; x <= 3.5; x += 0.5) {
-    const screenX = 54 + x * ((width - 74) / 3.5);
+  for (let x = 0; x <= bounds.maxX + gridStepX / 2; x += gridStepX) {
+    const screenX = 54 + x * ((width - 74) / bounds.maxX);
     context.moveTo(screenX, 20);
     context.lineTo(screenX, floor);
   }
-  for (let y = 0; y <= 3; y += 0.5) {
-    const screenY = floor - y * ((floor - 20) / 3);
+  for (let y = 0; y <= bounds.maxY + gridStepY / 2; y += gridStepY) {
+    const screenY = floor - y * ((floor - 20) / bounds.maxY);
     context.moveTo(54, screenY);
     context.lineTo(width - 20, screenY);
   }
@@ -38,11 +47,12 @@ function drawTrail(
   width: number,
   height: number,
   color: string,
+  bounds: PlotBounds,
   dash: number[] = [],
 ) {
   const floor = height - 34;
-  const scaleX = (width - 74) / 3.5;
-  const scaleY = (floor - 20) / 3;
+  const scaleX = (width - 74) / bounds.maxX;
+  const scaleY = (floor - 20) / bounds.maxY;
   context.strokeStyle = color;
   context.lineWidth = color === colors.foreground ? 2 : 1;
   context.setLineDash(dash);
@@ -63,10 +73,11 @@ function drawPoint(
   width: number,
   height: number,
   color: string,
+  bounds: PlotBounds,
 ) {
   const floor = height - 34;
-  const x = 54 + point.x * ((width - 74) / 3.5);
-  const y = floor - point.y * ((floor - 20) / 3);
+  const x = 54 + point.x * ((width - 74) / bounds.maxX);
+  const y = floor - point.y * ((floor - 20) / bounds.maxY);
   context.fillStyle = color;
   context.beginPath();
   context.arc(x, y, 4, 0, Math.PI * 2);
@@ -85,19 +96,28 @@ export default function IntegratorsWidget() {
     }),
     [velocity],
   );
+  const plotBounds = useMemo(() => {
+    const points = [trails.explicit, trails.semiImplicit, trails.rk4].flat();
+    const maxX = Math.max(...points.map((point) => point.x), 1);
+    const maxY = Math.max(...points.map((point) => point.y), 1);
+    return {
+      maxX: maxX + Math.max(0.5, maxX * 0.08),
+      maxY: maxY + Math.max(0.25, maxY * 0.1),
+    };
+  }, [trails]);
 
   const draw = useCallback((context: CanvasRenderingContext2D, width: number, height: number, elapsed: number) => {
     context.fillStyle = colors.background;
     context.fillRect(0, 0, width, height);
-    drawGrid(context, width, height);
-    drawTrail(context, trails.explicit, width, height, colors.muted, [5, 4]);
-    drawTrail(context, trails.semiImplicit, width, height, colors.foreground);
-    drawTrail(context, trails.rk4, width, height, colors.muted, [1, 4]);
+    drawGrid(context, width, height, plotBounds);
+    drawTrail(context, trails.explicit, width, height, colors.muted, plotBounds, [5, 4]);
+    drawTrail(context, trails.semiImplicit, width, height, colors.foreground, plotBounds);
+    drawTrail(context, trails.rk4, width, height, colors.muted, plotBounds, [1, 4]);
 
     const pointIndex = Math.min(Math.floor((elapsed / 1000) / dt), trails.rk4.length - 1);
-    drawPoint(context, trails.explicit[Math.min(pointIndex, trails.explicit.length - 1)], width, height, colors.muted);
-    drawPoint(context, trails.semiImplicit[Math.min(pointIndex, trails.semiImplicit.length - 1)], width, height, colors.foreground);
-    drawPoint(context, trails.rk4[Math.min(pointIndex, trails.rk4.length - 1)], width, height, colors.muted);
+    drawPoint(context, trails.explicit[Math.min(pointIndex, trails.explicit.length - 1)], width, height, colors.muted, plotBounds);
+    drawPoint(context, trails.semiImplicit[Math.min(pointIndex, trails.semiImplicit.length - 1)], width, height, colors.foreground, plotBounds);
+    drawPoint(context, trails.rk4[Math.min(pointIndex, trails.rk4.length - 1)], width, height, colors.muted, plotBounds);
 
     const originX = 54;
     const originY = height - 34;
@@ -114,14 +134,14 @@ export default function IntegratorsWidget() {
     context.arc(handleX, handleY, 7, 0, Math.PI * 2);
     context.fill();
     context.stroke();
-  }, [trails, velocity]);
+  }, [plotBounds, trails, velocity]);
 
   const updateVelocity = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     const originX = 54;
     const originY = bounds.height - 34;
-    const nextX = Math.max(2, Math.min(10, (event.clientX - bounds.left - originX) / 13));
-    const nextY = Math.max(2, Math.min(12, (originY - event.clientY + bounds.top) / 13));
+    const nextX = Math.max(velocityXRange.min, Math.min(velocityXRange.max, (event.clientX - bounds.left - originX) / 13));
+    const nextY = Math.max(velocityYRange.min, Math.min(velocityYRange.max, (originY - event.clientY + bounds.top) / 13));
     setVelocity({ x: nextX, y: nextY });
   };
 
@@ -154,9 +174,28 @@ export default function IntegratorsWidget() {
         <span><i className="legend-swatch legend-solid" />semi-implicit euler</span>
         <span><i className="legend-swatch legend-dotted" />rk4</span>
       </div>
-      <div className="project-widget-controls">
+      <div className="project-widget-controls project-widget-slider">
         <span>drag the launch point</span>
-        <span>velocity: {velocity.x.toFixed(1)}, {velocity.y.toFixed(1)} m/s</span>
+        <label htmlFor="launcher-velocity-x">velocity x: {velocity.x.toFixed(1)} m/s</label>
+        <input
+          id="launcher-velocity-x"
+          type="range"
+          min={velocityXRange.min}
+          max={velocityXRange.max}
+          step="0.1"
+          value={velocity.x}
+          onChange={(event) => setVelocity((current) => ({ ...current, x: Number(event.target.value) }))}
+        />
+        <label htmlFor="launcher-velocity-y">velocity y: {velocity.y.toFixed(1)} m/s</label>
+        <input
+          id="launcher-velocity-y"
+          type="range"
+          min={velocityYRange.min}
+          max={velocityYRange.max}
+          step="0.1"
+          value={velocity.y}
+          onChange={(event) => setVelocity((current) => ({ ...current, y: Number(event.target.value) }))}
+        />
         <button type="button" onClick={() => setReplayKey((value) => value + 1)}>[replay]</button>
       </div>
     </section>

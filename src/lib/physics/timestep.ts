@@ -17,14 +17,32 @@ function nextHeight(height: number, velocity: number, dt: number) {
 
   return { height: nextHeight, velocity: nextVelocity };
 }
-export function simulateFixedTrace(duration = 3, dt = 1 / 60): BouncePoint[] {
+export function simulateFixedTrace(
+  jitter = 0,
+  seed = 0,
+  duration = 3,
+  dt = 1 / 60,
+): BouncePoint[] {
   let height = 1;
   let velocity = 0;
-  const points: BouncePoint[] = [{ time: 0, height }];
+  let frameTime = 0;
+  let simulationTime = 0;
+  let accumulator = 0;
+  const maxAccumulator = dt * 5;
+  const stepEpsilon = dt * 1e-9;
+  const points: BouncePoint[] = [{ time: simulationTime, height }];
 
-  for (let time = dt; time <= duration + dt / 2; time += dt) {
-    ({ height, velocity } = nextHeight(height, velocity, dt));
-    points.push({ time, height });
+  for (let frame = 0; frameTime < duration; frame += 1) {
+    const frameDt = Math.min(frameDelta(frame, jitter, seed), duration - frameTime);
+    frameTime += frameDt;
+    accumulator = Math.min(maxAccumulator, accumulator + frameDt);
+
+    while (accumulator + stepEpsilon >= dt && simulationTime < duration) {
+      ({ height, velocity } = nextHeight(height, velocity, dt));
+      simulationTime += dt;
+      accumulator = Math.max(0, accumulator - dt);
+      points.push({ time: simulationTime, height });
+    }
   }
 
   return points;

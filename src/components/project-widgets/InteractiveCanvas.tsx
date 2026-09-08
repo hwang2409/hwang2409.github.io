@@ -31,7 +31,11 @@ export default function InteractiveCanvas({
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(mediaQuery.matches);
+    const updateReducedMotion = () => setReducedMotion(mediaQuery.matches);
+    updateReducedMotion();
+    mediaQuery.addEventListener('change', updateReducedMotion);
+
+    return () => mediaQuery.removeEventListener('change', updateReducedMotion);
   }, []);
 
   useEffect(() => {

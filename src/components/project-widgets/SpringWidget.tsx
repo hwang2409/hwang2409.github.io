@@ -53,6 +53,8 @@ function drawTrace(context: CanvasRenderingContext2D, trace: { time: number; dis
 export default function SpringWidget() {
   const [dampingValue, setDampingValue] = useState(40);
   const [displacement, setDisplacement] = useState(0.8);
+  const [replayKey, setReplayKey] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const dragging = useRef(false);
   const damping = dampingForSlider(dampingValue);
   const trace = useMemo(() => simulateSpring(displacement, damping, duration), [displacement, damping]);
@@ -62,7 +64,8 @@ export default function SpringWidget() {
     context.fillRect(0, 0, width, height);
     const centerX = width / 2;
     const restY = 106;
-    const massY = restY + sampleSpring(trace, (elapsed / 1000) % duration) * 70;
+    const elapsedDisplacement = sampleSpring(trace, (elapsed / 1000) % duration);
+    const massY = restY + (isDragging ? displacement : elapsedDisplacement) * 70;
     context.fillStyle = colors.foreground;
     context.fillRect(centerX - 4, 24, 8, 4);
     drawSpring(context, centerX, 30, massY - 13);
@@ -74,7 +77,7 @@ export default function SpringWidget() {
     context.fillStyle = colors.foreground;
     context.fillRect(centerX - 13, massY - 13, 26, 26);
     drawTrace(context, trace, width, height, elapsed);
-  }, [trace]);
+  }, [displacement, isDragging, trace]);
 
   const updateDisplacement = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -88,8 +91,10 @@ export default function SpringWidget() {
       <InteractiveCanvas
         aria-label="draggable mass on a spring with a motion trace"
         draw={draw}
+        resetKey={replayKey}
         onPointerDown={(event) => {
           dragging.current = true;
+          setIsDragging(true);
           event.currentTarget.setPointerCapture(event.pointerId);
           updateDisplacement(event);
         }}
@@ -98,12 +103,16 @@ export default function SpringWidget() {
         }}
         onPointerUp={(event) => {
           dragging.current = false;
+          setIsDragging(false);
+          setReplayKey((value) => value + 1);
           if (event.currentTarget.hasPointerCapture(event.pointerId)) {
             event.currentTarget.releasePointerCapture(event.pointerId);
           }
         }}
         onPointerCancel={() => {
           dragging.current = false;
+          setIsDragging(false);
+          setReplayKey((value) => value + 1);
         }}
       />
       <div className="project-widget-controls project-widget-slider">
@@ -116,6 +125,19 @@ export default function SpringWidget() {
           step="1"
           value={dampingValue}
           onChange={(event) => setDampingValue(Number(event.target.value))}
+        />
+        <label htmlFor="spring-displacement">displacement: {displacement.toFixed(2)}</label>
+        <input
+          id="spring-displacement"
+          type="range"
+          min="-0.9"
+          max="1.4"
+          step="0.01"
+          value={displacement}
+          onChange={(event) => {
+            setDisplacement(Number(event.target.value));
+            setReplayKey((value) => value + 1);
+          }}
         />
       </div>
       <div className="project-widget-scale" aria-hidden="true">

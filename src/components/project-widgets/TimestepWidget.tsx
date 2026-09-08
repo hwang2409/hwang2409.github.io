@@ -69,7 +69,7 @@ export default function TimestepWidget() {
   const [jitter, setJitter] = useState(0.45);
   const [seed, setSeed] = useState(0);
   const [replayKey, setReplayKey] = useState(0);
-  const fixedTrace = useMemo(() => simulateFixedTrace(duration), []);
+  const fixedTrace = useMemo(() => simulateFixedTrace(jitter, seed, duration), [jitter, seed]);
   const variableTrace = useMemo(() => simulateVariableTrace(jitter, seed, duration), [jitter, seed]);
   const [ghost, setGhost] = useState({ fixed: fixedTrace, variable: variableTrace });
 

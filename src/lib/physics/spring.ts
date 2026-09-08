@@ -3,8 +3,12 @@ export type SpringPoint = {
   displacement: number;
 };
 
+const stiffness = 18;
+const mass = 1;
+export const criticalDamping = 2 * Math.sqrt(stiffness * mass);
+
 export function dampingForSlider(value: number) {
-  return 0.6 + value * 0.12;
+  return (value / 50) * criticalDamping;
 }
 export function simulateSpring(
   displacement: number,
@@ -12,7 +16,6 @@ export function simulateSpring(
   duration = 4,
   dt = 1 / 120,
 ): SpringPoint[] {
-  const stiffness = 18;
   let position = displacement;
   let velocity = 0;
   const points: SpringPoint[] = [{ time: 0, displacement: position }];
