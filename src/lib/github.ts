@@ -20,7 +20,6 @@ export type GithubActivity = {
   readonly totalContributions: number | null;
   readonly weeks: readonly (readonly GithubContributionDay[])[] | null;
   readonly latestPush: GithubLatestPush | null;
-  readonly openPrs: number | null;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -100,7 +99,6 @@ function parseGithubActivity(value: unknown): GithubActivity {
     totalContributions: readNullableNumber(value.total_contributions),
     weeks: parseWeeks(value.weeks),
     latestPush: parseLatestPush(value.latest_push),
-    openPrs: readNullableNumber(value.open_prs),
   };
 }
 

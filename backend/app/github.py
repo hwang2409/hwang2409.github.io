@@ -22,7 +22,6 @@ GithubActivityValue = TypeVar("GithubActivityValue")
 
 GITHUB_CONTRIBUTIONS_URL: Final = "https://github.com/users/hwang2409/contributions"
 GITHUB_EVENTS_URL: Final = "https://api.github.com/users/hwang2409/events/public"
-GITHUB_SEARCH_URL: Final = "https://api.github.com/search/issues"
 GITHUB_USER_AGENT: Final = "hwang2409.github.io/1.0 (+https://github.com/hwang2409)"
 DEFAULT_CONTRIBUTIONS_CACHE_SECONDS: Final = 3_600.0
 DEFAULT_GITHUB_API_CACHE_SECONDS: Final = 600.0
@@ -66,7 +65,6 @@ class GithubActivityResponse(BaseModel):
     total_contributions: int | None
     weeks: tuple[tuple[GithubContributionDay, ...], ...] | None
     latest_push: GithubLatestPush | None
-    open_prs: int | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -149,16 +147,6 @@ _CONTRIBUTIONS_CACHE: Final[_ResponseCache[_ContributionCacheValue]] = _Response
 _PUSH_CACHE: Final[_ResponseCache[GithubLatestPush]] = _ResponseCache(
     ttl_seconds=_cache_ttl_seconds(
         "GITHUB_EVENTS_CACHE_SECONDS",
-        DEFAULT_GITHUB_API_CACHE_SECONDS,
-    ),
-    failure_ttl_seconds=_cache_ttl_seconds(
-        "GITHUB_FAILURE_CACHE_SECONDS",
-        DEFAULT_GITHUB_FAILURE_CACHE_SECONDS,
-    ),
-)
-_OPEN_PRS_CACHE: Final[_ResponseCache[int]] = _ResponseCache(
-    ttl_seconds=_cache_ttl_seconds(
-        "GITHUB_OPEN_PRS_CACHE_SECONDS",
         DEFAULT_GITHUB_API_CACHE_SECONDS,
     ),
     failure_ttl_seconds=_cache_ttl_seconds(
@@ -398,25 +386,6 @@ def _fetch_latest_push(client: httpx2.Client) -> GithubLatestPush:
     )
 
 
-def _fetch_open_prs(client: httpx2.Client) -> int:
-    response = _request(
-        client,
-        GITHUB_SEARCH_URL,
-        headers={"Accept": "application/vnd.github+json"},
-        params={
-            "q": "author:hwang2409 type:pr state:open is:public",
-            "per_page": "1",
-        },
-    )
-    try:
-        payload = response.json()
-    except ValueError as error:
-        raise GithubUpstreamError("GitHub search response was not JSON") from error
-    if not isinstance(payload, dict) or not isinstance(payload.get("total_count"), int):
-        raise GithubUpstreamError("GitHub search response had no total_count")
-    return max(0, payload["total_count"])
-
-
 def _cached_value(
     cache: _ResponseCache[GithubActivityValue],
     client: httpx2.Client,
@@ -433,18 +402,16 @@ def github_activity() -> GithubActivityResponse:
     with _create_http_client() as client:
         contributions = _cached_value(_CONTRIBUTIONS_CACHE, client, _fetch_contributions)
         latest_push = _cached_value(_PUSH_CACHE, client, _fetch_latest_push)
-        open_prs = _cached_value(_OPEN_PRS_CACHE, client, _fetch_open_prs)
 
     total_contributions = contributions[0] if contributions is not None else None
     weeks = contributions[1] if contributions is not None else None
-    failed_parts = sum(value is None for value in (contributions, latest_push, open_prs))
+    failed_parts = sum(value is None for value in (contributions, latest_push))
     activity_status: GithubActivityStatus = (
-        "unavailable" if failed_parts == 3 else "partial" if failed_parts else "ok"
+        "unavailable" if failed_parts == 2 else "partial" if failed_parts else "ok"
     )
     return GithubActivityResponse(
         status=activity_status,
         total_contributions=total_contributions,
         weeks=weeks,
         latest_push=latest_push,
-        open_prs=open_prs,
     )
