@@ -7,7 +7,6 @@ const navigationItems = [
   { label: 'blog', href: '/blog', section: 'blog' },
   { label: 'projects', href: '/projects', section: 'projects' },
   { label: 'music', href: '/music', section: 'music' },
-  { label: 'lab', href: '/lab', section: 'lab' },
   { label: 'now', href: '/now', section: 'now' },
   { label: 'resume', href: '/resume', section: 'resume' },
 ] as const;
@@ -15,7 +14,6 @@ const navigationItems = [
 function currentSection(pathname: string) {
   const normalizedPath = pathname.replace(/\/+$/u, '') || '/';
   if (normalizedPath === '/') return 'home';
-  if (normalizedPath === '/labs' || normalizedPath.startsWith('/lab/')) return 'lab';
   const item = navigationItems.find(({ href }) => normalizedPath === href || normalizedPath.startsWith(`${href}/`));
   return item?.section;
 }

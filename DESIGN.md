@@ -29,10 +29,10 @@ wide at most, with one rem of side padding.
 the vertical rhythm uses five steps: `.35rem`, `.7rem`, `1.25rem`, `2rem`, and
 `3rem`. sections use the largest step. related content uses the smaller steps.
 all pages use this rhythm for headings, lists, panels, posts, projects, music,
-lab, resume, now, and 404 content.
+resume, now, and 404 content.
 
-the header has one home link and six lowercase section links: blog, projects,
-music, lab, now, and resume. on home, the header shows only navigation, so the
+the header has one home link and five lowercase section links: blog, projects,
+music, now, and resume. on home, the header shows only navigation, so the
 page has one semantic `h1` instead of a repeated name. the header wraps on small
 screens. every page has the same small muted footer with email, github, linkedin,
 x, and copyright.
@@ -48,7 +48,7 @@ a title, date line, tools, prose, optional contents list, and previous or next
 links. heading ids, source maps, word guessing, code token inspection, mermaid,
 and iframe resize behavior remain available.
 
-projects, music, lab, now, resume, and 404 use the same plain page treatment.
+projects, music, now, resume, and 404 use the same plain page treatment.
 their existing data and interactive behavior stays intact. resume print styles
 stay intact.
 

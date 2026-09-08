@@ -6,7 +6,7 @@
 
 ## OVERVIEW
 
-Personal website workspace: static-export Next.js frontend plus a small FastAPI backend for lab/API experiments. Content is file-backed markdown; deployment is split between GitHub Pages for the frontend and Railway for `backend/`.
+Personal website workspace: static-export Next.js frontend plus a small FastAPI backend for API experiments. Content is file-backed markdown; deployment is split between GitHub Pages for the frontend and Railway for `backend/`.
 
 ## STRUCTURE
 
@@ -29,9 +29,8 @@ website/
 | Homepage | `src/app/page.tsx` | Imports backend-fed Spotify widget. |
 | Shared shell | `src/app/layout.tsx` | Header, footer, theme script, global shell. |
 | Blog index/post routes | `src/app/blog/`, `src/app/blog/[slug]/page.tsx` | Uses `src/lib/blog.ts` and markdown in `content/blog/`. |
-| Lab route | `src/app/lab/page.tsx` | `/labs` re-exports this page as an alias. |
 | Now page | `src/app/now/page.tsx`, `src/lib/now.ts`, `content/now.md` | Markdown-backed. |
-| UI components | `src/components/` | Mostly client components and lab/blog widgets. |
+| UI components | `src/components/` | Mostly client components and blog widgets. |
 | Content/data loaders | `src/lib/` | `blog.ts` is the largest/highest-risk file. |
 | Backend API | `backend/app/main.py` | FastAPI app root and `/token/*` endpoints. |
 | Spotify API | `backend/app/spotify.py`, `backend/app/spotify_*` | `/spotify/stats` and auth/cache/models. |
@@ -48,7 +47,7 @@ website/
 | `generateStaticParams` | Next static hook | `src/app/blog/[slug]/page.tsx` | build | Enumerates markdown blog slugs. |
 | `getAllBlogPosts` | loader | `src/lib/blog.ts` | several routes | Reads `content/blog/*.md`, sorts newest first. |
 | `markdownToHtml` | renderer | `src/lib/blog.ts` | blog posts | Remark/Rehype pipeline with syntax, sidenotes, source map. |
-| `getClientNGramModel` | data helper | `src/lib/siteData.ts` | blog/lab | Builds local n-gram model from site corpus. |
+| `getClientNGramModel` | data helper | `src/lib/siteData.ts` | blog | Builds local n-gram model from site corpus. |
 | `SpotifyStats` | client component | `src/components/SpotifyStats.tsx` | homepage | Fetches `${NEXT_PUBLIC_LAB_API_URL}/spotify/stats`. |
 | `app` | FastAPI app | `backend/app/main.py` | runtime | Backend entrypoint for Railway and local uvicorn. |
 | `spotify_stats` | FastAPI handler | `backend/app/spotify.py` | route | Public sanitized Spotify stats endpoint. |
@@ -69,7 +68,6 @@ website/
 
 - Do not add new UI colors outside existing CSS variables and `DESIGN.md`.
 - Do not treat `npm run start` as the production deploy path; GitHub Pages serves `out/`.
-- Do not assume `/lab` and `/labs` are different implementations; `/labs` aliases `/lab`.
 - Do not commit real Spotify credentials, Railway secrets, or local `.env` files.
 - Do not rely on production backend state as proof of local code; Railway may lag the repo.
 - Do not add a third deploy workflow without first resolving the two existing Pages workflows.
@@ -79,7 +77,6 @@ website/
 - Mono-first, sparse technical-notebook interface.
 - Borders/dividers carry structure; accent color is intentionally absent.
 - Blog tooling includes lowercase toggle, source-map overlay, token ghost, Mermaid, iframe resize, and code token inspection.
-- Lab panels are compact diagnostic surfaces, not marketing sections.
 
 ## COMMANDS
 

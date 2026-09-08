@@ -10,7 +10,7 @@ Next.js App Router frontend, statically exported for GitHub Pages. This subtree 
 src/
 ├── app/          # route files and global shell
 ├── components/   # client widgets and reusable UI surfaces
-└── lib/          # markdown/content/search/ngram helpers
+└── lib/          # markdown/content/ngram helpers
 ```
 
 ## WHERE TO LOOK
@@ -21,10 +21,8 @@ src/
 | Homepage | `app/page.tsx` | Personal facts plus Spotify stats widget. |
 | Blog pages | `app/blog/`, `app/blog/[slug]/page.tsx` | Pull from `lib/blog.ts` and `content/blog/`. |
 | Blog rendering | `lib/blog.ts` | Remark/Rehype pipeline, syntax tones, sidenotes, source map. |
-| Lab page | `app/lab/page.tsx` | Uses local search, local n-gram model, WASM/browser panel. |
-| `/labs` alias | `app/labs/page.tsx` | Re-exports `/lab`; keep behavior aligned. |
 | Components | `components/` | Client components usually own their own state. |
-| Site corpus/search | `lib/siteData.ts`, `lib/localNgram.ts`, `lib/siteIndex.ts` | Build-time local data helpers. |
+| Site corpus | `lib/siteData.ts`, `lib/localNgram.ts` | Build-time local data helpers. |
 
 ## CONVENTIONS
 
@@ -45,16 +43,13 @@ src/
 | `BlogPostPage` | `app/blog/[slug]/page.tsx` | Dynamic markdown post page. |
 | `getAllBlogPosts` | `lib/blog.ts` | Reads all markdown posts from disk. |
 | `markdownToHtml` | `lib/blog.ts` | Converts markdown to HTML with custom transforms. |
-| `getSearchDocuments` | `lib/siteData.ts` | Builds local search documents. |
 | `getClientNGramModel` | `lib/siteData.ts` | Builds browser n-gram model from site corpus. |
 | `SpotifyStats` | `components/SpotifyStats.tsx` | Fetches backend Spotify stats and renders compact states. |
-| `LocalSearchPanel` | `components/LocalSearchPanel.tsx` | Client-side blog search experiment. |
 
 ## ANTI-PATTERNS
 
 - Do not edit `out/` for frontend changes; rebuild instead.
 - Do not add page-level marketing hero patterns unless the design file changes first.
-- Do not split `/lab` and `/labs` accidentally; `/labs` is an alias.
 - Do not add fetches that require Next server runtime. The deployed frontend is static.
 - Do not expand `components/SpotifyStats.tsx` further without first splitting it.
 
