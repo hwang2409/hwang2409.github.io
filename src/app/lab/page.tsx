@@ -1,18 +1,6 @@
 import Link from 'next/link';
-import BrowserModelPanel from '@/components/BrowserModelPanel';
 import IframeResizer from '@/components/IframeResizer';
 import LabDemo from '@/components/LabDemo';
-
-function WhitematterDemo() {
-  return (
-    <iframe
-      className="lab-demo-iframe"
-      title="whitematter neural network demo"
-      src="/whitematter-demo.html"
-      scrolling="no"
-    />
-  );
-}
 
 const demos = [
   {
@@ -20,14 +8,14 @@ const demos = [
     title: 'cifar-10 classifier',
     description: 'ResNet-18 image classification running in your browser.',
     href: '/blog/cifar10-classifier/',
-    Component: BrowserModelPanel,
+    src: '/cifar-demo.html',
   },
   {
     id: 'whitematter-demo',
     title: 'whitematter',
     description: 'a neural network built from scratch, running live.',
     href: '/blog/whitematter/',
-    Component: WhitematterDemo,
+    src: '/whitematter-demo.html',
   },
 ] as const;
 
@@ -44,16 +32,14 @@ export default function LabPage() {
       </div>
 
       <div className="lab-demos">
-        {demos.map(({ id, title, description, href, Component }) => (
+        {demos.map(({ id, title, description, href, src }) => (
           <section className="lab-demo" key={id} aria-labelledby={`${id}-title`}>
             <div className="lab-demo-heading">
               <h2 id={`${id}-title`}>{title}</h2>
               <p>{description}</p>
               <Link href={href}>read the writeup</Link>
             </div>
-            <LabDemo>
-              <Component />
-            </LabDemo>
+            <LabDemo src={src} title={title} />
           </section>
         ))}
       </div>

@@ -7,7 +7,7 @@ kind: demo
 
 Upload an image. The model classifies it as one of: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, or truck.
 
-<iframe src="/whitematter-demo.html" style="width:100%;height:130px;border:none;margin:8px 0;transition:height 0.3s;" scrolling="no"></iframe>
+<!-- deferred-demo src="/cifar-demo.html" title="cifar-10 classifier" -->
 
 <p style="font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#555;margin:4px 0;">Runs locally via WebAssembly. No data leaves your browser.</p>
 

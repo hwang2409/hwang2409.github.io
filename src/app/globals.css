@@ -746,7 +746,7 @@ dd {
 }
 
 .lab-demos {
-  gap: var(--space-6);
+  gap: var(--space-5);
 }
 
 .lab-demo-heading {

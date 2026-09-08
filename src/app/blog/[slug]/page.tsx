@@ -11,6 +11,9 @@ import SourceMapToggle from '@/components/SourceMapToggle';
 import BlogTokenGhost from '@/components/BlogTokenGhost';
 import { getClientNGramModel } from '@/lib/siteData';
 import Contents from '@/components/Contents';
+import LabDemo from '@/components/LabDemo';
+
+const deferredDemoPattern = /<!-- deferred-demo src="([^"]+)" title="([^"]+)" -->/u;
 
 export async function generateMetadata({
   params,
@@ -38,6 +41,13 @@ export default async function BlogPostPage({
   const { html: htmlContent, sections } = await markdownToHtmlWithSections(post.content, {
     slug: post.slug,
   });
+  const deferredDemo = deferredDemoPattern.exec(htmlContent);
+  const contentBeforeDemo = deferredDemo
+    ? htmlContent.slice(0, deferredDemo.index)
+    : htmlContent;
+  const contentAfterDemo = deferredDemo
+    ? htmlContent.slice(deferredDemo.index + deferredDemo[0].length)
+    : '';
   const tokenModel = getClientNGramModel();
   const posts = getAllBlogPosts();
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug);
@@ -58,7 +68,11 @@ export default async function BlogPostPage({
         </div>
       </div>
       <Contents sections={sections} />
-      <div className="prose blog-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <div className="prose blog-content" dangerouslySetInnerHTML={{ __html: contentBeforeDemo }} />
+      {deferredDemo ? <LabDemo src={deferredDemo[1]} title={deferredDemo[2]} /> : null}
+      {deferredDemo ? (
+        <div className="prose blog-content" dangerouslySetInnerHTML={{ __html: contentAfterDemo }} />
+      ) : null}
       <nav className="post-pager" aria-label="post navigation">
           {previousPost && (
             <span><span className="fine-print">previous:</span> <Link href={`/blog/${previousPost.slug}`}>{previousPost.title}</Link></span>

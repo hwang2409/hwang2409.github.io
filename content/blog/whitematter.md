@@ -12,7 +12,7 @@ Whitematter is a small deep learning framework written in C++. It implements ten
 
 The web UI generates C++ training programs, compiles them, runs them, and streams metrics back to the browser.
 
-<iframe src="/whitematter-demo.html" title="whitematter neural network demo" style="width:100%;height:130px;border:none;margin:8px 0;transition:height 0.3s;" scrolling="no"></iframe>
+<!-- deferred-demo src="/whitematter-demo.html" title="whitematter neural network demo" -->
 
 
 ---

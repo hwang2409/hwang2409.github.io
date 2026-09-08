@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import type { ReactNode } from 'react';
 
-export default function LabDemo({ children }: { children: ReactNode }) {
+type LabDemoProps = {
+  readonly src: string;
+  readonly title: string;
+};
+
+export default function LabDemo({ src, title }: LabDemoProps) {
   const [loaded, setLoaded] = useState(false);
 
   if (!loaded) {
@@ -14,5 +18,14 @@ export default function LabDemo({ children }: { children: ReactNode }) {
     );
   }
 
-  return <div className="lab-demo-surface">{children}</div>;
+  return (
+    <div className="lab-demo-surface">
+      <iframe
+        className="lab-demo-iframe"
+        title={title}
+        src={src}
+        scrolling="no"
+      />
+    </div>
+  );
 }
