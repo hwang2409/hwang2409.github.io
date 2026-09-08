@@ -19,5 +19,9 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Check project demos and widget markers
+        run: |
+          node scripts/test-project-raster.mjs
+          node scripts/test-project-physics.mjs
       - name: Build
         run: npm run build

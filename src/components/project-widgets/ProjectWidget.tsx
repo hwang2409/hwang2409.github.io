@@ -1,5 +1,3 @@
-'use client';
-
 import IntegratorsWidget from './IntegratorsWidget';
 import SpringWidget from './SpringWidget';
 import TimestepWidget from './TimestepWidget';
@@ -7,6 +5,10 @@ import TriangleRasterWidget from './TriangleRasterWidget';
 import ZBufferWidget from './ZBufferWidget';
 import PerspectiveTextureWidget from './PerspectiveTextureWidget';
 import ShadingModelWidget from './ShadingModelWidget';
+import PipelineWidget from './PipelineWidget';
+import ScanlineWidget from './ScanlineWidget';
+import DepthViewWidget from './DepthViewWidget';
+import FrustumWidget from './FrustumWidget';
 
 import PendulumTreeWidget from './PendulumTreeWidget';
 import SolverIterationsWidget from './SolverIterationsWidget';
@@ -33,9 +35,17 @@ const widgets = {
   'zbuffer-toggle': ZBufferWidget,
   'perspective-texture': PerspectiveTextureWidget,
   'shading-model': ShadingModelWidget,
+  'raster-pipeline': PipelineWidget,
+  'scanline-theater': ScanlineWidget,
+  'depth-buffer-view': DepthViewWidget,
+  'frustum-culling': FrustumWidget,
 } as const;
 
 export type ProjectWidgetName = keyof typeof widgets;
+
+export function isProjectWidgetName(name: string): name is ProjectWidgetName {
+  return Object.prototype.hasOwnProperty.call(widgets, name);
+}
 
 export default function ProjectWidget({ name }: { name: ProjectWidgetName }) {
   const Widget = widgets[name];
