@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from app.site_ngram import NGramModel
+from app.github import router as github_router
 from app.spotify import router as spotify_router
 
 
@@ -139,6 +140,7 @@ async def allow_private_network_access(
 
 
 app.include_router(spotify_router)
+app.include_router(github_router)
 
 
 @app.get("/", response_model=HealthResponse)
