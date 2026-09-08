@@ -255,30 +255,6 @@ dd {
   margin-bottom: 0;
 }
 
-.home-projects,
-.project-list {
-  padding-left: 1.2rem;
-}
-
-.project-list li {
-  margin-bottom: var(--space-3);
-}
-
-.project-list li:last-child {
-  margin-bottom: 0;
-}
-
-.home-projects li {
-  display: grid;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
-}
-
-.home-projects li span {
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
 /* projects */
 
 .project-gallery {

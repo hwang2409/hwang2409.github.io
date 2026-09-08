@@ -40,9 +40,9 @@ x, and copyright.
 
 ## page content
 
-the home page has a name, role, short about paragraph, project list, music
-line, and mascot; contact links live in the shared footer. the mascot uses
-grayscale pixels and modest breathing room.
+the home page has a name, short about paragraph, mascot, and music line;
+projects live on their own page and contact links live in the shared footer.
+the mascot uses grayscale pixels and modest breathing room.
 
 the blog index shows one row per post with a muted date and title link. posts show
 a title, date line, tools, prose, optional contents list, and previous or next
