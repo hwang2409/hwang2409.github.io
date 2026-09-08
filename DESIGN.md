@@ -21,8 +21,9 @@ inverts the foreground and background.
 ## type and layout
 
 the primary stack is `var(--font-jetbrains-mono), ui-monospace, "SF Mono",
-Menlo, Consolas, monospace`. jetbrains mono is bundled with
-`next/font/google`, so visitors get the same font across platforms. the base
+Menlo, Consolas, monospace`. jetbrains mono v2.304 is self-hosted from
+`src/fonts/` via `next/font/local` (full build, so box-drawing glyphs render
+in-family), so visitors get the same font across platforms. the base
 size is 15px and the line height is 1.7. the centered content column is 55rem
 wide at most, with one rem of side padding.
 
