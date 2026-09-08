@@ -50,6 +50,10 @@ const widgetStub = (name) => function WidgetStub() {
   return createElement('section', { 'data-widget': name }, name);
 };
 const widgetImports = {
+  './ContactSoftnessWidget': { default: widgetStub('contact-softness') },
+  './TendonWrapWidget': { default: widgetStub('tendon-wrap') },
+  './WarmStartWidget': { default: widgetStub('warm-start') },
+  './InverseDynamicsWidget': { default: widgetStub('inverse-dynamics') },
   'react/jsx-runtime': require('react/jsx-runtime'),
   './IntegratorsWidget': { default: widgetStub('integrators') },
   './SpringWidget': { default: widgetStub('spring') },
