@@ -144,7 +144,7 @@ function useVisibleWeeks(
       const availableWidth = gridWidth - gutter;
       const count = Math.max(
         1,
-        Math.min(weekTotal, Math.floor((availableWidth + gap) / (metrics.width + gap))),
+        Math.min(weekTotal, Math.floor(availableWidth / (metrics.width + gap))),
       );
       setRamp(metrics.ramp);
       setVisibleWeekCount(count);

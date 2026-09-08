@@ -31,6 +31,7 @@ MIN_CONTRIBUTION_DAYS: Final = 363
 MAX_CONTRIBUTION_DAYS: Final = 373
 
 _COUNT_PATTERN: Final = re.compile(r"\b([\d,]+)\s+contributions?\b", re.IGNORECASE)
+_NO_CONTRIBUTIONS_PATTERN: Final = re.compile(r"^no contributions\b", re.IGNORECASE)
 _LIMITS: Final = httpx2.Limits(
     max_connections=20,
     max_keepalive_connections=5,
@@ -216,8 +217,10 @@ class _ContributionsParser(HTMLParser):
 
         tooltip_text = " ".join(self._tooltip_text)
         count_match = _COUNT_PATTERN.search(tooltip_text)
-        count = int(count_match.group(1).replace(",", "")) if count_match else 0
-        self._cells[self._tooltip_id]["count"] = count
+        if count_match:
+            self._cells[self._tooltip_id]["count"] = int(count_match.group(1).replace(",", ""))
+        elif _NO_CONTRIBUTIONS_PATTERN.match(tooltip_text.strip()):
+            self._cells[self._tooltip_id]["count"] = 0
         self._tooltip_id = None
         self._tooltip_text = []
 
