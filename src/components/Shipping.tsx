@@ -283,9 +283,6 @@ export default function Shipping() {
           <p>{activity.latestPush.repo} · {relativeTime(activity.latestPush.pushedAt)}</p>
         </div>
       )}
-      {activity.openPrs === null ? null : (
-        <p className={styles.meta}>{activity.openPrs} PRs open</p>
-      )}
     </section>
   );
 }
