@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 // Use the existing TypeScript compiler, as in test-project-physics.mjs.
 // CommonJS output lets Node resolve the models' extensionless local imports.
@@ -33,28 +35,74 @@ const { renderDepth } = depth;
 const { perspectiveAttribute, renderChecker } = perspective;
 const { blinnPhong, lightDirection, renderSphere } = shading;
 
-test('every project content widget marker is accepted by the page registry', async () => {
-  const source = await readFile(new URL('../src/components/project-widgets/ProjectWidget.tsx', import.meta.url), 'utf8');
+async function loadTypeScript(path, resolve) {
+  const source = await readFile(new URL(path, import.meta.url), 'utf8');
   const { outputText } = ts.transpileModule(source, { compilerOptions: {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX,
   } });
-  // Only inspect registry names; client component imports need no DOM or rendering.
-  const registry = {};
-  runInNewContext(outputText, { exports: registry, require: () => ({}) });
+  const exports = {};
+  runInNewContext(outputText, { exports, require: resolve });
+  return exports;
+}
+
+// Keep the real registry and parser; client component implementations need no DOM.
+const registry = await loadTypeScript('../src/components/project-widgets/ProjectWidget.tsx', () => ({}));
+const parser = await loadTypeScript('../src/components/project-widgets/parseProjectContent.ts', () => registry);
+
+test('every project content marker reaches ProjectWidget through the actual page', async () => {
+  let project;
+  const imports = {
+    'react/jsx-runtime': require('react/jsx-runtime'),
+    'next/link': { default: ({ children }) => children },
+    'next/navigation': { notFound: () => assert.fail('project was not found') },
+    '@/lib/blog': { getBlogPost: () => null },
+    '@/lib/projects': { getProject: () => project },
+    '@/lib/markdown': { markdownToHtmlWithSections: async (html) => ({ html, sections: [] }) },
+    '@/lib/dates': { formatDate: (date) => date },
+    '@/components/Contents': { default: () => null },
+    '@/components/LightboxImageTrigger': { default: () => null },
+    '@/components/project-widgets/parseProjectContent': parser,
+    '@/components/project-widgets/ProjectWidget': {
+      ...registry,
+      default: ({ name }) => {
+        assert.ok(registry.isProjectWidgetName(name), `unregistered widget ${name}`);
+        return createElement('section', { 'data-widget': name });
+      },
+    },
+  };
+  const page = await loadTypeScript('../src/app/projects/[slug]/page.tsx', (name) => {
+    assert.ok(Object.hasOwn(imports, name), `unexpected page import ${name}`);
+    return imports[name];
+  });
   const projects = new URL('../content/projects/', import.meta.url);
   let count = 0;
   for (const file of (await readdir(projects)).filter((name) => name.endsWith('.md'))) {
     const content = await readFile(new URL(file, projects), 'utf8');
-    for (const match of content.matchAll(/<!--\s*widget:\s*(.*?)\s*-->/gu)) {
-      const accepted = [...match[0].matchAll(registry.widgetMarker)];
-      assert.equal(accepted.length, 1, `${file}: unmapped widget ${match[1]}`);
-      assert.equal(accepted[0][1], match[1]);
-      assert.ok(registry.isProjectWidgetName(match[1]), `${file}: rejected widget ${match[1]}`);
-      count += 1;
-    }
+    const expected = [...content.matchAll(/<!--\s*widget:\s*(.*?)\s*-->/gu)].map((match) => match[1]);
+    const blocks = parser.parseProjectContent(content);
+    assert.deepEqual(Array.from(blocks.filter((block) => 'widget' in block), (block) => block.widget), expected, file);
+    project = { slug: file.slice(0, -3), title: file, date: '2026-09-08', content };
+    const html = renderToStaticMarkup(await page.default({ params: Promise.resolve({ slug: project.slug }) }));
+    const mounted = [...html.matchAll(/data-widget="([^"]+)"/gu)].map((match) => match[1]);
+    assert.deepEqual(mounted, expected, `${file}: page dropped or reordered a widget`);
+    assert.doesNotMatch(html, /<!--\s*widget:/u, `${file}: unconsumed widget marker`);
+    count += expected.length;
   }
   assert.ok(count > 0, 'no project markers were checked');
   assert.equal(registry.isProjectWidgetName('toString'), false);
+});
+
+test('marker parsing preserves prose and treats registry names literally', async () => {
+  const { parseProjectContent } = await loadTypeScript('../src/components/project-widgets/parseProjectContent.ts', () => ({
+    isProjectWidgetName: (name) => name === 'demo.v2',
+  }));
+  const before = '<p>before</p><!-- widget: demoXv2 --><!-- widget: toString -->';
+  const after = '<p>after</p>';
+  assert.deepEqual(Array.from(parseProjectContent(`${before}<!-- widget: demo.v2 -->${after}`), (block) => ({ ...block })), [
+    { html: before }, { widget: 'demo.v2' }, { html: after },
+  ]);
+  assert.equal(parseProjectContent('<!--widget:demo.v2--><!-- widget: demo.v2 -->').length, 2);
+  assert.equal(parseProjectContent('').length, 0);
 });
 
 test('edge signs and barycentric interpolation match pixel centers', () => {

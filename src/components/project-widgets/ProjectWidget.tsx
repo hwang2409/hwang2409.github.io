@@ -43,8 +43,6 @@ const widgets = {
 
 export type ProjectWidgetName = keyof typeof widgets;
 
-export const widgetMarker = new RegExp(`<!--\\s*widget:\\s*(${Object.keys(widgets).join('|')})\\s*-->`, 'gu');
-
 export function isProjectWidgetName(name: string): name is ProjectWidgetName {
   return Object.prototype.hasOwnProperty.call(widgets, name);
 }

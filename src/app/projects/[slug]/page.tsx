@@ -6,23 +6,12 @@ import { getProject, getProjects } from '@/lib/projects';
 import { markdownToHtmlWithSections } from '@/lib/markdown';
 import Contents from '@/components/Contents';
 import LightboxImageTrigger from '@/components/LightboxImageTrigger';
-import ProjectWidget, { isProjectWidgetName, widgetMarker, type ProjectWidgetName } from '@/components/project-widgets/ProjectWidget';
+import ProjectWidget from '@/components/project-widgets/ProjectWidget';
+import { parseProjectContent } from '@/components/project-widgets/parseProjectContent';
 import { formatDate } from '@/lib/dates';
 
 function ProjectContent({ html }: { html: string }) {
-  const blocks: Array<{ html: string } | { widget: ProjectWidgetName }> = [];
-  let lastIndex = 0;
-
-  for (const match of html.matchAll(widgetMarker)) {
-    if (match.index > lastIndex) blocks.push({ html: html.slice(lastIndex, match.index) });
-    const widget = match[1];
-    if (isProjectWidgetName(widget)) {
-      blocks.push({ widget });
-    }
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < html.length) blocks.push({ html: html.slice(lastIndex) });
+  const blocks = parseProjectContent(html);
 
   return (
     <div className="prose project-prose">
