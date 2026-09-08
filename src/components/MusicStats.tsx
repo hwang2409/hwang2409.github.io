@@ -108,15 +108,19 @@ function renderMusicState(
             <h2 id="music-listening">listening</h2>
             <MusicPlaybackPanel now={state.data.now} />
           </section>
-          <TimeRangeSelector
-            disabled={state.data.statsLoading}
-            onChange={onRangeChange}
-            selectedRange={selectedRange}
-          />
           {state.data.statsError !== null ? (
             <p className={styles.empty} role="status">{state.data.statsError}</p>
           ) : null}
-          <MusicTracksPanel stats={state.data.stats} />
+          <MusicTracksPanel
+            stats={state.data.stats}
+            headerExtra={(
+              <TimeRangeSelector
+                disabled={state.data.statsLoading}
+                onChange={onRangeChange}
+                selectedRange={selectedRange}
+              />
+            )}
+          />
           <MusicArtistsPanel stats={state.data.stats} />
           <MusicAlbumsPanel stats={state.data.stats} />
           <MusicGenresPanel stats={state.data.stats} />

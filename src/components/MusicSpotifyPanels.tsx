@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import styles from '@/components/SpotifyStats.module.css';
 import MusicCoverShelf, { type MusicCoverItem } from '@/components/MusicCoverShelf';
 import { formatArtists, SpotifyTrackFeature } from '@/components/SpotifyTrackFeature';
@@ -152,7 +152,7 @@ function albumCoverItems(stats: SpotifyStats): MusicCoverItem[] {
     imageUrl: track.imageUrl,
     url: track.url,
     fallback: album.slice(0, 1) || '?',
-  }));
+  })).slice(0, 5);
 }
 
 function StatsMessage({ stats }: { readonly stats: SpotifyStats | null }) {
@@ -163,15 +163,19 @@ export function MusicPlaybackPanel({ now }: { readonly now: SpotifyNow }) {
   return <NowBlock now={now} />;
 }
 
-export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats | null }) {
+export function MusicTracksPanel({ stats, headerExtra }: {
+  readonly stats: SpotifyStats | null;
+  readonly headerExtra?: ReactNode;
+}) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-tracks">
       <div className={styles.header}>
         <h2 id="music-tracks">top tracks</h2>
+        {headerExtra}
       </div>
       {stats?.status === 'ok' ? (
         <MusicCoverShelf
-          items={stats.topTracks.map(trackCoverItem)}
+          items={stats.topTracks.slice(0, 5).map(trackCoverItem)}
           empty="spotify returned no top tracks yet."
         />
       ) : <StatsMessage stats={stats} />}
