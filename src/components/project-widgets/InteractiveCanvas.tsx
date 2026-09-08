@@ -26,7 +26,8 @@ export default function InteractiveCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawRef = useRef(draw);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [step, setStep] = useState(0);
+  const [motionStep, setMotionStep] = useState({ resetKey, count: 0 });
+  const step = motionStep.resetKey === resetKey ? motionStep.count : 0;
   drawRef.current = draw;
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function InteractiveCanvas({
     let height = 0;
     let visible = true;
     let frame = 0;
+    let elapsed = 0;
     let start = performance.now();
     const staticMotion = reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -63,18 +65,19 @@ export default function InteractiveCanvas({
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = Math.max(1, Math.round(height * dpr));
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      render(staticMotion ? step * 350 : 0);
+      render(staticMotion ? step * 350 : elapsed);
     };
 
     const tick = (now: number) => {
       if (!visible || staticMotion) return;
-      render(now - start);
+      elapsed = Math.max(0, now - start);
+      render(elapsed);
       frame = window.requestAnimationFrame(tick);
     };
 
     const startAnimation = () => {
       if (staticMotion || !visible) return;
-      start = performance.now();
+      start = performance.now() - elapsed;
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(tick);
     };
@@ -102,7 +105,7 @@ export default function InteractiveCanvas({
     <div className="project-widget-canvas-wrap">
       <canvas ref={canvasRef} className={className} {...canvasProps} />
       {reducedMotion ? (
-        <button className="project-widget-step" type="button" onClick={() => setStep((value) => value + 1)}>
+        <button className="project-widget-step" type="button" onClick={() => setMotionStep({ resetKey, count: step + 1 })}>
           [step]
         </button>
       ) : null}

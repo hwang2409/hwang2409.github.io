@@ -31,6 +31,6 @@ export function simulateSpring(
 }
 
 export function sampleSpring(trace: SpringPoint[], time: number) {
-  const index = Math.min(Math.floor(time * 120), trace.length - 1);
+  const index = Math.max(0, Math.min(Math.floor(time * 120), trace.length - 1));
   return trace[index].displacement;
 }

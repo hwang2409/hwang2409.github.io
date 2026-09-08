@@ -114,7 +114,7 @@ export default function IntegratorsWidget() {
     drawTrail(context, trails.semiImplicit, width, height, colors.foreground, plotBounds);
     drawTrail(context, trails.rk4, width, height, colors.muted, plotBounds, [1, 4]);
 
-    const pointIndex = Math.min(Math.floor((elapsed / 1000) / dt), trails.rk4.length - 1);
+    const pointIndex = Math.max(0, Math.min(Math.floor((elapsed / 1000) / dt), trails.rk4.length - 1));
     drawPoint(context, trails.explicit[Math.min(pointIndex, trails.explicit.length - 1)], width, height, colors.muted, plotBounds);
     drawPoint(context, trails.semiImplicit[Math.min(pointIndex, trails.semiImplicit.length - 1)], width, height, colors.foreground, plotBounds);
     drawPoint(context, trails.rk4[Math.min(pointIndex, trails.rk4.length - 1)], width, height, colors.muted, plotBounds);
@@ -148,6 +148,7 @@ export default function IntegratorsWidget() {
   return (
     <section className="project-widget" aria-label="integrator comparison">
       <InteractiveCanvas
+        className="project-widget-draggable"
         aria-label="projectile trails for explicit euler, semi-implicit euler, and rk4"
         draw={draw}
         resetKey={replayKey}

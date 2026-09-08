@@ -74,6 +74,7 @@ export function simulateVariableTrace(
 }
 
 export function sampleTrace(trace: BouncePoint[], time: number) {
+  time = Math.max(0, time);
   for (let index = 1; index < trace.length; index += 1) {
     if (trace[index].time >= time) {
       const previous = trace[index - 1];

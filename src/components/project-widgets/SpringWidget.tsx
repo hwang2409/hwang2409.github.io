@@ -89,6 +89,7 @@ export default function SpringWidget() {
   return (
     <section className="project-widget" aria-label="spring and damping">
       <InteractiveCanvas
+        className="project-widget-draggable"
         aria-label="draggable mass on a spring with a motion trace"
         draw={draw}
         resetKey={replayKey}
@@ -116,16 +117,21 @@ export default function SpringWidget() {
         }}
       />
       <div className="project-widget-controls project-widget-slider">
-        <label htmlFor="spring-damping">damping: {damping.toFixed(1)}</label>
-        <input
-          id="spring-damping"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={dampingValue}
-          onChange={(event) => setDampingValue(Number(event.target.value))}
-        />
+        <div className="project-widget-damping">
+          <label htmlFor="spring-damping">damping: {damping.toFixed(1)}</label>
+          <input
+            id="spring-damping"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={dampingValue}
+            onChange={(event) => setDampingValue(Number(event.target.value))}
+          />
+          <div className="project-widget-scale" aria-hidden="true">
+            <span>under-damped</span><span>critical</span><span>over-damped</span>
+          </div>
+        </div>
         <label htmlFor="spring-displacement">displacement: {displacement.toFixed(2)}</label>
         <input
           id="spring-displacement"
@@ -139,9 +145,6 @@ export default function SpringWidget() {
             setReplayKey((value) => value + 1);
           }}
         />
-      </div>
-      <div className="project-widget-scale" aria-hidden="true">
-        <span>under-damped</span><span>critical</span><span>over-damped</span>
       </div>
       <p className="project-widget-hint">drag the mass to set its starting displacement</p>
     </section>
