@@ -1,5 +1,4 @@
 import type { RasterFrame } from '@/lib/raster/frame';
-import colors from './colors';
 
 // The raster result changes only with controls. Upload it once, not every frame.
 export function rasterPainter(frame: RasterFrame) {
@@ -15,15 +14,4 @@ export function rasterPainter(frame: RasterFrame) {
     context.imageSmoothingEnabled = false;
     context.drawImage(surface, x, y, width, height);
   };
-}
-
-export function clearRasterCanvas(context: CanvasRenderingContext2D, width: number, height: number) {
-  context.fillStyle = colors.background;
-  context.fillRect(0, 0, width, height);
-  context.fillStyle = colors.foreground;
-  // TODO(WEB-30): Replace with the shared font helper after rebasing.
-  context.font = `12px ${getComputedStyle(context.canvas).fontFamily}`;
-  context.textAlign = 'left';
-  context.textBaseline = 'alphabetic';
-  context.lineWidth = 1;
 }

@@ -1,17 +1,52 @@
-import { strict as assert } from 'node:assert';
+import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 import { test } from 'node:test';
-import { renderDepth } from './depth';
-import { perspectiveAttribute, renderChecker } from './perspective';
-import { blinnPhong, lightDirection, renderSphere, type ShadingMode } from './shading';
-import { rasterize, type Triangle } from './triangle';
+import ts from 'typescript';
+
+// Use the existing TypeScript compiler, as in test-project-physics.mjs.
+// CommonJS output lets Node resolve the models' extensionless local imports.
+const directory = await mkdtemp(new URL('../.raster-check-', import.meta.url));
+const require = createRequire(import.meta.url);
+let triangle, depth, perspective, shading;
+try {
+  for (const name of ['triangle', 'frame', 'depth', 'perspective', 'shading']) {
+    const source = await readFile(new URL(`../src/lib/raster/${name}.ts`, import.meta.url), 'utf8');
+    const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
+    await writeFile(join(directory, `${name}.js`), outputText);
+  }
+  triangle = require(join(directory, 'triangle.js'));
+  depth = require(join(directory, 'depth.js'));
+  perspective = require(join(directory, 'perspective.js'));
+  shading = require(join(directory, 'shading.js'));
+} finally {
+  await rm(directory, { recursive: true, force: true });
+}
+const { edge, interpolate, rasterize } = triangle;
+const { renderDepth } = depth;
+const { perspectiveAttribute, renderChecker } = perspective;
+const { blinnPhong, lightDirection, renderSphere } = shading;
+
+test('edge signs and barycentric interpolation match pixel centers', () => {
+  const a = { x: 0, y: 0 }, b = { x: 4, y: 0 }, c = { x: 0, y: 4 };
+  assert.equal(edge(a, b, c), 16);
+  assert.equal(edge(b, a, c), -16);
+  assert.equal(edge(a, b, { x: 2, y: 0 }), 0);
+  rasterize([a, b, c], 4, 4, (x, y, weights) => {
+    assert.deepEqual(weights, [1 - (x + y + 1) / 4, (x + 0.5) / 4, (y + 0.5) / 4]);
+    assert.equal(interpolate([0, 4, 0], weights), x + 0.5);
+    assert.equal(interpolate([0, 0, 4], weights), y + 0.5);
+  });
+});
 
 test('shared diagonal belongs to exactly one triangle, with either winding', () => {
-  const first: Triangle = [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 4 }];
-  const second: Triangle = [{ x: 0, y: 0 }, { x: 4, y: 4 }, { x: 0, y: 4 }];
+  const first = [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 4 }];
+  const second = [{ x: 0, y: 0 }, { x: 4, y: 4 }, { x: 0, y: 4 }];
   for (const reverse of [false, true]) {
     const counts = new Uint8Array(16);
     for (const triangle of [first, second]) {
-      const points: Triangle = reverse ? [triangle[2], triangle[1], triangle[0]] : triangle;
+      const points = reverse ? [triangle[2], triangle[1], triangle[0]] : triangle;
       rasterize(points, 4, 4, (x, y, weights) => {
         counts[y * 4 + x] += 1;
         assert.ok(weights.every((weight) => weight >= 0 && weight <= 1));
@@ -26,7 +61,7 @@ test('degenerate and wholly offscreen triangles emit no pixels', () => {
   for (const triangle of [
     [{ x: 1, y: 1 }, { x: 2, y: 2 }, { x: 3, y: 3 }],
     [{ x: -5, y: -5 }, { x: -3, y: -5 }, { x: -3, y: -3 }],
-  ] satisfies Triangle[]) {
+  ]) {
     rasterize(triangle, 4, 4, () => assert.fail('unexpected coverage'));
   }
 });
@@ -83,7 +118,7 @@ test('Blinn-Phong suppresses backlit specular and peaks toward the light', () =>
 });
 
 test('shading changes interior pixels but preserves the mesh silhouette', () => {
-  const modes: ShadingMode[] = ['flat', 'gouraud', 'blinn-phong'];
+  const modes = ['flat', 'gouraud', 'blinn-phong'];
   const frames = modes.map((mode) => renderSphere(mode, -35, 30));
   for (const frame of frames) {
     for (let i = 0; i < frame.pixels.length; i += 4) {
@@ -103,7 +138,7 @@ test('shading changes interior pixels but preserves the mesh silhouette', () => 
 });
 
 test('moving the light moves the highlight across the sphere', () => {
-  function highlightX(azimuth: number) {
+  function highlightX(azimuth) {
     const frame = renderSphere('blinn-phong', azimuth, 0);
     let total = 0;
     let count = 0;

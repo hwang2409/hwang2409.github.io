@@ -284,7 +284,7 @@ the [browser showcase source](https://github.com/hwang2409/tooling/tree/main/chi
 includes the build script and local run instructions. it is a separate
 application from this post's small concept demos.
 
-the other payoff is [newt](/projects/newt-chimy2/). its showcase adapter
+the other payoff is [newt](/projects/newt/). its showcase adapter
 advances a physics world at fixed steps and passes poses and geometry to
 chimy2. the renderer turns those states into lit frames. rendering does
 not advance the physics, and a test compares simulation state with and

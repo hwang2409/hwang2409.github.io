@@ -2,10 +2,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.widget canvas {
-  font-family: inherit;
-}
-
 .widget button {
   min-width: 40px;
 }

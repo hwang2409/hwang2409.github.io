@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react';
 import { renderDepth } from '@/lib/raster/depth';
 import InteractiveCanvas from './InteractiveCanvas';
-import { clearRasterCanvas, rasterPainter } from './rasterCanvas';
+import { clearCanvas } from './canvas';
+import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
 
 export default function ZBufferWidget() {
@@ -17,7 +18,7 @@ export default function ZBufferWidget() {
       <InteractiveCanvas aria-label={depthTest ? 'depth test: the dark triangle is in front on the left, the light triangle on the right' : 'painter mode: the last triangle covers the entire overlap incorrectly'}
         resetKey={revision}
         draw={(context, width, height) => {
-          clearRasterCanvas(context, width, height);
+          clearCanvas(context, width, height);
           const scale = Math.min((width - 24) / 240, (height - 64) / 180);
           paint(context, (width - 240 * scale) / 2, 30, 240 * scale, 180 * scale);
           context.fillText(depthTest ? 'nearest fragment wins' : 'last triangle wins', 12, 20);

@@ -5,7 +5,8 @@ import { clamp } from '@/lib/raster/triangle';
 import { renderChecker } from '@/lib/raster/perspective';
 import InteractiveCanvas from './InteractiveCanvas';
 import colors from './colors';
-import { clearRasterCanvas, rasterPainter } from './rasterCanvas';
+import { clearCanvas } from './canvas';
+import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
 
 export default function PerspectiveTextureWidget() {
@@ -19,7 +20,7 @@ export default function PerspectiveTextureWidget() {
       <InteractiveCanvas aria-label="the same tilted checkerboard: affine interpolation on the left, perspective-correct interpolation on the right"
         resetKey={revision}
         draw={(context, width, height) => {
-          clearRasterCanvas(context, width, height);
+          clearCanvas(context, width, height);
           const half = width / 2;
           const scale = Math.min((half - 12) / 180, (height - 66) / 210);
           const top = 34 + (height - 66 - 210 * scale) / 2;

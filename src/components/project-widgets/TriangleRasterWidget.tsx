@@ -4,7 +4,7 @@ import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { clamp, edge, interpolate, rasterize, type Point, type Triangle } from '@/lib/raster/triangle';
 import InteractiveCanvas from './InteractiveCanvas';
 import colors from './colors';
-import { clearRasterCanvas } from './rasterCanvas';
+import { clearCanvas } from './canvas';
 import styles from './RasterWidgets.module.css';
 
 const columns = 24;
@@ -49,7 +49,7 @@ export default function TriangleRasterWidget() {
         aria-label="drag vertices a, b, and c; equivalent coordinate inputs follow"
         resetKey={revision}
         draw={(context, width, height) => {
-          clearRasterCanvas(context, width, height);
+          clearCanvas(context, width, height);
           const { cell, left, top } = gridBounds(width, height);
           for (const pixel of cells) {
             context.fillStyle = `rgb(${pixel.gray} ${pixel.gray} ${pixel.gray})`;

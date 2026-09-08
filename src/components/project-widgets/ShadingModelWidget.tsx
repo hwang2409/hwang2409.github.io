@@ -5,7 +5,8 @@ import { clamp } from '@/lib/raster/triangle';
 import { lightDirection, renderSphere, sphereRadius, sphereSize, type ShadingMode } from '@/lib/raster/shading';
 import InteractiveCanvas from './InteractiveCanvas';
 import colors from './colors';
-import { clearRasterCanvas, rasterPainter } from './rasterCanvas';
+import { clearCanvas } from './canvas';
+import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
 
 const modes: ShadingMode[] = ['flat', 'gouraud', 'blinn-phong'];
@@ -42,7 +43,7 @@ export default function ShadingModelWidget() {
       <InteractiveCanvas className="project-widget-draggable" aria-label="drag the light handle labeled l; equivalent light angle sliders follow"
         resetKey={revision}
         draw={(context, width, height) => {
-          clearRasterCanvas(context, width, height);
+          clearCanvas(context, width, height);
           const bounds = sphereBounds(width, height);
           paint(context, bounds.x - bounds.size / 2, bounds.y - bounds.size / 2, bounds.size, bounds.size);
           const x = bounds.x + light.x * bounds.lightRadius;
