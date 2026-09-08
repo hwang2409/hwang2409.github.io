@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { renderNearClipping } from '@/lib/raster/nearClipping';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { rasterPainter } from './rasterCanvas';
@@ -62,16 +63,17 @@ export default function NearClippingWidget() {
   }, [result, paint, dolly]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="near-plane triangle clipping">
-    <InteractiveCanvas draw={draw} resetKey={revision} className={styles.splitCanvas}
+    <InteractiveCanvas hint="toggle clipping · move the camera past the near plane" draw={draw} resetKey={revision} className={styles.splitCanvas}
       aria-label="top-down camera diagram and software-rendered output of the same triangle crossing the near plane" />
     <div className="project-widget-controls">
-      <button type="button" aria-pressed={clipping} onClick={() => setClipping(!clipping)}>[clipping {clipping ? 'on' : 'off'}]</button>
-      <button type="button" onClick={() => { setDolly(0.7); setClipping(true); setRevision((v) => v + 1); }}>[reset]</button>
-      <div className={styles.sliders}><label>camera dolly: {dolly.toFixed(2)} units
-        <input type="range" min={-0.5} max={4.5} step={0.05} value={dolly} onChange={(e) => setDolly(e.currentTarget.valueAsNumber)} />
-      </label></div>
+      <ControlGroup label="camera" actions={<>
+        <button type="button" aria-pressed={clipping} onClick={() => setClipping(!clipping)}>[clipping {clipping ? 'on' : 'off'}]</button>
+        <button type="button" onClick={() => { setDolly(0.7); setClipping(true); setRevision((v) => v + 1); }}>[reset]</button>
+      </>}>
+        <Slider label="camera dolly" valueText={`${dolly.toFixed(2)} units`} min={-0.5} max={4.5} step={0.05} value={dolly} onChange={(e) => setDolly(e.currentTarget.valueAsNumber)} />
+      </ControlGroup>
     </div>
-    <p className={styles.readout}>{result.count} vertices → {Math.max(0, result.count - 2)} triangles{result.singular ? ' · projection undefined at the camera plane' : ''}</p>
-    <p className="project-widget-hint">dashed edges show the input; solid edges show the output and its triangle split. turn clipping off, then dolly past 1.13 to see the projection flip.</p>
+    <p className="project-widget-readout">{result.count} vertices → {Math.max(0, result.count - 2)} triangles{result.singular ? ' · projection undefined at the camera plane' : ''}</p>
+    <p className="project-widget-note">dashed edges show the input; solid edges show the output and its triangle split. turn clipping off, then dolly past 1.13 to see the projection flip.</p>
   </section>;
 }
