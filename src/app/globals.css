@@ -369,7 +369,6 @@ dd {
 .post-date {
   color: var(--muted);
   font-size: var(--text-sm);
-  font-variant-numeric: tabular-nums;
 }
 
 .plain-list {
@@ -671,7 +670,6 @@ dd {
 .now-date {
   color: var(--muted);
   font-size: var(--text-sm);
-  font-variant-numeric: tabular-nums;
 }
 
 .now-copy {
@@ -890,13 +888,18 @@ dd {
 
   .site-nav {
     justify-content: flex-start;
-    gap: var(--space-1) var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .site-footer,
+  .site-links {
+    row-gap: var(--space-3);
   }
 
   .site-nav a,
   .site-footer a {
-    padding-block: 0.65rem;
-    margin-block: -0.65rem;
+    padding-block: 0.625rem;
+    margin-block: -0.625rem;
   }
 
   .site-name {
