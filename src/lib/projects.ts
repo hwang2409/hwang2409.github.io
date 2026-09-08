@@ -71,12 +71,17 @@ function parseDate(value: string | null | undefined, filePath: string) {
     .join('-');
 }
 
-function parseImageDimension(value: number | null | undefined, field: string, filePath: string) {
-  if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+function parseImageDimension(
+  value: number | string | null | undefined,
+  field: string,
+  filePath: string
+) {
+  const dimension = Number(value);
+  if (!Number.isInteger(dimension) || dimension <= 0) {
     invalidMetadata(filePath, `${field} must be a positive integer`);
   }
 
-  return value;
+  return dimension;
 }
 
 function readProject(slug: string): Project | null {
@@ -96,13 +101,26 @@ function readProject(slug: string): Project | null {
 
   const order = data.order;
   const imagePath = data.image ? String(data.image).trim() : '';
-  if (imagePath && !imagePath.startsWith('/')) {
-    invalidMetadata(filePath, 'image must start with /');
+  if (imagePath) {
+    const imageSegments = imagePath.slice(1).split('/');
+    if (
+      !/^\/[^/]/u.test(imagePath) ||
+      imageSegments.some((segment) => segment === '.' || segment === '..')
+    ) {
+      invalidMetadata(filePath, 'image must be a safe path under public/');
+    }
+
+    const publicImagePath = path.join(
+      process.cwd(),
+      'public',
+      imagePath.slice(1)
+    );
+    if (!fs.existsSync(publicImagePath) || !fs.statSync(publicImagePath).isFile()) {
+      invalidMetadata(filePath, `image file does not exist: ${imagePath}`);
+    }
   }
 
-  const image = imagePath && fs.existsSync(path.join(process.cwd(), 'public', imagePath.replace(/^\/+/, '')))
-    ? imagePath
-    : undefined;
+  const image = imagePath || undefined;
   const imageAlt = imagePath ? parseRequiredText(data.imageAlt, 'imageAlt', filePath) : undefined;
   const imageWidth = imagePath
     ? parseImageDimension(data.imageWidth, 'imageWidth', filePath)
