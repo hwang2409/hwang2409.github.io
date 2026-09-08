@@ -21,6 +21,7 @@ type MusicData = {
   readonly now: SpotifyNow;
   readonly stats: SpotifyStats | null;
   readonly statsLoading: boolean;
+  readonly statsError: string | null;
 };
 
 type MusicState =
@@ -60,6 +61,10 @@ const TIME_RANGE_OPTIONS: readonly { value: SpotifyTimeRange; label: string }[] 
   { value: 'medium_term', label: 'last 6 months' },
   { value: 'long_term', label: 'last year' },
 ];
+
+function timeRangeLabel(range: SpotifyTimeRange): string {
+  return TIME_RANGE_OPTIONS.find((option) => option.value === range)?.label ?? 'selected range';
+}
 
 function TimeRangeSelector({
   selectedRange,
@@ -108,6 +113,9 @@ function renderMusicState(
             onChange={onRangeChange}
             selectedRange={selectedRange}
           />
+          {state.data.statsError !== null ? (
+            <p className={styles.empty} role="status">{state.data.statsError}</p>
+          ) : null}
           <MusicTracksPanel stats={state.data.stats} />
           <MusicArtistsPanel stats={state.data.stats} />
           <MusicAlbumsPanel stats={state.data.stats} />
@@ -174,7 +182,7 @@ export default function MusicStats() {
       try {
         const [now, stats] = await Promise.all([fetchSpotifyNow(), fetchSpotifyStats()]);
         if (!cancelled) {
-          setState({ kind: 'ready', data: { now, stats, statsLoading: false } });
+          setState({ kind: 'ready', data: { now, stats, statsLoading: false, statsError: null } });
           intervalId = window.setInterval(pollNow, 30_000);
           document.addEventListener('visibilitychange', refreshOnVisibilityChange);
         }
@@ -197,7 +205,7 @@ export default function MusicStats() {
   }, []);
 
   function changeRange(range: SpotifyTimeRange) {
-    if (range === selectedRange) {
+    if (range === selectedRange && state.kind === 'ready' && state.data.statsError === null) {
       return;
     }
 
@@ -211,7 +219,7 @@ export default function MusicStats() {
 
       return {
         kind: 'ready',
-        data: { ...current.data, stats: null, statsLoading: true },
+        data: { ...current.data, statsLoading: true, statsError: null },
       };
     });
 
@@ -223,7 +231,7 @@ export default function MusicStats() {
 
         setState((current) => (
           current.kind === 'ready'
-            ? { kind: 'ready', data: { ...current.data, stats, statsLoading: false } }
+            ? { kind: 'ready', data: { ...current.data, stats, statsLoading: false, statsError: null } }
             : current
         ));
       })
@@ -234,7 +242,14 @@ export default function MusicStats() {
 
         setState((current) => (
           current.kind === 'ready'
-            ? { kind: 'ready', data: { ...current.data, statsLoading: false } }
+            ? {
+              kind: 'ready',
+              data: {
+                ...current.data,
+                statsLoading: false,
+                statsError: `unable to load ${timeRangeLabel(range)}. try again`,
+              },
+            }
             : current
         ));
       });

@@ -62,12 +62,7 @@ def spotify_now_response(
             note="Current Spotify playback is read from Spotify Web API. Tokens stay on the backend.",
         )
 
-    recent = _recent_track(
-        client,
-        api_url,
-        access_token,
-        exclude_track_id=current.item.id if current and current.item else None,
-    )
+    recent = _recent_track(client, api_url, access_token)
     if recent is not None:
         return _ok_now_response(
             playback_kind="recent",
@@ -137,7 +132,6 @@ def _recent_track(
     client: httpx2.Client,
     api_url: str,
     access_token: str,
-    exclude_track_id: str | None,
 ) -> SpotifyRecentlyPlayedItem | None:
     response = client.get(
         f"{api_url}{RECENTLY_PLAYED_PATH}",
@@ -158,7 +152,6 @@ def _recent_track(
         item
         for item in page.items
         if item.track.type in {None, "track"}
-        and (exclude_track_id is None or item.track.id != exclude_track_id)
     ]
     return max(
         candidates,

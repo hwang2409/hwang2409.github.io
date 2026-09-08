@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from '@/components/SpotifyStats.module.css';
 import MusicCoverShelf, { type MusicCoverItem } from '@/components/MusicCoverShelf';
 import { formatArtists, SpotifyTrackFeature } from '@/components/SpotifyTrackFeature';
@@ -26,31 +26,69 @@ function playbackLabel(now: SpotifyNow): string {
 function NowBlock({ now }: { readonly now: SpotifyNow }) {
   const track = now.track;
   const [progressMs, setProgressMs] = useState(track?.progressMs ?? null);
+  const progressAnchor = useRef<{
+    readonly startedAt: number;
+    readonly progressMs: number;
+  } | null>(null);
+  const progressFromTrack = track?.progressMs ?? null;
+  const durationFromTrack = track?.durationMs ?? null;
+  const isPlaying = track?.isPlaying ?? false;
   const progressUnavailable = progressMs === null;
 
   useEffect(() => {
-    setProgressMs(track?.progressMs ?? null);
-  }, [track?.durationMs, track?.progressMs, track?.title, track?.url]);
+    const nextProgressMs = progressFromTrack;
+    setProgressMs(nextProgressMs);
+
+    if (
+      nextProgressMs === null ||
+      durationFromTrack === null ||
+      durationFromTrack <= 0
+    ) {
+      progressAnchor.current = null;
+      return;
+    }
+
+    progressAnchor.current = {
+      startedAt: performance.now(),
+      progressMs: Math.min(Math.max(nextProgressMs, 0), durationFromTrack),
+    };
+  }, [durationFromTrack, progressFromTrack, track?.title, track?.url]);
 
   useEffect(() => {
     if (
-      track === null ||
-      !track.isPlaying ||
+      !isPlaying ||
       progressUnavailable ||
-      track.durationMs === null ||
-      track.durationMs <= 0
+      durationFromTrack === null ||
+      durationFromTrack <= 0
     ) {
       return undefined;
     }
 
+    const durationMs = durationFromTrack;
+    const initialAnchor = progressAnchor.current;
+    if (initialAnchor === null || initialAnchor.progressMs >= durationMs) {
+      return undefined;
+    }
+
     const intervalId = window.setInterval(() => {
-      setProgressMs((current) => (
-        current === null ? null : Math.min(current + 1000, track.durationMs ?? current)
-      ));
+      const anchor = progressAnchor.current;
+      if (anchor === null) {
+        window.clearInterval(intervalId);
+        return;
+      }
+
+      const elapsedMs = performance.now() - anchor.startedAt;
+      const nextProgressMs = Math.min(anchor.progressMs + elapsedMs, durationMs);
+      setProgressMs(nextProgressMs);
+
+      if (nextProgressMs >= durationMs) {
+        window.clearInterval(intervalId);
+        progressAnchor.current = null;
+      }
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [progressUnavailable, track]);
+  }, [durationFromTrack, isPlaying, progressUnavailable]);
 
   if (now.status !== 'ok') {
     return <p className={styles.empty}>{now.note}</p>;
