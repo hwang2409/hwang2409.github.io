@@ -27,8 +27,8 @@ const jetBrainsMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Henry Wang',
-    template: '%s | Henry Wang',
+    default: 'hwang',
+    template: '%s',
   },
   description:
     'Building thingamajigs.',
