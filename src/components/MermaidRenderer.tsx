@@ -40,7 +40,7 @@ function configureMermaid() {
       clusterBkg: background,
       clusterBorder: border,
       edgeLabelBackground: background,
-      fontFamily: 'Consolas, "Consolas for Powerline", Inconsolata, ui-monospace, monospace',
+      fontFamily: "'JetBrains Mono', ui-monospace, monospace",
       fontSize: '12px',
     },
   });

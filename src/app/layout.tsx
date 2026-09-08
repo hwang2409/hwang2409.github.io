@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Inconsolata } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
 import SiteNav from '@/components/SiteNav';
 import './globals.css';
 
-const inconsolata = Inconsolata({
+const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-inconsolata',
+  variable: '--font-jetbrains-mono',
   display: 'swap',
 });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inconsolata.variable}>
+    <html lang="en" className={jetBrainsMono.variable}>
       <body>
         <a href="#main-content" className="skip-link">skip to content</a>
         <div className="site-shell">
