@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { clamp } from '@/lib/raster/triangle';
 import { lightDirection, renderSphere, sphereRadius, sphereSize, type ShadingMode } from '@/lib/raster/shading';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
@@ -40,7 +41,7 @@ export default function ShadingModelWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="sphere shading and light direction">
-      <InteractiveCanvas className="project-widget-draggable" aria-label="drag the light handle labeled l; equivalent light angle sliders follow"
+      <InteractiveCanvas hint="drag the light handle · use light sliders or choose a shading model" className="project-widget-draggable" aria-label="drag the light handle labeled l; equivalent light angle sliders follow"
         resetKey={revision}
         draw={(context, width, height) => {
           clearCanvas(context, width, height);
@@ -89,23 +90,23 @@ export default function ShadingModelWidget() {
         onLostPointerCapture={() => { dragging.current = false; }}
         onPointerCancel={() => { dragging.current = false; }} />
       <div className="project-widget-controls">
-        {modes.map((value) => <button key={value} type="button" aria-pressed={mode === value} onClick={() => {
-          setMode(value); setRevision((v) => v + 1);
-        }}>[{value}]</button>)}
-        <div className={styles.sliders}>
-          <label>light azimuth: {azimuth}°
-            <input type="range" min={-85} max={85} step={1} value={azimuth} onChange={(event) => {
+        <ControlGroup label="light direction">
+          <Slider label="light azimuth" valueText={`${azimuth}°`} min={-85} max={85} step={1} value={azimuth}
+            onChange={(event) => {
               setAzimuth(clamp(event.currentTarget.valueAsNumber, -85, 85)); setRevision((v) => v + 1);
             }} />
-          </label>
-          <label>light elevation: {elevation}°
-            <input type="range" min={-75} max={75} step={1} value={elevation} onChange={(event) => {
+          <Slider label="light elevation" valueText={`${elevation}°`} min={-75} max={75} step={1} value={elevation}
+            onChange={(event) => {
               setElevation(clamp(event.currentTarget.valueAsNumber, -75, 75)); setRevision((v) => v + 1);
             }} />
-          </label>
-        </div>
+        </ControlGroup>
+        <ControlGroup label="shading model">
+          {modes.map((value) => <button key={value} type="button" aria-pressed={mode === value} onClick={() => {
+            setMode(value); setRevision((v) => v + 1);
+          }}>[{value}]</button>)}
+        </ControlGroup>
       </div>
-      <p className="project-widget-hint">drag l or change the light angles. flat lights each face; gouraud interpolates vertex light; blinn-phong lights each pixel.</p>
+      <p className="project-widget-note">flat lights each face; gouraud interpolates vertex light; blinn-phong lights each pixel.</p>
     </section>
   );
 }

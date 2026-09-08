@@ -5,6 +5,7 @@ import { stages, type Stage } from '@/lib/raster/pipeline';
 import { Scene } from '@/lib/raster/scene';
 import { clamp } from '@/lib/raster/triangle';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { scenePainter } from './sceneCanvas';
 import styles from './RasterWidgets.module.css';
@@ -52,7 +53,7 @@ export default function PipelineWidget() {
   }
 
   return <section className={`project-widget ${styles.widget}`} aria-label="3d rendering pipeline">
-    <InteractiveCanvas className={`project-widget-draggable ${styles.flagship}`} draw={draw} resetKey={revision}
+    <InteractiveCanvas hint="drag to orbit · use camera sliders or select a render stage" className={`project-widget-draggable ${styles.flagship}`} draw={draw} resetKey={revision}
       aria-label="three rotating triangle meshes; drag to orbit, or use yaw and pitch below"
       onPointerDown={(event) => {
         if (event.button !== 0 || dragging.current) return;
@@ -62,19 +63,23 @@ export default function PipelineWidget() {
       onPointerUp={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); dragging.current = null; }}
       onPointerCancel={() => { dragging.current = null; }} onLostPointerCapture={() => { dragging.current = null; }} />
     <div className="project-widget-controls">
-      <div className={styles.stages} role="group" aria-label="render stage">
-        {stages.map((value, index) => <button type="button" key={value} aria-pressed={stage === value} onClick={() => setStage(value)}>{index + 1}. {value}</button>)}
-      </div>
-      <button type="button" aria-pressed={paused} onClick={() => setPaused(!paused)}>[{paused ? 'play' : 'pause'}]</button>
-      <button type="button" onClick={() => {
-        setStage('blinn-phong'); setYaw(15); setPitch(12); setPaused(false); rotation.current = 0; setRevision((v) => v + 1);
-      }}>[reset]</button>
-      <div className={styles.sliders}>
-        <label>camera yaw: {yaw}°<input type="range" min={-180} max={180} value={yaw} onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} /></label>
-        <label>camera pitch: {pitch}°<input type="range" min={-65} max={65} value={pitch} onChange={(e) => setPitch(e.currentTarget.valueAsNumber)} /></label>
-      </div>
+      <ControlGroup label="playback">
+        <button type="button" onClick={() => setPaused(!paused)}>[{paused ? 'play' : 'pause'}]</button>
+        <button type="button" onClick={() => {
+          setStage('blinn-phong'); setYaw(15); setPitch(12); setPaused(false); rotation.current = 0; setRevision((v) => v + 1);
+        }}>[reset demo]</button>
+      </ControlGroup>
+      <ControlGroup label="camera">
+        <Slider label="camera yaw" valueText={`${yaw}°`} min={-180} max={180} value={yaw}
+          onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} />
+        <Slider label="camera pitch" valueText={`${pitch}°`} min={-65} max={65} value={pitch}
+          onChange={(e) => setPitch(e.currentTarget.valueAsNumber)} />
+      </ControlGroup>
+      <ControlGroup label="render stage">
+        {stages.map((value, index) => <button type="button" key={value} aria-pressed={stage === value} onClick={() => setStage(value)}>[{index + 1}. {value}]</button>)}
+      </ControlGroup>
     </div>
-    <p className={styles.readout} ref={readout} />
-    <p className="project-widget-hint">{descriptions[stage]}</p>
+    <p className="project-widget-readout" ref={readout} />
+    <p className="project-widget-note">{descriptions[stage]}</p>
   </section>;
 }

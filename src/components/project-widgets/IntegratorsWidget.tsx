@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas, crisp } from './canvas';
 import { sampleIndex } from '@/lib/physics/sampling';
@@ -149,7 +150,7 @@ export default function IntegratorsWidget() {
 
   return (
     <section className="project-widget" aria-label="integrator comparison">
-      <InteractiveCanvas
+      <InteractiveCanvas hint="drag to aim the launch · use velocity sliders for keyboard control"
         className="project-widget-draggable"
         aria-label="projectile trails for explicit euler, semi-implicit euler, and rk4"
         draw={draw}
@@ -177,29 +178,16 @@ export default function IntegratorsWidget() {
         <span><i className="legend-swatch legend-solid" />semi-implicit euler</span>
         <span><i className="legend-swatch legend-dotted" />rk4</span>
       </div>
-      <div className="project-widget-controls project-widget-slider">
-        <span>drag the launch point</span>
-        <label htmlFor="launcher-velocity-x">velocity x: {velocity.x.toFixed(1)} m/s</label>
-        <input
-          id="launcher-velocity-x"
-          type="range"
-          min={velocityXRange.min}
-          max={velocityXRange.max}
-          step="0.1"
-          value={velocity.x}
-          onChange={(event) => { setVelocity((current) => ({ ...current, x: Number(event.target.value) })); setReplayKey(value => value + 1); }}
-        />
-        <label htmlFor="launcher-velocity-y">velocity y: {velocity.y.toFixed(1)} m/s</label>
-        <input
-          id="launcher-velocity-y"
-          type="range"
-          min={velocityYRange.min}
-          max={velocityYRange.max}
-          step="0.1"
-          value={velocity.y}
-          onChange={(event) => { setVelocity((current) => ({ ...current, y: Number(event.target.value) })); setReplayKey(value => value + 1); }}
-        />
-        <button type="button" onClick={() => setReplayKey((value) => value + 1)}>[replay]</button>
+      <div className="project-widget-controls">
+        <ControlGroup label="launch">
+          <button type="button" onClick={() => setReplayKey((value) => value + 1)}>[replay]</button>
+        </ControlGroup>
+        <ControlGroup label="starting velocity">
+          <Slider label="velocity x" valueText={`${velocity.x.toFixed(1)} m/s`} id="launcher-velocity-x" min={velocityXRange.min} max={velocityXRange.max} step="0.1" value={velocity.x}
+            onChange={(event) => { setVelocity((current) => ({ ...current, x: Number(event.target.value) })); setReplayKey(value => value + 1); }} />
+          <Slider label="velocity y" valueText={`${velocity.y.toFixed(1)} m/s`} id="launcher-velocity-y" min={velocityYRange.min} max={velocityYRange.max} step="0.1" value={velocity.y}
+            onChange={(event) => { setVelocity((current) => ({ ...current, y: Number(event.target.value) })); setReplayKey(value => value + 1); }} />
+        </ControlGroup>
       </div>
     </section>
   );

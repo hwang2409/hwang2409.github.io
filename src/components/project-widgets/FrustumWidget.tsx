@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { objects, Scene } from '@/lib/raster/scene';
 import { clamp } from '@/lib/raster/triangle';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { scenePainter } from './sceneCanvas';
@@ -61,7 +62,7 @@ export default function FrustumWidget() {
     setYaw(clamp(Math.round(start.yaw + (event.clientX - start.x) * 0.7), -180, 180));
   }
   return <section className={`project-widget ${styles.widget}`} aria-label="frustum culling split view">
-    <InteractiveCanvas className={`project-widget-draggable ${styles.splitCanvas}`} resetKey={revision}
+    <InteractiveCanvas hint="drag left or right to turn the camera · use yaw for keyboard control" className={`project-widget-draggable ${styles.splitCanvas}`} resetKey={revision}
       aria-label="top-down camera frustum and matching first-person view; drag horizontally or use camera yaw below"
       onPointerDown={(event) => {
         if (event.button !== 0 || dragging.current) return;
@@ -71,12 +72,12 @@ export default function FrustumWidget() {
       onPointerCancel={() => { dragging.current = null; }} onLostPointerCapture={() => { dragging.current = null; }}
       draw={draw} />
     <div className="project-widget-controls">
-      <button type="button" onClick={() => { setYaw(0); setRevision((v) => v + 1); }}>[reset]</button>
-      <div className={styles.sliders}><label>camera yaw: {yaw}°
-        <input type="range" min={-180} max={180} value={yaw} onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} />
-      </label></div>
+      <ControlGroup label="camera" actions={<button type="button" onClick={() => { setYaw(0); setRevision((v) => v + 1); }}>[center camera]</button>}>
+        <Slider label="camera yaw" valueText={`${yaw}°`} min={-180} max={180} value={yaw}
+          onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} />
+      </ControlGroup>
     </div>
-    <p className={styles.readout} ref={readout} />
-    <p className="project-widget-hint">filled objects pass the bounds test; hollow ones are culled. objects touching a frustum plane stay.</p>
+    <p className="project-widget-readout" ref={readout} />
+    <p className="project-widget-note">filled objects pass the bounds test; hollow ones are culled. objects touching a frustum plane stay.</p>
   </section>;
 }

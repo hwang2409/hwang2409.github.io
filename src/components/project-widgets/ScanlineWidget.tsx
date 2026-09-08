@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Scene } from '@/lib/raster/scene';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { scenePainter } from './sceneCanvas';
@@ -62,20 +63,22 @@ export default function ScanlineWidget() {
   }, [scene, paint, speed, paused, rejection, steps]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="scanline theater">
-    <InteractiveCanvas draw={draw} resetKey={revision} aria-label="a frame fills one scanline at a time; hatching marks pixels with rejected depth tests" />
+    <InteractiveCanvas hint="pause, then step one line · show rejected fragments to inspect depth tests" draw={draw} resetKey={revision} aria-label="a frame fills one scanline at a time; hatching marks pixels with rejected depth tests" />
     <div className="project-widget-controls">
-      <button type="button" aria-pressed={paused} onClick={() => setPaused(!paused)}>[{paused ? 'play' : 'pause'}]</button>
-      <button type="button" onClick={() => { setPaused(true); setSteps((v) => v + 1); }}>[step-line]</button>
-      <button type="button" aria-pressed={rejection} onClick={() => setRejection(!rejection)}>[show rejected]</button>
-      <button type="button" onClick={() => {
-        scene.raster.clear(); progress.current = { line: 0, fraction: 0, steps: 0, previewed: false };
-        setSpeed(30); setPaused(false); setRejection(true); setSteps(0); setRevision((v) => v + 1);
-      }}>[reset]</button>
-      <div className={styles.sliders}><label>speed: {speed} lines / second
-        <input type="range" min={1} max={144} value={speed} onChange={(e) => setSpeed(e.currentTarget.valueAsNumber)} />
-      </label></div>
+      <ControlGroup label="playback" actions={<><button type="button" onClick={() => setPaused(!paused)}>[{paused ? 'play' : 'pause'}]</button>
+        <button type="button" onClick={() => { setPaused(true); setSteps((v) => v + 1); }}>[step one line]</button>
+        <button type="button" onClick={() => {
+          scene.raster.clear(); progress.current = { line: 0, fraction: 0, steps: 0, previewed: false };
+          setSpeed(30); setPaused(false); setRejection(true); setSteps(0); setRevision((v) => v + 1);
+        }}>[reset demo]</button></>}>
+        <Slider label="speed" valueText={`${speed} lines / second`} min={1} max={144} value={speed}
+          onChange={(e) => setSpeed(e.currentTarget.valueAsNumber)} />
+      </ControlGroup>
+      <ControlGroup label="view">
+        <button type="button" aria-pressed={rejection} onClick={() => setRejection(!rejection)}>[show rejected]</button>
+      </ControlGroup>
     </div>
-    <p className={styles.readout} ref={readout} />
-    <p className="project-widget-hint">the near mesh arrives first. hidden fragments from later meshes fail the depth test. hatching records those attempts.</p>
+    <p className="project-widget-readout" ref={readout} />
+    <p className="project-widget-note">the near mesh arrives first. hidden fragments from later meshes fail the depth test. hatching records those attempts.</p>
   </section>;
 }

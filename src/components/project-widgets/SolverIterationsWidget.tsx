@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { simulateStack } from '@/lib/physics/stack';
 import { sampleIndex } from '@/lib/physics/sampling';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas, crisp } from './canvas';
 import colors from './colors';
 
@@ -37,13 +38,17 @@ export default function SolverIterationsWidget() {
 
   return (
     <section className="project-widget" aria-label="iterative stack correction">
-      <InteractiveCanvas draw={draw} resetKey={replay} staticElapsed={5000} aria-label="four boxes with measured residual penetration" />
-      <div className="project-widget-controls project-widget-slider">
-        <label htmlFor="solver-iterations">iterations: {iterations}</label>
-        <input id="solver-iterations" type="range" min="1" max="30" step="1" value={iterations} onChange={e => { setIterations(Number(e.target.value)); setReplay(r => r + 1); }} />
-        <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
+      <InteractiveCanvas hint="increase solver iterations · compare the overlap between boxes" draw={draw} resetKey={replay} staticElapsed={5000} aria-label="four boxes with measured residual penetration" />
+      <div className="project-widget-controls">
+        <ControlGroup label="release">
+          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
+        </ControlGroup>
+        <ControlGroup label="solver">
+          <Slider label="iterations" valueText={`${iterations}`} id="solver-iterations" min="1" max="30" step="1" value={iterations}
+            onChange={e => { setIterations(Number(e.target.value)); setReplay(r => r + 1); }} />
+        </ControlGroup>
       </div>
-      <p className="project-widget-hint">vertical motion only, dt = 1/12 s; each sweep shares a contact correction between neighboring boxes</p>
+      <p className="project-widget-note">vertical motion only, dt = 1/12 s; each sweep shares a contact correction between neighboring boxes</p>
     </section>
   );
 }

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { clamp } from '@/lib/raster/triangle';
 import { renderChecker } from '@/lib/raster/perspective';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
@@ -17,7 +18,7 @@ export default function PerspectiveTextureWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="affine and perspective-correct texture mapping">
-      <InteractiveCanvas aria-label="the same tilted checkerboard: affine interpolation on the left, perspective-correct interpolation on the right"
+      <InteractiveCanvas hint="tilt the checkerboard · compare the seam in both views" aria-label="the same tilted checkerboard: affine interpolation on the left, perspective-correct interpolation on the right"
         resetKey={revision}
         draw={(context, width, height) => {
           clearCanvas(context, width, height);
@@ -36,17 +37,15 @@ export default function PerspectiveTextureWidget() {
           context.stroke();
         }} />
       <div className="project-widget-controls">
-        <div className={styles.sliders}>
-          <label>tilt: {tilt}°
-            <input type="range" min={0} max={72} step={1} value={tilt} onChange={(event) => {
+        <ControlGroup label="surface" actions={<button type="button" onClick={() => { setTilt(0); setRevision((v) => v + 1); }}>[face on]</button>}>
+          <Slider label="tilt" valueText={`${tilt}°`} min={0} max={72} step={1} value={tilt}
+            onChange={(event) => {
               setTilt(clamp(event.currentTarget.valueAsNumber, 0, 72));
               setRevision((v) => v + 1);
             }} />
-          </label>
-        </div>
-        <button type="button" onClick={() => { setTilt(0); setRevision((v) => v + 1); }}>[face on]</button>
+        </ControlGroup>
       </div>
-      <p className="project-widget-hint">move the tilt slider. the affine checker bends across the triangle seam; at 0° both methods agree.</p>
+      <p className="project-widget-note">the affine checker bends across the triangle seam; at 0° both methods agree.</p>
     </section>
   );
 }

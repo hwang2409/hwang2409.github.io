@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { clamp, edge, interpolate, rasterize, type Point, type Triangle } from '@/lib/raster/triangle';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas } from './canvas';
 import styles from './RasterWidgets.module.css';
@@ -44,7 +45,7 @@ export default function TriangleRasterWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="triangle coverage and barycentric weights">
-      <InteractiveCanvas
+      <InteractiveCanvas hint="drag a vertex · edit its coordinates for keyboard control"
         className="project-widget-draggable"
         aria-label="drag vertices a, b, and c; equivalent coordinate inputs follow"
         resetKey={revision}
@@ -121,27 +122,31 @@ export default function TriangleRasterWidget() {
         onPointerCancel={() => { dragging.current = null; }}
       />
       <div className="project-widget-controls">
-        <div className={styles.vertices}>
-          {vertices.map((p, index) => (
-            <fieldset key={names[index]}>
-              <legend>vertex {names[index]}</legend>
-              {(['x', 'y'] as const).map((axis) => (
-                <label key={axis}>{axis}
-                  <input type="number" min={0} max={axis === 'x' ? columns : rows} step={1} value={p[axis]}
-                    onChange={(event) => {
-                      const value = event.currentTarget.valueAsNumber;
-                      if (Number.isFinite(value)) updateVertex(index, { ...p, [axis]: value });
-                    }} />
-                </label>
-              ))}
-            </fieldset>
-          ))}
-        </div>
-        <button type="button" onClick={() => { setVertices(initial); setRevision((value) => value + 1); }}>[reset]</button>
-        <output>{cells.length} covered pixels</output>
+        <ControlGroup label="triangle">
+          <button type="button" onClick={() => { setVertices(initial); setRevision((value) => value + 1); }}>[reset]</button>
+        </ControlGroup>
+        <ControlGroup label="coordinates">
+          <div className={styles.vertices}>
+            {vertices.map((p, index) => (
+              <fieldset key={names[index]}>
+                <legend>vertex {names[index]}</legend>
+                {(['x', 'y'] as const).map((axis) => (
+                  <label key={axis}>{axis}
+                    <input type="number" min={0} max={axis === 'x' ? columns : rows} step={1} value={p[axis]}
+                      onChange={(event) => {
+                        const value = event.currentTarget.valueAsNumber;
+                        if (Number.isFinite(value)) updateVertex(index, { ...p, [axis]: value });
+                      }} />
+                  </label>
+                ))}
+              </fieldset>
+            ))}
+          </div>
+        </ControlGroup>
       </div>
-      <p className="project-widget-hint">drag a vertex or edit its coordinates. a is dark, b is gray, c is light; pixel centers decide coverage.</p>
-      {Math.abs(edge(vertices[0], vertices[1], vertices[2])) < 1e-8 ? <p className={styles.readout}>zero area: no pixels to fill</p> : null}
+      <div className="project-widget-readout"><output>{cells.length} covered pixels</output></div>
+      <p className="project-widget-note">a is dark, b is gray, c is light; pixel centers decide coverage.</p>
+      {Math.abs(edge(vertices[0], vertices[1], vertices[2])) < 1e-8 ? <p className="project-widget-readout">zero area: no pixels to fill</p> : null}
     </section>
   );
 }

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { pendulumPositions, simulatePendulum } from '@/lib/physics/pendulum';
 import { sampleIndex } from '@/lib/physics/sampling';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { drawPendulum, pendulumBounds, pendulumLayout } from './pendulumDrawing';
 
@@ -49,7 +50,7 @@ export default function PendulumTreeWidget() {
 
   return (
     <section className="project-widget" aria-label="joint-space pendulum">
-      <InteractiveCanvas draw={draw} resetKey={replay} className="project-widget-draggable" aria-label="two-link pendulum; drag a link or use the angle controls below"
+      <InteractiveCanvas hint="drag either link, then release · use joint sliders for keyboard control" draw={draw} resetKey={replay} className="project-widget-draggable" aria-label="two-link pendulum; drag a link or use the angle controls below"
         onPointerDown={event => {
           const rect = event.currentTarget.getBoundingClientRect();
           const layout = pendulumLayout(rect.width, rect.height, bounds);
@@ -65,14 +66,17 @@ export default function PendulumTreeWidget() {
           event.currentTarget.setPointerCapture(event.pointerId);
           drag(event);
         }} onPointerMove={drag} onPointerUp={release} onPointerCancel={release} />
-      <div className="project-widget-controls project-widget-slider">
-        <label htmlFor="pendulum-q1">joint 1: {angles.q1.toFixed(2)} rad</label>
-        <input id="pendulum-q1" type="range" min={-Math.PI} max={Math.PI} step="0.01" value={angles.q1} onChange={e => changeAngle('q1', Number(e.target.value))} />
-        <label htmlFor="pendulum-q2">joint 2: {angles.q2.toFixed(2)} rad</label>
-        <input id="pendulum-q2" type="range" min={-Math.PI} max={Math.PI} step="0.01" value={angles.q2} onChange={e => changeAngle('q2', Number(e.target.value))} />
-        <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
+      <div className="project-widget-controls">
+        <ControlGroup label="release">
+          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
+        </ControlGroup>
+        <ControlGroup label="starting angles">
+          <Slider label="joint 1" valueText={`${angles.q1.toFixed(2)} rad`} id="pendulum-q1" min={-Math.PI} max={Math.PI} step="0.01" value={angles.q1}
+            onChange={e => changeAngle('q1', Number(e.target.value))} />
+          <Slider label="joint 2" valueText={`${angles.q2.toFixed(2)} rad`} id="pendulum-q2" min={-Math.PI} max={Math.PI} step="0.01" value={angles.q2}
+            onChange={e => changeAngle('q2', Number(e.target.value))} />
+        </ControlGroup>
       </div>
-      <p className="project-widget-hint">drag either link to set its starting angle; release from rest</p>
     </section>
   );
 }

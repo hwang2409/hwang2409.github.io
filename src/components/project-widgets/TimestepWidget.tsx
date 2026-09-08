@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
+import { ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas, crisp } from './canvas';
 import { sampleTrace, simulateFixedTrace, simulateVariableTrace, type BouncePoint } from '@/lib/physics/timestep';
@@ -94,23 +95,19 @@ export default function TimestepWidget() {
 
   return (
     <section className="project-widget" aria-label="fixed and variable timestep comparison">
-      <InteractiveCanvas aria-label="bouncing ball with fixed and variable timestep traces" draw={draw} resetKey={replayKey} />
+      <InteractiveCanvas hint="adjust frame jitter · replay to compare with the previous run" aria-label="bouncing ball with fixed and variable timestep traces" draw={draw} resetKey={replayKey} />
       <div className="project-widget-legend" aria-label="timestep legend">
         <span><i className="legend-swatch legend-solid" />current run</span>
         <span><i className="legend-swatch legend-dashed" />previous run</span>
       </div>
-      <div className="project-widget-controls project-widget-slider">
-        <label htmlFor="frame-jitter">frame jitter: {Math.round(jitter * 100)}%</label>
-        <input
-          id="frame-jitter"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={jitter}
-          onChange={(event) => { setJitter(Number(event.target.value)); setReplayKey(value => value + 1); }}
-        />
-        <button type="button" onClick={replay}>[replay]</button>
+      <div className="project-widget-controls">
+        <ControlGroup label="replay">
+          <button type="button" onClick={replay}>[replay]</button>
+        </ControlGroup>
+        <ControlGroup label="frame timing">
+          <Slider label="frame jitter" valueText={`${Math.round(jitter * 100)}%`} id="frame-jitter" min="0" max="1" step="0.01" value={jitter}
+            onChange={(event) => { setJitter(Number(event.target.value)); setReplayKey(value => value + 1); }} />
+        </ControlGroup>
       </div>
     </section>
   );
