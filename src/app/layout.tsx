@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: '%s | Henry Wang',
   },
   description:
-    'Software engineering student at the University of Waterloo.',
+    'Building thingamajigs.',
 };
 
 export default function RootLayout({
@@ -56,7 +56,7 @@ export default function RootLayout({
                 x
               </a>
             </div>
-            <span className="site-copyright">© 2026 henry wang</span>
+            <span className="site-copyright">building thingamajigs</span>
           </footer>
         </div>
       </body>
