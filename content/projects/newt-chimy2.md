@@ -3,6 +3,10 @@ title: newt + chimy2
 excerpt: a deterministic physics engine and software renderer built together from first principles
 date: 09/04/2026
 order: 3
+image: /projects/newt-chimy2-1.png
+imageAlt: newt biped walk demo rendered through chimy2
+imageWidth: 960
+imageHeight: 640
 ---
 
 Most physics demos hide the handoff between simulation and rendering. This one
@@ -34,8 +38,6 @@ The contact path follows the same preference for explicit stages. With the PGS o
 ## chimy2 is a small software gpu
 
 Chimy2 is a software renderer with a narrow pipeline:
-
-![newt biped walk demo rendered through chimy2](/projects/newt-chimy2-1.png)
 
 ```text
 vertex stage -> clip and cull -> raster core -> fragment stage

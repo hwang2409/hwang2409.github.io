@@ -8,6 +8,11 @@ export interface Project {
   date: string;
   excerpt: string;
   order: number;
+  image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  blog?: string;
   content: string;
 }
 
@@ -66,6 +71,18 @@ function parseDate(value: string | null | undefined, filePath: string) {
     .join('-');
 }
 
+function parseImageDimension(
+  value: number,
+  field: string,
+  filePath: string
+) {
+  if (!Number.isInteger(value) || value <= 0) {
+    invalidMetadata(filePath, `${field} must be a positive integer`);
+  }
+
+  return value;
+}
+
 function readProject(slug: string): Project | null {
   const filePath = path.join(process.cwd(), 'content', 'projects', `${slug}.md`);
 
@@ -82,6 +99,35 @@ function readProject(slug: string): Project | null {
   }
 
   const order = data.order;
+  const imagePath = data.image ? String(data.image).trim() : '';
+  if (imagePath) {
+    const imageSegments = imagePath.slice(1).split('/');
+    if (
+      !/^\/[^/]/u.test(imagePath) ||
+      imageSegments.some((segment) => segment === '.' || segment === '..')
+    ) {
+      invalidMetadata(filePath, 'image must be a safe path under public/');
+    }
+
+    const publicImagePath = path.join(
+      process.cwd(),
+      'public',
+      imagePath.slice(1)
+    );
+    if (!fs.existsSync(publicImagePath) || !fs.statSync(publicImagePath).isFile()) {
+      invalidMetadata(filePath, `image file does not exist: ${imagePath}`);
+    }
+  }
+
+  const image = imagePath || undefined;
+  const imageAlt = imagePath ? parseRequiredText(data.imageAlt, 'imageAlt', filePath) : undefined;
+  const imageWidth = imagePath
+    ? parseImageDimension(data.imageWidth, 'imageWidth', filePath)
+    : undefined;
+  const imageHeight = imagePath
+    ? parseImageDimension(data.imageHeight, 'imageHeight', filePath)
+    : undefined;
+  const blog = data.blog ? String(data.blog).trim() : undefined;
 
   return {
     slug,
@@ -89,6 +135,11 @@ function readProject(slug: string): Project | null {
     date,
     excerpt,
     order,
+    image,
+    imageAlt,
+    imageWidth,
+    imageHeight,
+    blog,
     content: content.trim(),
   };
 }

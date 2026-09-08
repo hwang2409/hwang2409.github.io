@@ -3,6 +3,10 @@ title: zeta
 excerpt: a standalone agent harness that owns the loop instead of hiding it in a provider
 date: 09/04/2026
 order: 2
+image: /projects/zeta-1.png
+imageAlt: zeta terminal harness with transcript and composer
+imageWidth: 1726
+imageHeight: 1392
 ---
 
 Zeta began with a simple question: what should still be true when an agent
@@ -20,8 +24,6 @@ belong to one small system.
 ## the hard boundary
 
 Zeta treats a provider as a completion backend. The harness sends one bounded completion, receives a stream, and stops at the tool boundary. If the model asks for a tool, zeta validates and runs it. The next completion sees the recorded result.
-
-![zeta terminal harness with transcript and composer](/projects/zeta-1.png)
 
 That boundary makes the loop explicit. The harness applies one tool registry
 and approval policy to both supported providers. It records assistant text,
