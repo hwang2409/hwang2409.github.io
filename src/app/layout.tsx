@@ -1,10 +1,26 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import SiteNav from '@/components/SiteNav';
 import './globals.css';
 
-const jetBrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
+const jetBrainsMono = localFont({
+  src: [
+    {
+      path: '../fonts/JetBrainsMono-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/JetBrainsMono-SemiBold.woff2',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/JetBrainsMono-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   variable: '--font-jetbrains-mono',
   display: 'swap',
 });
