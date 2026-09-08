@@ -1,11 +1,15 @@
 ---
-note: append-only notes, latest first
+note: my life in bullet points
 ---
 
 <!--
 Add newest entries at the top.
 Format: ## date / category
 -->
+
+## september 8, 2026 / personal
+
+spent a week in paris, pretty great. excited to be back in ny
 
 ## july 31, 2026 / personal
 
