@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { MipmapFloor } from '@/lib/raster/mipmapFloor';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup } from './WidgetControls';
+import { WidgetControls, PauseButton, ControlGroup } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import styles from './RasterWidgets.module.css';
 
@@ -51,20 +51,20 @@ export default function MipmapWidget() {
     <InteractiveCanvas hint="toggle mipmaps · show levels or pause to inspect distant checks" draw={draw} resetKey={revision}
       aria-label={falseColor ? 'mip levels shown as grayscale bands: level zero is dark, level six is light'
         : 'a moving checkered floor, with distant texture samples compared using mipmaps on or off'} />
-    <div className="project-widget-controls">
+    <WidgetControls
+      note={falseColor
+      ? 'level 0 is dark; level 6 is light. bands show the lower mip of each trilinear blend. mipmaps off uses level 0 everywhere.'
+      : 'turn mipmaps off to see distant checks shimmer. both modes use bilinear sampling; mipmaps also average the smaller details.'}>
       <ControlGroup label="texture">
         <button type="button" aria-pressed={mipmaps} onClick={() => { setMipmaps(!mipmaps); setRevision((v) => v + 1); }}>[mipmaps {mipmaps ? 'on' : 'off'}]</button>
         <button type="button" aria-pressed={falseColor} onClick={() => { setFalseColor(!falseColor); setRevision((v) => v + 1); }}>[false-color levels]</button>
       </ControlGroup>
       <ControlGroup label="playback">
-        <button type="button" aria-pressed={paused} onClick={() => { setPaused(!paused); setRevision((v) => v + 1); }}>[{paused ? 'play' : 'pause'}]</button>
+        <PauseButton paused={paused} onClick={() => { setPaused(!paused); setRevision((v) => v + 1); }} />
         <button type="button" onClick={() => {
           setMipmaps(true); setFalseColor(false); setPaused(false); travel.current = 0; setRevision((v) => v + 1);
         }}>[reset]</button>
       </ControlGroup>
-    </div>
-    <p className="project-widget-note">{falseColor
-      ? 'level 0 is dark; level 6 is light. bands show the lower mip of each trilinear blend. mipmaps off uses level 0 everywhere.'
-      : 'turn mipmaps off to see distant checks shimmer. both modes use bilinear sampling; mipmaps also average the smaller details.'}</p>
+    </WidgetControls>
   </section>;
 }

@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { simulateStack } from '@/lib/physics/stack';
 import { sampleIndex } from '@/lib/physics/sampling';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas, crisp } from './canvas';
 import colors from './colors';
 
@@ -39,7 +39,8 @@ export default function SolverIterationsWidget() {
   return (
     <section className="project-widget" aria-label="iterative stack correction">
       <InteractiveCanvas hint="increase solver iterations · compare the overlap between boxes" draw={draw} resetKey={replay} staticElapsed={5000} aria-label="four boxes with measured residual penetration" />
-      <div className="project-widget-controls">
+      <WidgetControls
+        note="vertical motion only, dt = 1/12 s; each sweep shares a contact correction between neighboring boxes">
         <ControlGroup label="release">
           <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
         </ControlGroup>
@@ -47,8 +48,7 @@ export default function SolverIterationsWidget() {
           <Slider label="iterations" valueText={`${iterations}`} id="solver-iterations" min="1" max="30" step="1" value={iterations}
             onChange={e => { setIterations(Number(e.target.value)); setReplay(r => r + 1); }} />
         </ControlGroup>
-      </div>
-      <p className="project-widget-note">vertical motion only, dt = 1/12 s; each sweep shares a contact correction between neighboring boxes</p>
+      </WidgetControls>
     </section>
   );
 }

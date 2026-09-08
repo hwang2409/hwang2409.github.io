@@ -4,7 +4,7 @@ import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { clamp } from '@/lib/raster/triangle';
 import { lightDirection, renderSphere, sphereRadius, sphereSize, type ShadingMode } from '@/lib/raster/shading';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
@@ -89,7 +89,8 @@ export default function ShadingModelWidget() {
         }}
         onLostPointerCapture={() => { dragging.current = false; }}
         onPointerCancel={() => { dragging.current = false; }} />
-      <div className="project-widget-controls">
+      <WidgetControls
+        note="flat lights each face; gouraud interpolates vertex light; blinn-phong lights each pixel.">
         <ControlGroup label="light direction">
           <Slider label="light azimuth" valueText={`${azimuth}°`} min={-85} max={85} step={1} value={azimuth}
             onChange={(event) => {
@@ -105,8 +106,7 @@ export default function ShadingModelWidget() {
             setMode(value); setRevision((v) => v + 1);
           }}>[{value}]</button>)}
         </ControlGroup>
-      </div>
-      <p className="project-widget-note">flat lights each face; gouraud interpolates vertex light; blinn-phong lights each pixel.</p>
+      </WidgetControls>
     </section>
   );
 }

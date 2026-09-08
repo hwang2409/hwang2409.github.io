@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import { inclineForces } from '@/lib/physics/friction';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 
@@ -52,7 +52,7 @@ export default function FrictionConeWidget() {
   return (
     <section className="project-widget" aria-label="friction threshold on an incline">
       <InteractiveCanvas hint="adjust the incline or friction · watch the block stick or slide" draw={draw} resetKey={replay} staticElapsed={3000} aria-label="block on a slope with the required support force and friction cone" />
-      <div className="project-widget-controls">
+      <WidgetControls readout={{ children: <>{forces.acceleration === 0 ? 'sticks' : 'slides'}: required ratio {forces.ratio.toFixed(3)}, available μ {friction.toFixed(2)}. the dark line is required support; the two light lines bound the cone.</> }}>
         <ControlGroup label="release">
           <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
         </ControlGroup>
@@ -62,8 +62,7 @@ export default function FrictionConeWidget() {
           <Slider label="friction μ" valueText={`${friction.toFixed(2)}`} id="incline-friction" min="0" max="1.2" step="0.01" value={friction}
             onChange={e => { setFriction(Number(e.target.value)); setReplay(r => r + 1); }} />
         </ControlGroup>
-      </div>
-      <p className="project-widget-readout">{forces.acceleration === 0 ? 'sticks' : 'slides'}: required ratio {forces.ratio.toFixed(3)}, available μ {friction.toFixed(2)}. the dark line is required support; the two light lines bound the cone.</p>
+      </WidgetControls>
     </section>
   );
 }

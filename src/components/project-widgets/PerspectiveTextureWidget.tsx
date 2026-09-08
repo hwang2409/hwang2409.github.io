@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { clamp } from '@/lib/raster/triangle';
 import { renderChecker } from '@/lib/raster/perspective';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
@@ -36,16 +36,14 @@ export default function PerspectiveTextureWidget() {
           context.lineTo(Math.floor(half) + 0.5, height - 34);
           context.stroke();
         }} />
-      <div className="project-widget-controls">
-        <ControlGroup label="surface" actions={<button type="button" onClick={() => { setTilt(0); setRevision((v) => v + 1); }}>[face on]</button>}>
-          <Slider label="tilt" valueText={`${tilt}°`} min={0} max={72} step={1} value={tilt}
-            onChange={(event) => {
-              setTilt(clamp(event.currentTarget.valueAsNumber, 0, 72));
-              setRevision((v) => v + 1);
-            }} />
-        </ControlGroup>
-      </div>
-      <p className="project-widget-note">the affine checker bends across the triangle seam; at 0° both methods agree.</p>
+      <WidgetControls label="surface" actions={<button type="button" onClick={() => { setTilt(0); setRevision((v) => v + 1); }}>[face on]</button>}
+        note="the affine checker bends across the triangle seam; at 0° both methods agree.">
+        <Slider label="tilt" valueText={`${tilt}°`} min={0} max={72} step={1} value={tilt}
+          onChange={(event) => {
+            setTilt(clamp(event.currentTarget.valueAsNumber, 0, 72));
+            setRevision((v) => v + 1);
+          }} />
+      </WidgetControls>
     </section>
   );
 }

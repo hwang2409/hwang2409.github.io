@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { renderFiltering } from '@/lib/raster/textureFiltering';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
@@ -27,13 +27,11 @@ export default function TextureFilteringWidget() {
   return <section className={`project-widget ${styles.widget}`} aria-label="texture filtering comparison">
     <InteractiveCanvas hint="adjust zoom · compare nearest and bilinear texture filtering" draw={draw} resetKey={revision}
       aria-label="the same magnified ring texture: nearest on the left, bilinear on the right" />
-    <div className="project-widget-controls">
-      <ControlGroup label="texture" actions={
+    <WidgetControls label="texture" actions={
         <button type="button" onClick={() => { setZoom(2); setRevision((v) => v + 1); }}>[reset]</button>
-      }>
-        <Slider label="zoom" valueText={`${zoom.toFixed(1)}×`} min={1} max={8} step={0.1} value={zoom} onChange={(e) => setZoom(e.currentTarget.valueAsNumber)} />
-      </ControlGroup>
-    </div>
-    <p className="project-widget-note">zoom into the ring’s edge. nearest keeps hard texel boundaries; bilinear blends four neighbors in linear light.</p>
+      }
+      note="zoom into the ring’s edge. nearest keeps hard texel boundaries; bilinear blends four neighbors in linear light.">
+      <Slider label="zoom" valueText={`${zoom.toFixed(1)}×`} min={1} max={8} step={0.1} value={zoom} onChange={(e) => setZoom(e.currentTarget.valueAsNumber)} />
+    </WidgetControls>
   </section>;
 }

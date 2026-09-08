@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas, crisp } from './canvas';
 import { sampleIndex } from '@/lib/physics/sampling';
@@ -178,7 +178,7 @@ export default function IntegratorsWidget() {
         <span><i className="legend-swatch legend-solid" />semi-implicit euler</span>
         <span><i className="legend-swatch legend-dotted" />rk4</span>
       </div>
-      <div className="project-widget-controls">
+      <WidgetControls>
         <ControlGroup label="launch">
           <button type="button" onClick={() => setReplayKey((value) => value + 1)}>[replay]</button>
         </ControlGroup>
@@ -188,7 +188,7 @@ export default function IntegratorsWidget() {
           <Slider label="velocity y" valueText={`${velocity.y.toFixed(1)} m/s`} id="launcher-velocity-y" min={velocityYRange.min} max={velocityYRange.max} step="0.1" value={velocity.y}
             onChange={(event) => { setVelocity((current) => ({ ...current, y: Number(event.target.value) })); setReplayKey(value => value + 1); }} />
         </ControlGroup>
-      </div>
+      </WidgetControls>
     </section>
   );
 }

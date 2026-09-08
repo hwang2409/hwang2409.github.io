@@ -4,7 +4,7 @@ import { useCallback, useId, useState } from 'react';
 import { INVERSE_DT, simulateInverse } from '@/lib/physics/inverseDynamics';
 import { pendulumPositions } from '@/lib/physics/pendulum';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { demoPlayback } from './demoPlayback';
@@ -66,14 +66,12 @@ export default function InverseDynamicsWidget() {
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="inverse dynamics round trip">
       <InteractiveCanvas hint="adjust torque amplitude · compare applied and recovered torque" draw={draw} resetKey={reset} aria-label="two-link arm above applied and recovered shoulder and elbow torque plots; a cursor follows the motion" />
-      <div className="project-widget-controls">
-        <ControlGroup label="torque" actions={
+      <WidgetControls label="torque" actions={
           <button type="button" onClick={() => restart(run.amplitude)}>[replay]</button>
-        }>
-          <Slider label="torque amplitude" valueText={`${run.amplitude.toFixed(1)} N·m`} id={id} min="0" max="8" step="0.5" value={run.amplitude} onChange={e => restart(Number(e.target.value))} />
-        </ControlGroup>
-      </div>
-      <p className="project-widget-note">two unit point masses and rods. shoulder = A sin(2t), elbow = A/2 cos(3t). inverse dynamics uses recorded instantaneous accelerations, not finite differences. this f64 browser residual is not newt’s f32 tolerance.</p>
+        }
+        note="two unit point masses and rods. shoulder = A sin(2t), elbow = A/2 cos(3t). inverse dynamics uses recorded instantaneous accelerations, not finite differences. this f64 browser residual is not newt’s f32 tolerance.">
+        <Slider label="torque amplitude" valueText={`${run.amplitude.toFixed(1)} N·m`} id={id} min="0" max="8" step="0.5" value={run.amplitude} onChange={e => restart(Number(e.target.value))} />
+      </WidgetControls>
     </section>
   );
 }

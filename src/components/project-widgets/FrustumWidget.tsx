@@ -4,7 +4,7 @@ import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { objects, Scene } from '@/lib/raster/scene';
 import { clamp } from '@/lib/raster/triangle';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { scenePainter } from './sceneCanvas';
@@ -71,13 +71,10 @@ export default function FrustumWidget() {
       onPointerUp={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); dragging.current = null; }}
       onPointerCancel={() => { dragging.current = null; }} onLostPointerCapture={() => { dragging.current = null; }}
       draw={draw} />
-    <div className="project-widget-controls">
-      <ControlGroup label="camera" actions={<button type="button" onClick={() => { setYaw(0); setRevision((v) => v + 1); }}>[center camera]</button>}>
-        <Slider label="camera yaw" valueText={`${yaw}°`} min={-180} max={180} value={yaw}
-          onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} />
-      </ControlGroup>
-    </div>
-    <p className="project-widget-readout" ref={readout} />
-    <p className="project-widget-note">filled objects pass the bounds test; hollow ones are culled. objects touching a frustum plane stay.</p>
+    <WidgetControls label="camera" actions={<button type="button" onClick={() => { setYaw(0); setRevision((v) => v + 1); }}>[center camera]</button>} readout={{ ref: readout }}
+      note="filled objects pass the bounds test; hollow ones are culled. objects touching a frustum plane stay.">
+      <Slider label="camera yaw" valueText={`${yaw}°`} min={-180} max={180} value={yaw}
+        onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} />
+    </WidgetControls>
   </section>;
 }

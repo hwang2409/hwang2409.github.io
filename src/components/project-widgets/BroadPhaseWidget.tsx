@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { createBroadPhase, findPairs, stepBroadPhase } from '@/lib/physics/broadphase';
 import { createClock } from '@/lib/physics/scene';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup } from './WidgetControls';
+import { WidgetControls, ControlGroup } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { sceneLayout } from './sceneDrawing';
 import colors from './colors';
@@ -46,7 +46,8 @@ export default function BroadPhaseWidget() {
   return (
     <section className={`project-widget ${styles.scene}`} aria-label="broad-phase candidate pairs">
       <InteractiveCanvas hint="choose a pair search · compare the candidate lines and counts" draw={draw} resetKey={reset} redrawKey={revision} aria-label="forty drifting circles with bounding boxes and candidate-pair lines" />
-      <div className="project-widget-controls">
+      <WidgetControls
+        note="same seeded motion in both modes. all pairs sends every pair onward; sweep sorts x bounds, then checks y overlap. lines mark candidates, not confirmed contacts. bodies pass through each other.">
         <ControlGroup label="motion">
           <button type="button" onClick={() => { setRuntime(session()); setReset(n => n + 1); }}>[reset]</button>
         </ControlGroup>
@@ -54,8 +55,7 @@ export default function BroadPhaseWidget() {
           <button type="button" aria-pressed={!runtime.sweep} onClick={() => { runtime.sweep = false; setRevision(n => n + 1); }}>[all pairs]</button>
           <button type="button" aria-pressed={runtime.sweep} onClick={() => { runtime.sweep = true; setRevision(n => n + 1); }}>[sweep]</button>
         </ControlGroup>
-      </div>
-      <p className="project-widget-note">same seeded motion in both modes. all pairs sends every pair onward; sweep sorts x bounds, then checks y overlap. lines mark candidates, not confirmed contacts. bodies pass through each other.</p>
+      </WidgetControls>
     </section>
   );
 }

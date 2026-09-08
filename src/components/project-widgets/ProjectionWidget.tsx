@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { renderProjection, type Projection } from '@/lib/raster/cameraProjection';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
@@ -22,15 +22,13 @@ export default function ProjectionWidget() {
   return <section className={`project-widget ${styles.widget}`} aria-label="orthographic and perspective projection">
     <InteractiveCanvas hint="switch projection · adjust field of view in perspective mode" draw={draw} resetKey={revision}
       aria-label={`six equal frames in a corridor under ${mode} projection`} />
-    <div className="project-widget-controls">
-      <ControlGroup label="camera" actions={<>
+    <WidgetControls label="camera" actions={<>
         <button type="button" aria-pressed={mode === 'orthographic'} onClick={() => setMode('orthographic')}>[orthographic]</button>
         <button type="button" aria-pressed={mode === 'perspective'} onClick={() => setMode('perspective')}>[perspective]</button>
         <button type="button" onClick={() => { setMode('perspective'); setFov(60); setRevision((v) => v + 1); }}>[reset]</button>
-      </>}>
-        <Slider label="field of view" valueText={mode === 'perspective' ? `${fov}°` : 'perspective only'} min={35} max={95} step={1} value={fov} disabled={mode === 'orthographic'} onChange={(e) => setFov(e.currentTarget.valueAsNumber)} />
-      </ControlGroup>
-    </div>
-    <p className="project-widget-note">all six frames have equal dimensions. orthographic keeps parallel rails; perspective makes the far frames smaller. field of view changes the crop.</p>
+      </>}
+      note="all six frames have equal dimensions. orthographic keeps parallel rails; perspective makes the far frames smaller. field of view changes the crop.">
+      <Slider label="field of view" valueText={mode === 'perspective' ? `${fov}°` : 'perspective only'} min={35} max={95} step={1} value={fov} disabled={mode === 'orthographic'} onChange={(e) => setFov(e.currentTarget.valueAsNumber)} />
+    </WidgetControls>
   </section>;
 }

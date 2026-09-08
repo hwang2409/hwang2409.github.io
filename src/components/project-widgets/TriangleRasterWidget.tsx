@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { clamp, edge, interpolate, rasterize, type Point, type Triangle } from '@/lib/raster/triangle';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup } from './WidgetControls';
+import { WidgetControls, ControlGroup } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas } from './canvas';
 import styles from './RasterWidgets.module.css';
@@ -121,7 +121,8 @@ export default function TriangleRasterWidget() {
         onLostPointerCapture={() => { dragging.current = null; }}
         onPointerCancel={() => { dragging.current = null; }}
       />
-      <div className="project-widget-controls">
+      <WidgetControls readout={{ children: <output>{cells.length} covered pixels</output> }}
+        note="a is dark, b is gray, c is light; pixel centers decide coverage.">
         <ControlGroup label="triangle">
           <button type="button" onClick={() => { setVertices(initial); setRevision((value) => value + 1); }}>[reset]</button>
         </ControlGroup>
@@ -143,9 +144,7 @@ export default function TriangleRasterWidget() {
             ))}
           </div>
         </ControlGroup>
-      </div>
-      <div className="project-widget-readout"><output>{cells.length} covered pixels</output></div>
-      <p className="project-widget-note">a is dark, b is gray, c is light; pixel centers decide coverage.</p>
+      </WidgetControls>
       {Math.abs(edge(vertices[0], vertices[1], vertices[2])) < 1e-8 ? <p className="project-widget-readout">zero area: no pixels to fill</p> : null}
     </section>
   );

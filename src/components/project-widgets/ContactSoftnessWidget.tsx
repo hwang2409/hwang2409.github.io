@@ -3,7 +3,7 @@
 import { useCallback, useId, useState } from 'react';
 import { BALL_RADIUS, CONTACT_DT, contactStiffness, simulateSoftContact } from '@/lib/physics/softContact';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { demoPlayback } from './demoPlayback';
@@ -43,14 +43,12 @@ export default function ContactSoftnessWidget() {
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="contact softness">
       <InteractiveCanvas hint="adjust softness · drop again to compare penetration" draw={draw} resetKey={reset} aria-label="a dropped ball compresses a spring contact; penetration depth appears above" />
-      <div className="project-widget-controls">
-        <ControlGroup label="contact" actions={
+      <WidgetControls label="contact" actions={
           <button type="button" onClick={() => restart(run.softness)}>[drop again]</button>
-        }>
-          <Slider label="softness" valueText={`${run.softness.toFixed(2)} · ${contactStiffness(run.softness).toFixed(0)} N/m`} id={id} min="0" max="1" step="0.01" value={run.softness} onChange={e => restart(Number(e.target.value))} />
-        </ControlGroup>
-      </div>
-      <p className="project-widget-note">0 = hard, 1 = soft. unit mass, spring–damper contact, fixed damping ratio 0.18. stiffness is an analogy for compliance, not newt’s solimp mapping.</p>
+        }
+        note="0 = hard, 1 = soft. unit mass, spring–damper contact, fixed damping ratio 0.18. stiffness is an analogy for compliance, not newt’s solimp mapping.">
+        <Slider label="softness" valueText={`${run.softness.toFixed(2)} · ${contactStiffness(run.softness).toFixed(0)} N/m`} id={id} min="0" max="1" step="0.01" value={run.softness} onChange={e => restart(Number(e.target.value))} />
+      </WidgetControls>
     </section>
   );
 }

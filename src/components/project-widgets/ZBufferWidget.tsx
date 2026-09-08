@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { renderDepth } from '@/lib/raster/depth';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup } from './WidgetControls';
+import { WidgetControls, ControlGroup } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
@@ -24,7 +24,8 @@ export default function ZBufferWidget() {
           paint(context, (width - 240 * scale) / 2, 30, 240 * scale, 180 * scale);
           context.fillText(depthTest ? 'nearest fragment wins' : 'last triangle wins', 12, 20);
         }} />
-      <div className="project-widget-controls">
+      <WidgetControls readout={{ children: <output>{reverse ? 'dark drawn last' : 'light drawn last'}</output> }}
+        note="the triangles cross in depth. swap their order: painter mode changes; the z-buffer result stays the same.">
         <ControlGroup label="draw order">
           <button type="button" onClick={() => { setReverse((v) => !v); setRevision((v) => v + 1); }}>[swap order]</button>
         </ControlGroup>
@@ -32,9 +33,7 @@ export default function ZBufferWidget() {
           <button type="button" aria-pressed={!depthTest} onClick={() => { setDepthTest(false); setRevision((v) => v + 1); }}>[painter]</button>
           <button type="button" aria-pressed={depthTest} onClick={() => { setDepthTest(true); setRevision((v) => v + 1); }}>[z-buffer]</button>
         </ControlGroup>
-      </div>
-      <div className="project-widget-readout"><output>{reverse ? 'dark drawn last' : 'light drawn last'}</output></div>
-      <p className="project-widget-note">the triangles cross in depth. swap their order: painter mode changes; the z-buffer result stays the same.</p>
+      </WidgetControls>
     </section>
   );
 }

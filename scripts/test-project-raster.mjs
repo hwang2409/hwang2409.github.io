@@ -50,6 +50,18 @@ async function loadTypeScript(path, resolve) {
   return exports;
 }
 
+test('pause controls expose both toggle states and preserve the click action', async () => {
+  const { PauseButton } = await loadTypeScript('../src/components/project-widgets/WidgetControls.tsx', require);
+  for (const paused of [false, true]) {
+    let clicks = 0;
+    const button = PauseButton({ paused, onClick: () => { clicks += 1; } });
+    assert.equal(renderToStaticMarkup(button),
+      `<button type="button" aria-pressed="${paused}">[${paused ? 'play' : 'pause'}]</button>`);
+    button.props.onClick();
+    assert.equal(clicks, 1);
+  }
+});
+
 // Exercise the real dispatcher; stub only its client widget imports.
 const widgetStub = (name) => function WidgetStub() {
   return createElement('section', { 'data-widget': name }, name);

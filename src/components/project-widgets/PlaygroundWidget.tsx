@@ -3,7 +3,7 @@
 import { useCallback, useId, useState, type PointerEvent } from 'react';
 import { BODY_LIMIT, createClock, createScene, fireProjectile, SCENE_DT, spawnBody, stepScene } from '@/lib/physics/scene';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlField, ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlField, ControlGroup, Slider } from './WidgetControls';
 import { containsBody, drawScene, sceneLayout } from './sceneDrawing';
 import styles from './NewtWidgets.module.css';
 
@@ -102,7 +102,8 @@ export default function PlaygroundWidget({ wall = false }: { wall?: boolean }) {
           if (drag.pointer !== event.pointerId) return;
           const p = coordinates(event); drag.x = p.x; drag.y = p.y; refresh();
         }} />
-      <div className="project-widget-controls">
+      <WidgetControls readout={{ role: "status", children: message || (wall ? '8 kg projectile · 1 kg boxes' : 'click empty space to add a box') }}
+        note="2d rigid bodies · dt = 1/180 s · friction 0.55 · restitution 0.3. energy includes gravity and rotation; spawning and flinging add energy. reduced motion: [step] advances 0.35 s.">
         <ControlGroup label="launch" actions={<button type="button" disabled={wall && scene.bodies.length >= BODY_LIMIT} onClick={launch}>{wall ? '[fire]' : '[fling body]'}</button>}>
           {!wall && (<ControlField label="body to fling">
             <select id={`${id}-body`} value={runtime.selected} onChange={e => { runtime.selected = Number(e.target.value); refresh(); }}>
@@ -124,9 +125,7 @@ export default function PlaygroundWidget({ wall = false }: { wall?: boolean }) {
           {!wall && <Slider label="gravity" valueText={`${scene.gravity.toFixed(1)} m/s²`} id={`${id}-gravity`} min="0" max="20" step="0.1" value={scene.gravity}
             onChange={e => { scene.gravity = Number(e.target.value); refresh(); }} />}
         </ControlGroup>
-      </div>
-      <p className="project-widget-readout" role="status">{message || (wall ? '8 kg projectile · 1 kg boxes' : 'click empty space to add a box')}</p>
-      <p className="project-widget-note">2d rigid bodies · dt = 1/180 s · friction 0.55 · restitution 0.3. energy includes gravity and rotation; spawning and flinging add energy. reduced motion: [step] advances 0.35 s.</p>
+      </WidgetControls>
     </section>
   );
 }

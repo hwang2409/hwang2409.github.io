@@ -1,10 +1,35 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { ComponentProps, InputHTMLAttributes, ReactNode } from 'react';
 
-export function ControlGroup({ label, actions, children }: {
+type ControlGroupProps = {
   label: string;
   actions?: ReactNode;
   children?: ReactNode;
+};
+
+export function WidgetControls({ label, actions, children, readout, note }: {
+  label?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+  readout?: ComponentProps<'p'>;
+  note?: ReactNode;
 }) {
+  return <>
+    <div className="project-widget-controls">
+      {label ? <ControlGroup label={label} actions={actions}>{children}</ControlGroup> : children}
+    </div>
+    {readout && <p className="project-widget-readout" {...readout} />}
+    {note && <p className="project-widget-note">{note}</p>}
+  </>;
+}
+
+export function PauseButton({ paused, onClick }: {
+  paused: boolean;
+  onClick: () => void;
+}) {
+  return <button type="button" aria-pressed={paused} onClick={onClick}>[{paused ? 'play' : 'pause'}]</button>;
+}
+
+export function ControlGroup({ label, actions, children }: ControlGroupProps) {
   return (
     <fieldset className="project-widget-group">
       <legend>{label}</legend>

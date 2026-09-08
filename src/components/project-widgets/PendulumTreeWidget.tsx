@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { pendulumPositions, simulatePendulum } from '@/lib/physics/pendulum';
 import { sampleIndex } from '@/lib/physics/sampling';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { drawPendulum, pendulumBounds, pendulumLayout } from './pendulumDrawing';
 
@@ -66,7 +66,7 @@ export default function PendulumTreeWidget() {
           event.currentTarget.setPointerCapture(event.pointerId);
           drag(event);
         }} onPointerMove={drag} onPointerUp={release} onPointerCancel={release} />
-      <div className="project-widget-controls">
+      <WidgetControls>
         <ControlGroup label="release">
           <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
         </ControlGroup>
@@ -76,7 +76,7 @@ export default function PendulumTreeWidget() {
           <Slider label="joint 2" valueText={`${angles.q2.toFixed(2)} rad`} id="pendulum-q2" min={-Math.PI} max={Math.PI} step="0.01" value={angles.q2}
             onChange={e => changeAngle('q2', Number(e.target.value))} />
         </ControlGroup>
-      </div>
+      </WidgetControls>
     </section>
   );
 }

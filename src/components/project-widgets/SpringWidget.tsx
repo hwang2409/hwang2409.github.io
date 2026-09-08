@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas, crisp } from './canvas';
 import { dampingForSlider, sampleSpring, simulateSpring } from '@/lib/physics/spring';
@@ -118,7 +118,7 @@ export default function SpringWidget() {
           setReplayKey((value) => value + 1);
         }}
       />
-      <div className="project-widget-controls">
+      <WidgetControls>
         <ControlGroup label="release">
           <button type="button" onClick={() => setReplayKey(value => value + 1)}>[replay]</button>
         </ControlGroup>
@@ -136,7 +136,7 @@ export default function SpringWidget() {
             <span>under-damped</span><span>critical</span><span>over-damped</span>
           </div>
         </ControlGroup>
-      </div>
+      </WidgetControls>
     </section>
   );
 }

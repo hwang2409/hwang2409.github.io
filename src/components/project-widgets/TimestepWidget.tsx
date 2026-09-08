@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas, crisp } from './canvas';
 import { sampleTrace, simulateFixedTrace, simulateVariableTrace, type BouncePoint } from '@/lib/physics/timestep';
@@ -100,7 +100,7 @@ export default function TimestepWidget() {
         <span><i className="legend-swatch legend-solid" />current run</span>
         <span><i className="legend-swatch legend-dashed" />previous run</span>
       </div>
-      <div className="project-widget-controls">
+      <WidgetControls>
         <ControlGroup label="replay">
           <button type="button" onClick={replay}>[replay]</button>
         </ControlGroup>
@@ -108,7 +108,7 @@ export default function TimestepWidget() {
           <Slider label="frame jitter" valueText={`${Math.round(jitter * 100)}%`} id="frame-jitter" min="0" max="1" step="0.01" value={jitter}
             onChange={(event) => { setJitter(Number(event.target.value)); setReplayKey(value => value + 1); }} />
         </ControlGroup>
-      </div>
+      </WidgetControls>
     </section>
   );
 }

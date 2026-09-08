@@ -3,7 +3,7 @@
 import { useCallback, useId, useState } from 'react';
 import { ANCHOR, LINK_LENGTH, LINK_PIVOT, PEG_RADIUS, tendonWrap } from '@/lib/physics/tendonWrap';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import styles from './BuildDemos.module.css';
@@ -42,14 +42,12 @@ export default function TendonWrapWidget() {
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="tendon wrap geometry">
       <InteractiveCanvas hint="rotate the link · watch the tendon wrap around the peg" draw={draw} resetKey={angle} aria-label="a tendon from a fixed anchor wraps around a circular peg to a rotating link" />
-      <div className="project-widget-controls">
-        <ControlGroup label="link" actions={
+      <WidgetControls label="link" actions={
           <button type="button" onClick={() => setAngle(45)}>[reset]</button>
-        }>
-          <Slider label="link angle" valueText={`${angle}°`} id={id} min="25" max="110" step="1" value={angle} onChange={e => setAngle(Number(e.target.value))} />
-        </ControlGroup>
-      </div>
-      <p className="project-widget-note">a planar section of cylinder wrapping. two tangent segments meet a circular arc; the arc vanishes when the straight path clears the peg.</p>
+        }
+        note="a planar section of cylinder wrapping. two tangent segments meet a circular arc; the arc vanishes when the straight path clears the peg.">
+        <Slider label="link angle" valueText={`${angle}°`} id={id} min="25" max="110" step="1" value={angle} onChange={e => setAngle(Number(e.target.value))} />
+      </WidgetControls>
     </section>
   );
 }

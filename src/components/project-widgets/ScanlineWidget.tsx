@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Scene } from '@/lib/raster/scene';
 import InteractiveCanvas from './InteractiveCanvas';
-import { ControlGroup, Slider } from './WidgetControls';
+import { WidgetControls, PauseButton, ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { scenePainter } from './sceneCanvas';
@@ -64,8 +64,9 @@ export default function ScanlineWidget() {
 
   return <section className={`project-widget ${styles.widget}`} aria-label="scanline theater">
     <InteractiveCanvas hint="pause, then step one line · show rejected fragments to inspect depth tests" draw={draw} resetKey={revision} aria-label="a frame fills one scanline at a time; hatching marks pixels with rejected depth tests" />
-    <div className="project-widget-controls">
-      <ControlGroup label="playback" actions={<><button type="button" onClick={() => setPaused(!paused)}>[{paused ? 'play' : 'pause'}]</button>
+    <WidgetControls readout={{ ref: readout }}
+      note="the near mesh arrives first. hidden fragments from later meshes fail the depth test. hatching records those attempts.">
+      <ControlGroup label="playback" actions={<><PauseButton paused={paused} onClick={() => setPaused(!paused)} />
         <button type="button" onClick={() => { setPaused(true); setSteps((v) => v + 1); }}>[step one line]</button>
         <button type="button" onClick={() => {
           scene.raster.clear(); progress.current = { line: 0, fraction: 0, steps: 0, previewed: false };
@@ -77,8 +78,6 @@ export default function ScanlineWidget() {
       <ControlGroup label="view">
         <button type="button" aria-pressed={rejection} onClick={() => setRejection(!rejection)}>[show rejected]</button>
       </ControlGroup>
-    </div>
-    <p className="project-widget-readout" ref={readout} />
-    <p className="project-widget-note">the near mesh arrives first. hidden fragments from later meshes fail the depth test. hatching records those attempts.</p>
+    </WidgetControls>
   </section>;
 }
