@@ -15,6 +15,7 @@ type DrawCanvas = (
 type InteractiveCanvasProps = Omit<CanvasHTMLAttributes<HTMLCanvasElement>, 'children'> & {
   draw: DrawCanvas;
   resetKey?: number;
+  redrawKey?: number;
   staticElapsed?: number;
   children?: ReactNode;
 };
@@ -22,11 +23,13 @@ type InteractiveCanvasProps = Omit<CanvasHTMLAttributes<HTMLCanvasElement>, 'chi
 export default function InteractiveCanvas({
   draw,
   resetKey = 0,
+  redrawKey = 0,
   staticElapsed = 0,
   children,
   className,
   ...canvasProps
 }: InteractiveCanvasProps) {
+  const redrawRef = useRef<(() => void) | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [motionStep, setMotionStep] = useState({ resetKey, count: 0 });
@@ -77,6 +80,8 @@ export default function InteractiveCanvas({
       render(staticMotion ? (step === 0 ? staticElapsed : step * 350) : elapsed);
     };
 
+    redrawRef.current = () => render(staticMotion ? (step === 0 ? staticElapsed : step * 350) : elapsed);
+
     const tick = (now: number) => {
       if (!visible || document.hidden || staticMotion) return;
       elapsed = Math.max(0, now - start);
@@ -115,12 +120,15 @@ export default function InteractiveCanvas({
 
     return () => {
       disposed = true;
+      redrawRef.current = null;
       window.cancelAnimationFrame(frame);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       document.removeEventListener('visibilitychange', startAnimation);
     };
   }, [reducedMotion, resetKey, step, staticElapsed, draw]);
+
+  useEffect(() => { redrawRef.current?.(); }, [redrawKey]);
 
   return (
     <div className="project-widget-canvas-wrap">

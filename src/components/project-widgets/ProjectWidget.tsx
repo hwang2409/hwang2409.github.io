@@ -13,7 +13,15 @@ import SolverIterationsWidget from './SolverIterationsWidget';
 import FrictionConeWidget from './FrictionConeWidget';
 import DeterminismWidget from './DeterminismWidget';
 
+import PlaygroundWidget, { ProjectileStackWidget } from './PlaygroundWidget';
+import BroadPhaseWidget from './BroadPhaseWidget';
+import MuscleArmWidget from './MuscleArmWidget';
+
 const widgets = {
+  playground: PlaygroundWidget,
+  'projectile-stack': ProjectileStackWidget,
+  'broad-phase': BroadPhaseWidget,
+  'muscle-arm': MuscleArmWidget,
   integrators: IntegratorsWidget,
   timestep: TimestepWidget,
   spring: SpringWidget,
