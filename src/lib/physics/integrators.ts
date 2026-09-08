@@ -6,6 +6,7 @@ export type ProjectileState = {
 };
 
 export type ProjectilePoint = {
+  time: number;
   x: number;
   y: number;
 };
@@ -70,11 +71,11 @@ export function simulateProjectile(
   duration = 2.5,
 ): ProjectilePoint[] {
   let state: ProjectileState = { x: 0, y: 0, vx: velocity.x, vy: velocity.y };
-  const points: ProjectilePoint[] = [{ x: state.x, y: state.y }];
+  const points: ProjectilePoint[] = [{ time: 0, x: state.x, y: state.y }];
 
   for (let time = 0; time < duration; time += dt) {
     state = stepProjectile(state, dt, integrator);
-    points.push({ x: state.x, y: Math.max(0, state.y) });
+    points.push({ time: time + dt, x: state.x, y: Math.max(0, state.y) });
     if (state.y < 0) break;
   }
 

@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
 import colors from './colors';
+import { clearCanvas, crisp } from './canvas';
 import { dampingForSlider, sampleSpring, simulateSpring } from '@/lib/physics/spring';
 
 const duration = 4;
@@ -25,25 +26,26 @@ function drawSpring(context: CanvasRenderingContext2D, centerX: number, top: num
 function drawTrace(context: CanvasRenderingContext2D, trace: { time: number; displacement: number }[], width: number, height: number, elapsed: number) {
   const startX = 22;
   const traceWidth = width - 44;
-  const centerY = height - 42;
+  const centerY = height - 52;
+  const scale = 34 / Math.max(...trace.map(p => Math.abs(p.displacement)), 0.01);
   context.strokeStyle = colors.border;
   context.lineWidth = 1;
   context.beginPath();
-  context.moveTo(startX, centerY);
-  context.lineTo(startX + traceWidth, centerY);
+  context.moveTo(startX, crisp(centerY));
+  context.lineTo(startX + traceWidth, crisp(centerY));
   context.stroke();
   context.strokeStyle = colors.muted;
   context.beginPath();
   trace.forEach((point, index) => {
     const x = startX + (point.time / duration) * traceWidth;
-    const y = centerY - point.displacement * 28;
+    const y = centerY - point.displacement * scale;
     if (index === 0) context.moveTo(x, y);
     else context.lineTo(x, y);
   });
   context.stroke();
   const time = (elapsed / 1000) % duration;
   const currentX = startX + (time / duration) * traceWidth;
-  const currentY = centerY - sampleSpring(trace, time) * 28;
+  const currentY = centerY - sampleSpring(trace, time) * scale;
   context.fillStyle = colors.foreground;
   context.beginPath();
   context.arc(currentX, currentY, 3, 0, Math.PI * 2);
@@ -60,19 +62,18 @@ export default function SpringWidget() {
   const trace = useMemo(() => simulateSpring(displacement, damping, duration), [displacement, damping]);
 
   const draw = useCallback((context: CanvasRenderingContext2D, width: number, height: number, elapsed: number) => {
-    context.fillStyle = colors.background;
-    context.fillRect(0, 0, width, height);
+    clearCanvas(context, width, height);
     const centerX = width / 2;
-    const restY = 106;
+    const restY = 125;
     const elapsedDisplacement = sampleSpring(trace, (elapsed / 1000) % duration);
-    const massY = restY + (isDragging ? displacement : elapsedDisplacement) * 70;
+    const massY = restY + (isDragging ? displacement : elapsedDisplacement) * 55;
     context.fillStyle = colors.foreground;
     context.fillRect(centerX - 4, 24, 8, 4);
     drawSpring(context, centerX, 30, massY - 13);
     context.strokeStyle = colors.border;
     context.beginPath();
-    context.moveTo(centerX - 34, restY);
-    context.lineTo(centerX + 34, restY);
+    context.moveTo(centerX - 34, crisp(restY));
+    context.lineTo(centerX + 34, crisp(restY));
     context.stroke();
     context.fillStyle = colors.foreground;
     context.fillRect(centerX - 13, massY - 13, 26, 26);
@@ -81,8 +82,8 @@ export default function SpringWidget() {
 
   const updateDisplacement = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
-    const restY = 106;
-    const next = (event.clientY - bounds.top - restY) / 70;
+    const restY = 125;
+    const next = (event.clientY - bounds.top - restY) / 55;
     setDisplacement(Math.max(-0.9, Math.min(1.4, next)));
   };
 
@@ -126,7 +127,7 @@ export default function SpringWidget() {
             max="100"
             step="1"
             value={dampingValue}
-            onChange={(event) => setDampingValue(Number(event.target.value))}
+            onChange={(event) => { setDampingValue(Number(event.target.value)); setReplayKey(value => value + 1); }}
           />
           <div className="project-widget-scale" aria-hidden="true">
             <span>under-damped</span><span>critical</span><span>over-damped</span>
@@ -145,6 +146,7 @@ export default function SpringWidget() {
             setReplayKey((value) => value + 1);
           }}
         />
+        <button type="button" onClick={() => setReplayKey(value => value + 1)}>[replay]</button>
       </div>
       <p className="project-widget-hint">drag the mass to set its starting displacement</p>
     </section>
