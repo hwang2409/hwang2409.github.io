@@ -16,6 +16,8 @@
   --text-sm: 0.85rem;
   --page-width: 40rem;
   color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -36,7 +38,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
 }
 
 a,
@@ -79,7 +80,7 @@ button:focus-visible,
 summary:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 1px solid currentColor;
+  outline: 2px solid currentColor;
   outline-offset: 3px;
 }
 
@@ -887,7 +888,23 @@ dd {
 
   .site-nav {
     justify-content: flex-start;
-    gap: var(--space-1) var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .site-footer,
+  .site-links {
+    row-gap: var(--space-3);
+  }
+
+  .site-nav a,
+  .site-footer a {
+    padding-block: 0.625rem;
+    margin-block: -0.625rem;
+  }
+
+  .site-name {
+    padding-block: 0.525rem;
+    margin-block: -0.525rem;
   }
 
   .site-copyright {

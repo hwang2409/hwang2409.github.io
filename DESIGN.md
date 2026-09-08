@@ -15,7 +15,7 @@ and small functional controls. it does not use a manual-page metaphor.
 
 the site is light mode only. there is no dark palette, no theme toggle, and no
 theme storage. every color is neutral grayscale. links use the text color and
-keep an underline. focus uses a one-pixel `currentColor` outline. selection
+keep an underline. focus uses a two-pixel `currentColor` outline. selection
 inverts the foreground and background.
 
 ## type and layout
