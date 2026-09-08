@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <section className="home-intro" aria-labelledby="home-name">
-        <h1 id="home-name">henry wang</h1>
+        <h1 id="home-name">hello, i'm henry</h1>
         <p>swe @ uwaterloo, currently working on agents at <a href="https://phoebe.work/" target="_blank" rel="noopener noreferrer">phoebe</a>; previously worked at <a href="https://fish.audio" target="_blank" rel="noopener noreferrer">fish audio</a> and <a href="https://www.nationgraph.com/" target="_blank" rel="noopener noreferrer">nationgraph</a>.</p>
       </section>
 
