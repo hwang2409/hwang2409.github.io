@@ -3,6 +3,8 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
 import colors from './colors';
+import { clearCanvas, crisp } from './canvas';
+import { sampleIndex } from '@/lib/physics/sampling';
 import { simulateProjectile, type ProjectilePoint } from '@/lib/physics/integrators';
 
 const duration = 2.5;
@@ -23,21 +25,21 @@ function drawGrid(context: CanvasRenderingContext2D, width: number, height: numb
   context.lineWidth = 1;
   context.beginPath();
   for (let x = 0; x <= bounds.maxX + gridStepX / 2; x += gridStepX) {
-    const screenX = 54 + x * ((width - 74) / bounds.maxX);
+    const screenX = crisp(54 + x * ((width - 74) / bounds.maxX));
     context.moveTo(screenX, 20);
     context.lineTo(screenX, floor);
   }
   for (let y = 0; y <= bounds.maxY + gridStepY / 2; y += gridStepY) {
-    const screenY = floor - y * ((floor - 20) / bounds.maxY);
+    const screenY = crisp(floor - y * ((floor - 20) / bounds.maxY));
     context.moveTo(54, screenY);
     context.lineTo(width - 20, screenY);
   }
   context.stroke();
   context.strokeStyle = colors.foreground;
   context.beginPath();
-  context.moveTo(54, 20);
-  context.lineTo(54, floor);
-  context.lineTo(width - 20, floor);
+  context.moveTo(54.5, 20);
+  context.lineTo(54.5, crisp(floor));
+  context.lineTo(width - 20, crisp(floor));
   context.stroke();
 }
 
@@ -107,14 +109,13 @@ export default function IntegratorsWidget() {
   }, [trails]);
 
   const draw = useCallback((context: CanvasRenderingContext2D, width: number, height: number, elapsed: number) => {
-    context.fillStyle = colors.background;
-    context.fillRect(0, 0, width, height);
+    clearCanvas(context, width, height);
     drawGrid(context, width, height, plotBounds);
     drawTrail(context, trails.explicit, width, height, colors.muted, plotBounds, [5, 4]);
     drawTrail(context, trails.semiImplicit, width, height, colors.foreground, plotBounds);
     drawTrail(context, trails.rk4, width, height, colors.muted, plotBounds, [1, 4]);
 
-    const pointIndex = Math.max(0, Math.min(Math.floor((elapsed / 1000) / dt), trails.rk4.length - 1));
+    const pointIndex = sampleIndex(trails.rk4, elapsed / 1000);
     drawPoint(context, trails.explicit[Math.min(pointIndex, trails.explicit.length - 1)], width, height, colors.muted, plotBounds);
     drawPoint(context, trails.semiImplicit[Math.min(pointIndex, trails.semiImplicit.length - 1)], width, height, colors.foreground, plotBounds);
     drawPoint(context, trails.rk4[Math.min(pointIndex, trails.rk4.length - 1)], width, height, colors.muted, plotBounds);
@@ -143,6 +144,7 @@ export default function IntegratorsWidget() {
     const nextX = Math.max(velocityXRange.min, Math.min(velocityXRange.max, (event.clientX - bounds.left - originX) / 13));
     const nextY = Math.max(velocityYRange.min, Math.min(velocityYRange.max, (originY - event.clientY + bounds.top) / 13));
     setVelocity({ x: nextX, y: nextY });
+    setReplayKey(value => value + 1);
   };
 
   return (
@@ -185,7 +187,7 @@ export default function IntegratorsWidget() {
           max={velocityXRange.max}
           step="0.1"
           value={velocity.x}
-          onChange={(event) => setVelocity((current) => ({ ...current, x: Number(event.target.value) }))}
+          onChange={(event) => { setVelocity((current) => ({ ...current, x: Number(event.target.value) })); setReplayKey(value => value + 1); }}
         />
         <label htmlFor="launcher-velocity-y">velocity y: {velocity.y.toFixed(1)} m/s</label>
         <input
@@ -195,7 +197,7 @@ export default function IntegratorsWidget() {
           max={velocityYRange.max}
           step="0.1"
           value={velocity.y}
-          onChange={(event) => setVelocity((current) => ({ ...current, y: Number(event.target.value) }))}
+          onChange={(event) => { setVelocity((current) => ({ ...current, y: Number(event.target.value) })); setReplayKey(value => value + 1); }}
         />
         <button type="button" onClick={() => setReplayKey((value) => value + 1)}>[replay]</button>
       </div>
