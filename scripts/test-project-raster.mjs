@@ -45,8 +45,35 @@ async function loadTypeScript(path, resolve) {
   return exports;
 }
 
-// Keep the real registry and parser; client component implementations need no DOM.
-const registry = await loadTypeScript('../src/components/project-widgets/ProjectWidget.tsx', () => ({}));
+// Exercise the real dispatcher; stub only its client widget imports.
+const widgetStub = (name) => function WidgetStub() {
+  return createElement('section', { 'data-widget': name }, name);
+};
+const widgetImports = {
+  'react/jsx-runtime': require('react/jsx-runtime'),
+  './IntegratorsWidget': { default: widgetStub('integrators') },
+  './SpringWidget': { default: widgetStub('spring') },
+  './TimestepWidget': { default: widgetStub('timestep') },
+  './TriangleRasterWidget': { default: widgetStub('triangle-raster') },
+  './ZBufferWidget': { default: widgetStub('zbuffer-toggle') },
+  './PerspectiveTextureWidget': { default: widgetStub('perspective-texture') },
+  './ShadingModelWidget': { default: widgetStub('shading-model') },
+  './PipelineWidget': { default: widgetStub('raster-pipeline') },
+  './ScanlineWidget': { default: widgetStub('scanline-theater') },
+  './DepthViewWidget': { default: widgetStub('depth-buffer-view') },
+  './FrustumWidget': { default: widgetStub('frustum-culling') },
+  './PendulumTreeWidget': { default: widgetStub('pendulum-tree') },
+  './SolverIterationsWidget': { default: widgetStub('solver-iterations') },
+  './FrictionConeWidget': { default: widgetStub('friction-cone') },
+  './DeterminismWidget': { default: widgetStub('determinism-replay') },
+  './PlaygroundWidget': { default: widgetStub('playground'), ProjectileStackWidget: widgetStub('projectile-stack') },
+  './BroadPhaseWidget': { default: widgetStub('broad-phase') },
+  './MuscleArmWidget': { default: widgetStub('muscle-arm') },
+};
+const registry = await loadTypeScript('../src/components/project-widgets/ProjectWidget.tsx', (name) => {
+  assert.ok(Object.hasOwn(widgetImports, name), `unexpected widget import ${name}`);
+  return widgetImports[name];
+});
 const parser = await loadTypeScript('../src/components/project-widgets/parseProjectContent.ts', () => registry);
 
 test('every project content marker reaches ProjectWidget through the actual page', async () => {
@@ -62,13 +89,7 @@ test('every project content marker reaches ProjectWidget through the actual page
     '@/components/Contents': { default: () => null },
     '@/components/LightboxImageTrigger': { default: () => null },
     '@/components/project-widgets/parseProjectContent': parser,
-    '@/components/project-widgets/ProjectWidget': {
-      ...registry,
-      default: ({ name }) => {
-        assert.ok(registry.isProjectWidgetName(name), `unregistered widget ${name}`);
-        return createElement('section', { 'data-widget': name });
-      },
-    },
+    '@/components/project-widgets/ProjectWidget': registry,
   };
   const page = await loadTypeScript('../src/app/projects/[slug]/page.tsx', (name) => {
     assert.ok(Object.hasOwn(imports, name), `unexpected page import ${name}`);
@@ -79,6 +100,9 @@ test('every project content marker reaches ProjectWidget through the actual page
   for (const file of (await readdir(projects)).filter((name) => name.endsWith('.md'))) {
     const content = await readFile(new URL(file, projects), 'utf8');
     const expected = [...content.matchAll(/<!--\s*widget:\s*(.*?)\s*-->/gu)].map((match) => match[1]);
+    for (const name of expected) {
+      assert.ok(registry.isProjectWidgetName(name), `unregistered widget ${name}`);
+    }
     const blocks = parser.parseProjectContent(content);
     assert.deepEqual(Array.from(blocks.filter((block) => 'widget' in block), (block) => block.widget), expected, file);
     project = { slug: file.slice(0, -3), title: file, date: '2026-09-08', content };
