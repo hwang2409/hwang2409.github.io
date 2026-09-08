@@ -40,9 +40,9 @@ x, and copyright.
 
 ## page content
 
-the home page has a name, role, short about paragraph, interests sentence, project
-list, music line, mascot, quote, and contact links. the mascot uses grayscale
-pixels and modest breathing room.
+the home page has a name, role, short about paragraph, project list, music
+line, mascot, and contact links. the mascot uses grayscale pixels and modest
+breathing room.
 
 the blog index shows one row per post with a muted date and title link. posts show
 a title, date line, tools, prose, optional contents list, and previous or next
