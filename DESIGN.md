@@ -23,7 +23,7 @@ inverts the foreground and background.
 the primary stack is `var(--font-jetbrains-mono), ui-monospace, "SF Mono",
 Menlo, Consolas, monospace`. jetbrains mono is bundled with
 `next/font/google`, so visitors get the same font across platforms. the base
-size is 15px and the line height is 1.7. the centered content column is 44rem
+size is 15px and the line height is 1.7. the centered content column is 55rem
 wide at most, with one rem of side padding.
 
 the vertical rhythm uses five steps: `.35rem`, `.7rem`, `1.25rem`, `2rem`, and

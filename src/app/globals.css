@@ -14,7 +14,7 @@
   --text-lg: 1.15rem;
   --text-base: 1rem;
   --text-sm: 0.85rem;
-  --page-width: 44rem;
+  --page-width: 55rem;
   color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -244,7 +244,7 @@ dd {
 }
 
 .home-intro {
-  max-width: 38rem;
+  max-width: 52rem;
 }
 
 .home-intro p {
@@ -346,7 +346,7 @@ dd {
 }
 
 .post-title {
-  max-width: 38rem;
+  max-width: 52rem;
   margin-bottom: var(--space-2);
 }
 
@@ -418,7 +418,7 @@ dd {
 }
 
 .prose {
-  max-width: 38rem;
+  max-width: 52rem;
   color: var(--foreground);
   font-size: var(--text-base);
 }
