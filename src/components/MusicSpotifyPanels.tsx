@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import styles from '@/components/SpotifyStats.module.css';
 import MusicCoverShelf, { type MusicCoverItem } from '@/components/MusicCoverShelf';
 import { formatArtists, SpotifyTrackFeature } from '@/components/SpotifyTrackFeature';
@@ -21,6 +24,72 @@ function playbackLabel(now: SpotifyNow): string {
 }
 
 function NowBlock({ now }: { readonly now: SpotifyNow }) {
+  const track = now.track;
+  const [progressMs, setProgressMs] = useState(track?.progressMs ?? null);
+  const progressAnchor = useRef<{
+    readonly startedAt: number;
+    readonly progressMs: number;
+  } | null>(null);
+  const progressFromTrack = track?.progressMs ?? null;
+  const durationFromTrack = track?.durationMs ?? null;
+  const isPlaying = track?.isPlaying ?? false;
+  const progressUnavailable = progressMs === null;
+
+  useEffect(() => {
+    const nextProgressMs = progressFromTrack;
+    setProgressMs(nextProgressMs);
+
+    if (
+      nextProgressMs === null ||
+      durationFromTrack === null ||
+      durationFromTrack <= 0
+    ) {
+      progressAnchor.current = null;
+      return;
+    }
+
+    progressAnchor.current = {
+      startedAt: performance.now(),
+      progressMs: Math.min(Math.max(nextProgressMs, 0), durationFromTrack),
+    };
+  }, [durationFromTrack, progressFromTrack, track?.title, track?.url]);
+
+  useEffect(() => {
+    if (
+      !isPlaying ||
+      progressUnavailable ||
+      durationFromTrack === null ||
+      durationFromTrack <= 0
+    ) {
+      return undefined;
+    }
+
+    const durationMs = durationFromTrack;
+    const initialAnchor = progressAnchor.current;
+    if (initialAnchor === null || initialAnchor.progressMs >= durationMs) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      const anchor = progressAnchor.current;
+      if (anchor === null) {
+        window.clearInterval(intervalId);
+        return;
+      }
+
+      const elapsedMs = performance.now() - anchor.startedAt;
+      const nextProgressMs = Math.min(anchor.progressMs + elapsedMs, durationMs);
+      setProgressMs(nextProgressMs);
+
+      if (nextProgressMs >= durationMs) {
+        window.clearInterval(intervalId);
+        progressAnchor.current = null;
+      }
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [durationFromTrack, isPlaying, progressUnavailable]);
+
   if (now.status !== 'ok') {
     return <p className={styles.empty}>{now.note}</p>;
   }
@@ -39,6 +108,8 @@ function NowBlock({ now }: { readonly now: SpotifyNow }) {
       imageUrl={now.track.imageUrl}
       fallback="now"
       emphasizeLabel={now.playbackKind === 'current'}
+      progressMs={now.playbackKind === 'current' && now.track.isPlaying ? progressMs : null}
+      durationMs={now.playbackKind === 'current' && now.track.isPlaying ? now.track.durationMs : null}
     />
   );
 }
@@ -84,22 +155,21 @@ function albumCoverItems(stats: SpotifyStats): MusicCoverItem[] {
   }));
 }
 
-function StatsMessage({ stats }: { readonly stats: SpotifyStats }) {
-  return <p className={styles.empty}>{stats.note}</p>;
+function StatsMessage({ stats }: { readonly stats: SpotifyStats | null }) {
+  return <p className={styles.empty}>{stats?.note ?? 'checking spotify.'}</p>;
 }
 
 export function MusicPlaybackPanel({ now }: { readonly now: SpotifyNow }) {
   return <NowBlock now={now} />;
 }
 
-export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats }) {
+export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats | null }) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-tracks">
       <div className={styles.header}>
         <h2 id="music-tracks">top tracks</h2>
-        <span>{stats.timeRangeLabel}</span>
       </div>
-      {stats.status === 'ok' ? (
+      {stats?.status === 'ok' ? (
         <MusicCoverShelf
           items={stats.topTracks.map(trackCoverItem)}
           empty="spotify returned no top tracks yet."
@@ -109,14 +179,13 @@ export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats }) {
   );
 }
 
-export function MusicArtistsPanel({ stats }: { readonly stats: SpotifyStats }) {
+export function MusicArtistsPanel({ stats }: { readonly stats: SpotifyStats | null }) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-artists">
       <div className={styles.header}>
         <h2 id="music-artists">top artists</h2>
-        <span>{stats.timeRangeLabel}</span>
       </div>
-      {stats.status === 'ok' ? (
+      {stats?.status === 'ok' ? (
         <MusicCoverShelf
           items={stats.topArtists.map(artistCoverItem)}
           empty="spotify returned no top artists yet."
@@ -126,14 +195,13 @@ export function MusicArtistsPanel({ stats }: { readonly stats: SpotifyStats }) {
   );
 }
 
-export function MusicAlbumsPanel({ stats }: { readonly stats: SpotifyStats }) {
+export function MusicAlbumsPanel({ stats }: { readonly stats: SpotifyStats | null }) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-albums">
       <div className={styles.header}>
         <h2 id="music-albums">top albums</h2>
-        <span>{stats.timeRangeLabel}</span>
       </div>
-      {stats.status === 'ok' ? (
+      {stats?.status === 'ok' ? (
         <MusicCoverShelf
           items={albumCoverItems(stats)}
           empty="spotify returned no top albums yet."
@@ -143,8 +211,8 @@ export function MusicAlbumsPanel({ stats }: { readonly stats: SpotifyStats }) {
   );
 }
 
-export function MusicGenresPanel({ stats }: { readonly stats: SpotifyStats }) {
-  if (stats.status !== 'ok' || stats.topGenres.length === 0) {
+export function MusicGenresPanel({ stats }: { readonly stats: SpotifyStats | null }) {
+  if (!stats || stats.status !== 'ok' || stats.topGenres.length === 0) {
     return null;
   }
 

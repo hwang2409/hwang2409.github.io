@@ -148,6 +148,8 @@ class PublicSpotifyPlaybackTrack(BaseModel):
     image_url: str | None
     played_at: str | None
     is_playing: bool
+    progress_ms: int | None = None
+    duration_ms: int | None = None
 
 
 class SpotifyStatsResponse(BaseModel):

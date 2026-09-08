@@ -54,7 +54,7 @@ SPOTIFY_CLIENT_ID=...
 SPOTIFY_CLIENT_SECRET=...
 SPOTIFY_REFRESH_TOKEN=...
 SPOTIFY_CACHE_SECONDS=1800
-SPOTIFY_NOW_CACHE_SECONDS=20
+SPOTIFY_NOW_CACHE_SECONDS=0
 SPOTIFY_HISTORY_DB=backend/data/spotify_history.sqlite3
 ```
 
@@ -89,7 +89,7 @@ SPOTIFY_CLIENT_ID=<Spotify app client id>
 SPOTIFY_CLIENT_SECRET=<Spotify app client secret>
 SPOTIFY_REFRESH_TOKEN=<refresh token authorized with user-top-read user-read-currently-playing user-read-recently-played>
 SPOTIFY_CACHE_SECONDS=1800
-SPOTIFY_NOW_CACHE_SECONDS=20
+SPOTIFY_NOW_CACHE_SECONDS=0
 SPOTIFY_HISTORY_DB=backend/data/spotify_history.sqlite3
 ```
 
@@ -104,8 +104,9 @@ https://developer.spotify.com/blog/2026-06-18-refresh-token-expiration
 Refresh `SPOTIFY_REFRESH_TOKEN` before it expires. If Spotify returns `invalid_grant`,
 `/spotify/now` and `/spotify/stats` return `status=reauthorization_required` and the website
 renders a quiet unavailable state. `SPOTIFY_CACHE_SECONDS` is optional and defaults to 1800
-seconds for top stats. `SPOTIFY_NOW_CACHE_SECONDS` is optional and defaults to 20 seconds for
-current playback. Set either cache variable to 0 to disable that in-process cache. If the
+seconds for top stats. `SPOTIFY_NOW_CACHE_SECONDS` is optional and defaults to 0 seconds for
+current playback, so progress seeds from fresh Spotify state. Set either cache variable to 0 to
+disable that in-process cache. If the
 variables are absent, both endpoints return configured=false responses.
 
 `/spotify/observe` samples current playback into the local SQLite database at

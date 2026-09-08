@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from typing import Final
 
 import httpx2
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.spotify_auth import (
     SpotifyApiError,
@@ -44,7 +44,12 @@ from app.spotify_history import (
 
 SPOTIFY_TOKEN_URL: Final = "https://accounts.spotify.com/api/token"
 SPOTIFY_API_URL: Final = "https://api.spotify.com/v1"
-SPOTIFY_TIME_RANGE: Final[TimeRange] = "medium_term"
+DEFAULT_TIME_RANGE: Final[TimeRange] = "medium_term"
+TIME_RANGE_LABELS: Final[dict[TimeRange, str]] = {
+    "short_term": "last month",
+    "medium_term": "last 6 months",
+    "long_term": "last year",
+}
 SPOTIFY_ITEM_LIMIT: Final = 5
 
 _LIMITS: Final = httpx2.Limits(
@@ -90,18 +95,29 @@ def _create_http_client() -> httpx2.Client:
     )
 
 
-def _credentials_cache_key(credentials: SpotifyCredentials) -> SpotifyStatsCacheKey:
+def _credentials_cache_key(credentials: SpotifyCredentials) -> str:
     raw = (
         f"{credentials.client_id}:{credentials.client_secret}:"
         f"{credentials.refresh_token}"
     ).encode("utf-8")
-    return SpotifyStatsCacheKey(hashlib.sha256(raw).hexdigest())
+    return hashlib.sha256(raw).hexdigest()
 
 
-def _get_top_tracks(client: httpx2.Client, access_token: str) -> SpotifyTopTracksPage:
+def _stats_cache_key(
+    credentials: SpotifyCredentials,
+    time_range: TimeRange,
+) -> SpotifyStatsCacheKey:
+    return SpotifyStatsCacheKey(f"{_credentials_cache_key(credentials)}:{time_range}")
+
+
+def _get_top_tracks(
+    client: httpx2.Client,
+    access_token: str,
+    time_range: TimeRange,
+) -> SpotifyTopTracksPage:
     response = client.get(
         f"{SPOTIFY_API_URL}/me/top/tracks",
-        params={"time_range": SPOTIFY_TIME_RANGE, "limit": SPOTIFY_ITEM_LIMIT},
+        params={"time_range": time_range, "limit": SPOTIFY_ITEM_LIMIT},
         headers={"Authorization": f"Bearer {access_token}"},
     )
     try:
@@ -115,10 +131,14 @@ def _get_top_tracks(client: httpx2.Client, access_token: str) -> SpotifyTopTrack
     return SpotifyTopTracksPage.model_validate(response.json())
 
 
-def _get_top_artists(client: httpx2.Client, access_token: str) -> SpotifyTopArtistsPage:
+def _get_top_artists(
+    client: httpx2.Client,
+    access_token: str,
+    time_range: TimeRange,
+) -> SpotifyTopArtistsPage:
     response = client.get(
         f"{SPOTIFY_API_URL}/me/top/artists",
-        params={"time_range": SPOTIFY_TIME_RANGE, "limit": SPOTIFY_ITEM_LIMIT},
+        params={"time_range": time_range, "limit": SPOTIFY_ITEM_LIMIT},
         headers={"Authorization": f"Bearer {access_token}"},
     )
     try:
@@ -174,13 +194,13 @@ def _top_genres(artists: tuple[SpotifyTopArtistItem, ...]) -> tuple[str, ...]:
     return tuple(genre for genre, _ in genre_counts.most_common(5))
 
 
-def _not_configured_response() -> SpotifyStatsResponse:
+def _not_configured_response(time_range: TimeRange) -> SpotifyStatsResponse:
     return SpotifyStatsResponse(
         status="not_configured",
         configured=False,
         generated_at=datetime.now(UTC).isoformat(),
-        time_range=SPOTIFY_TIME_RANGE,
-        time_range_label="last 6 months",
+        time_range=time_range,
+        time_range_label=TIME_RANGE_LABELS[time_range],
         top_tracks=(),
         top_artists=(),
         top_genres=(),
@@ -188,13 +208,13 @@ def _not_configured_response() -> SpotifyStatsResponse:
     )
 
 
-def _reauthorization_required_response() -> SpotifyStatsResponse:
+def _reauthorization_required_response(time_range: TimeRange) -> SpotifyStatsResponse:
     return SpotifyStatsResponse(
         status="reauthorization_required",
         configured=False,
         generated_at=datetime.now(UTC).isoformat(),
-        time_range=SPOTIFY_TIME_RANGE,
-        time_range_label="last 6 months",
+        time_range=time_range,
+        time_range_label=TIME_RANGE_LABELS[time_range],
         top_tracks=(),
         top_artists=(),
         top_genres=(),
@@ -234,12 +254,14 @@ def spotify_now() -> SpotifyNowResponse:
 
 
 @router.get("/stats", response_model=SpotifyStatsResponse)
-def spotify_stats() -> SpotifyStatsResponse:
+def spotify_stats(
+    time_range: TimeRange = Query(default=DEFAULT_TIME_RANGE, alias="range"),
+) -> SpotifyStatsResponse:
     credentials = _load_credentials()
     if credentials is None:
-        return _not_configured_response()
+        return _not_configured_response(time_range)
 
-    cache_key = _credentials_cache_key(credentials)
+    cache_key = _stats_cache_key(credentials, time_range)
     cached_response = SPOTIFY_STATS_CACHE.get(cache_key)
     if cached_response is not None:
         return cached_response
@@ -247,15 +269,15 @@ def spotify_stats() -> SpotifyStatsResponse:
     try:
         with _create_http_client() as client:
             token = refresh_access_token(client, credentials, SPOTIFY_TOKEN_URL)
-            tracks = _get_top_tracks(client, token.access_token)
-            artists = _get_top_artists(client, token.access_token)
+            tracks = _get_top_tracks(client, token.access_token, time_range)
+            artists = _get_top_artists(client, token.access_token, time_range)
     except httpx2.RequestError as error:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Spotify request failed: {error.__class__.__name__}",
         ) from error
     except SpotifyReauthorizationRequired:
-        return _reauthorization_required_response()
+        return _reauthorization_required_response(time_range)
     except SpotifyApiError as error:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
@@ -266,8 +288,8 @@ def spotify_stats() -> SpotifyStatsResponse:
         status="ok",
         configured=True,
         generated_at=datetime.now(UTC).isoformat(),
-        time_range=SPOTIFY_TIME_RANGE,
-        time_range_label="last 6 months",
+        time_range=time_range,
+        time_range_label=TIME_RANGE_LABELS[time_range],
         top_tracks=_public_tracks(tracks),
         top_artists=_public_artists(artists),
         top_genres=_top_genres(artists.items),

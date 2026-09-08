@@ -3,6 +3,7 @@ const LAB_API_URL = process.env.NEXT_PUBLIC_LAB_API_URL || DEFAULT_API_URL;
 
 export type SpotifyStatus = 'ok' | 'not_configured' | 'reauthorization_required';
 export type SpotifyPlaybackKind = 'current' | 'recent' | 'empty';
+export type SpotifyTimeRange = 'short_term' | 'medium_term' | 'long_term';
 
 export type SpotifyTrack = {
   readonly rank: number;
@@ -29,13 +30,15 @@ export type SpotifyPlaybackTrack = {
   readonly imageUrl: string | null;
   readonly playedAt: string | null;
   readonly isPlaying: boolean;
+  readonly progressMs: number | null;
+  readonly durationMs: number | null;
 };
 
 export type SpotifyStats = {
   readonly status: SpotifyStatus;
   readonly configured: boolean;
   readonly generatedAt: string;
-  readonly timeRange: string;
+  readonly timeRange: SpotifyTimeRange;
   readonly timeRangeLabel: string;
   readonly topTracks: readonly SpotifyTrack[];
   readonly topArtists: readonly SpotifyArtist[];
@@ -70,6 +73,10 @@ function readBoolean(value: unknown, fallback = false): boolean {
 
 function readNumber(value: unknown, fallback: number): number {
   return typeof value === 'number' ? value : fallback;
+}
+
+function readNullableNumber(value: unknown): number | null {
+  return typeof value === 'number' ? value : null;
 }
 
 function readStringArray(value: unknown): readonly string[] {
@@ -108,6 +115,15 @@ function readPlaybackKind(value: unknown): SpotifyPlaybackKind {
   throw new Error('Spotify response had an unknown playback kind');
 }
 
+function readTimeRange(value: unknown): SpotifyTimeRange {
+  const timeRange = readString(value);
+  if (timeRange === 'short_term' || timeRange === 'medium_term' || timeRange === 'long_term') {
+    return timeRange;
+  }
+
+  throw new Error('Spotify response had an unknown time range');
+}
+
 function parseTrack(value: Record<string, unknown>): SpotifyTrack {
   return {
     rank: readNumber(value.rank, 0),
@@ -142,6 +158,8 @@ function parsePlaybackTrack(value: unknown): SpotifyPlaybackTrack | null {
     imageUrl: readNullableString(value.image_url),
     playedAt: readNullableString(value.played_at),
     isPlaying: readBoolean(value.is_playing),
+    progressMs: readNullableNumber(value.progress_ms),
+    durationMs: readNullableNumber(value.duration_ms),
   };
 }
 
@@ -154,7 +172,7 @@ function parseSpotifyStats(value: unknown): SpotifyStats {
     status: readStatus(value.status),
     configured: readBoolean(value.configured),
     generatedAt: readString(value.generated_at),
-    timeRange: readString(value.time_range),
+    timeRange: readTimeRange(value.time_range),
     timeRangeLabel: readString(value.time_range_label, 'recently'),
     topTracks: readRecordArray(value.top_tracks).map(parseTrack),
     topArtists: readRecordArray(value.top_artists).map(parseArtist),
@@ -196,8 +214,12 @@ async function fetchSpotifyJson(path: string, init?: RequestInit): Promise<unkno
   return value;
 }
 
-export async function fetchSpotifyStats(): Promise<SpotifyStats> {
-  return parseSpotifyStats(await fetchSpotifyJson('/spotify/stats'));
+export async function fetchSpotifyStats(
+  timeRange: SpotifyTimeRange = 'medium_term',
+): Promise<SpotifyStats> {
+  return parseSpotifyStats(
+    await fetchSpotifyJson(`/spotify/stats?range=${encodeURIComponent(timeRange)}`),
+  );
 }
 
 export async function fetchSpotifyNow(): Promise<SpotifyNow> {

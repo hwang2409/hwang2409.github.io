@@ -53,6 +53,50 @@
   line-height: 1.6;
 }
 
+.rangeSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.7rem;
+  align-items: center;
+  justify-self: start;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.rangeSelector button {
+  min-height: 40px;
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: inherit;
+  line-height: 1.4;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition-property: color, text-decoration-color, transform;
+}
+
+.rangeSelector button:hover,
+.rangeSelector button:focus-visible {
+  color: var(--foreground);
+  text-decoration-color: currentColor;
+}
+
+.rangeSelector button:active {
+  transform: scale(0.96);
+}
+
+.rangeSelector button:disabled {
+  cursor: wait;
+}
+
+.rangeSelected {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
 .header span {
   margin-left: auto;
 }
@@ -126,6 +170,38 @@
   display: block;
   margin: 0.1rem 0 0;
   overflow-wrap: anywhere;
+}
+
+.progress {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.progressTrack {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  background: var(--foreground);
+}
+
+.progressTime {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .progressFill {
+    transition: width 120ms linear;
+  }
 }
 
 .musicLink {
