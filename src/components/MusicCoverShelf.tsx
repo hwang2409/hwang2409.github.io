@@ -33,8 +33,8 @@ function CoverTile({ item }: { readonly item: MusicCoverItem }) {
         <CoverArt item={item} />
       </span>
       <span className={styles.coverCaption}>
-        <strong>{item.title}</strong>
-        {item.subtitle ? <span>{item.subtitle}</span> : null}
+        <strong title={item.title}>{item.title}</strong>
+        {item.subtitle ? <span title={item.subtitle}>{item.subtitle}</span> : null}
       </span>
     </>
   );

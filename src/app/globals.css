@@ -10,6 +10,10 @@
   --space-3: 1.25rem;
   --space-4: 2rem;
   --space-5: 3rem;
+  --text-xl: 1.6rem;
+  --text-lg: 1.15rem;
+  --text-base: 1rem;
+  --text-sm: 0.85rem;
   --page-width: 40rem;
   color-scheme: light;
 }
@@ -22,7 +26,7 @@ html {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: var(--text-base);
   font-variant-numeric: tabular-nums;
 }
 
@@ -97,21 +101,21 @@ h3 {
 
 h1 {
   margin-bottom: 0;
-  font-size: 1.6rem;
+  font-size: var(--text-xl);
   line-height: 1.3;
   font-weight: 600;
 }
 
 h2 {
   margin-bottom: 0;
-  font-size: 1.15rem;
+  font-size: var(--text-lg);
   line-height: 1.35;
   font-weight: 600;
 }
 
 h3 {
   margin-bottom: 0;
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 1.45;
   font-weight: 600;
 }
@@ -157,7 +161,7 @@ dd {
   justify-content: flex-end;
   gap: var(--space-1) var(--space-3);
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .site-nav-current {
@@ -175,7 +179,7 @@ dd {
   gap: var(--space-1) var(--space-3);
   padding: var(--space-4) 0 var(--space-3);
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
 }
 
 .site-links {
@@ -270,7 +274,7 @@ dd {
 
 .home-projects li span {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 /* projects */
@@ -312,7 +316,7 @@ dd {
 .project-entry-copy span,
 .project-blog-link {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .project-hero {
@@ -334,7 +338,7 @@ dd {
 .home-epigraph {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .home-epigraph p {
@@ -363,7 +367,7 @@ dd {
 
 .post-date {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .plain-list {
@@ -391,7 +395,7 @@ dd {
 }
 
 .post-meta {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .post-excerpt {
@@ -405,7 +409,7 @@ dd {
   gap: var(--space-1) var(--space-3);
   margin-top: var(--space-3);
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
 }
 
 .case-toggle,
@@ -430,13 +434,13 @@ dd {
 .contents {
   margin: 0 0 var(--space-5);
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .contents h2 {
   margin-bottom: 0.5rem;
   color: var(--foreground);
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
 }
 
 .contents ol {
@@ -450,6 +454,8 @@ dd {
 
 .prose {
   max-width: 38rem;
+  color: var(--foreground);
+  font-size: var(--text-base);
 }
 
 :root[data-blog-case="lower"] .post-article {
@@ -476,6 +482,7 @@ dd {
 
 .prose h3 {
   margin-top: var(--space-4);
+  font-size: var(--text-lg);
 }
 
 .prose p,
@@ -520,7 +527,7 @@ dd {
 .prose figcaption {
   margin-top: 0.5rem;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
 }
 
 .prose code,
@@ -550,7 +557,7 @@ dd {
   width: 100%;
   border-collapse: collapse;
   overflow-x: auto;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .prose th,
@@ -576,7 +583,7 @@ dd {
   display: flex;
   gap: 0.75rem;
   margin: -0.8rem 0 0.5rem;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
 }
 
 .code-tools button {
@@ -599,7 +606,7 @@ dd {
   flex-wrap: wrap;
   gap: var(--space-1) var(--space-4);
   margin-top: var(--space-5);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .token-ghost {
@@ -611,7 +618,7 @@ dd {
   padding: 0.5rem 0.75rem;
   background: var(--foreground);
   color: var(--background);
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   pointer-events: none;
 }
 
@@ -624,7 +631,7 @@ dd {
   margin-top: var(--space-1);
   color: var(--muted);
   content: attr(data-source);
-  font-size: 0.7rem;
+  font-size: var(--text-sm);
   font-weight: 400;
 }
 
@@ -640,7 +647,7 @@ dd {
     margin-right: -11rem;
     padding-left: 0.75rem;
     border-left: 1px solid var(--border);
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
   }
 }
 
@@ -661,7 +668,7 @@ dd {
 
 .now-date {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .now-copy {
@@ -718,7 +725,7 @@ dd {
 
 .entry-subheading {
   margin-top: 0.2rem;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .entry ul {

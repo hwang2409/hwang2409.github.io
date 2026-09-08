@@ -6,6 +6,7 @@ import { getProject, getProjects } from '@/lib/projects';
 import { markdownToHtmlWithSections } from '@/lib/markdown';
 import Contents from '@/components/Contents';
 import ProjectImage from '@/components/ProjectImage';
+import { formatDate } from '@/lib/dates';
 
 export async function generateMetadata({
   params,
@@ -34,7 +35,7 @@ export default async function ProjectPage({
     <>
     <article className="post-article project-article">
       <h1 className="post-title page-title">{project.title}</h1>
-      <p className="post-meta">{project.date}</p>
+      <p className="post-meta"><time dateTime={formatDate(project.date)}>{formatDate(project.date)}</time></p>
       <p className="post-excerpt">{project.excerpt}</p>
       <ProjectImage project={project} className="project-hero" loading="eager" />
       <Contents sections={sections} />
