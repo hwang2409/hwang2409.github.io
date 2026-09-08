@@ -75,3 +75,24 @@
   color: var(--muted);
   font-size: var(--text-sm);
 }
+
+.widget canvas.flagship {
+  height: clamp(20rem, 60vw, 30rem);
+}
+
+.stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+  width: 100%;
+}
+
+.stages button {
+  text-align: left;
+}
+
+@media (max-width: 520px) {
+  .widget canvas.splitCanvas {
+    height: 32rem;
+  }
+}

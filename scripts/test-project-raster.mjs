@@ -9,9 +9,9 @@ import ts from 'typescript';
 // CommonJS output lets Node resolve the models' extensionless local imports.
 const directory = await mkdtemp(new URL('../.raster-check-', import.meta.url));
 const require = createRequire(import.meta.url);
-let triangle, depth, perspective, shading;
+let triangle, depth, perspective, shading, transform, mesh, pipeline, scene;
 try {
-  for (const name of ['triangle', 'frame', 'depth', 'perspective', 'shading']) {
+  for (const name of ['triangle', 'frame', 'depth', 'perspective', 'shading', 'transform', 'mesh', 'pipeline', 'scene']) {
     const source = await readFile(new URL(`../src/lib/raster/${name}.ts`, import.meta.url), 'utf8');
     const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
     await writeFile(join(directory, `${name}.js`), outputText);
@@ -20,6 +20,10 @@ try {
   depth = require(join(directory, 'depth.js'));
   perspective = require(join(directory, 'perspective.js'));
   shading = require(join(directory, 'shading.js'));
+  transform = require(join(directory, 'transform.js'));
+  mesh = require(join(directory, 'mesh.js'));
+  pipeline = require(join(directory, 'pipeline.js'));
+  scene = require(join(directory, 'scene.js'));
 } finally {
   await rm(directory, { recursive: true, force: true });
 }
@@ -153,4 +157,176 @@ test('moving the light moves the highlight across the sphere', () => {
   }
   assert.ok(highlightX(-40) < 90);
   assert.ok(highlightX(40) > 90);
+});
+
+const { identity, transform: apply, modelMatrix, viewMatrix, projectionMatrix, boundsVisible } = transform;
+const { Pipeline, stages, signedArea, depthTest } = pipeline;
+const { Scene, objects } = scene;
+const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-10, `${actual} != ${expected}`);
+
+test('model rotation and camera view round-trip known coordinates', () => {
+  const model = new Float64Array(16), view = new Float64Array(16), point = new Float64Array(4);
+  for (const angle of [-2, -0.4, 0, 1.3]) {
+    modelMatrix(model, angle, 1, 2, -3, 4);
+    viewMatrix(view, angle, 0, 2, -3, 4);
+    apply(point, 0, model, 0.2, 0.7, -2);
+    apply(point, 0, view, point[0], point[1], point[2]);
+    close(point[0], 0.2); close(point[1], 0.7); close(point[2], -2); close(point[3], 1);
+  }
+  for (const pitch of [-0.8, 0, 0.7]) {
+    const yaw = 0.9, distance = 4.8;
+    viewMatrix(view, yaw, pitch, Math.sin(yaw) * Math.cos(pitch) * distance,
+      Math.sin(pitch) * distance, Math.cos(yaw) * Math.cos(pitch) * distance);
+    apply(point, 0, view, 0, 0, 0);
+    close(point[0], 0); close(point[1], 0); close(point[2], -distance);
+  }
+});
+
+test('projection maps near and far exactly; inverse projection recovers distance and x/y', () => {
+  const projection = new Float64Array(16), point = new Float64Array(4);
+  const near = 0.5, far = 12;
+  projectionMatrix(projection, 4 / 3, near, far);
+  for (const distance of [near, 1, 4.8, far]) {
+    apply(point, 0, projection, 0.2, -0.3, -distance);
+    const z = point[2] / point[3];
+    const recovered = 2 * near * far / (far + near - z * (far - near));
+    close(recovered, distance);
+    close(point[0] / point[3] * recovered / projection[0], 0.2);
+    close(point[1] / point[3] * recovered / projection[5], -0.3);
+    if (distance === near) close(z, -1);
+    if (distance === far) close(z, 1);
+  }
+});
+
+function trianglePipeline(vertices, stage = 'flat', size = 16) {
+  const raster = new Pipeline(size, size), matrix = new Float64Array(16);
+  identity(matrix);
+  raster.begin(stage);
+  raster.submit(new Float64Array(vertices), matrix, matrix, matrix);
+  return raster;
+}
+
+const front = [-0.75, -0.75, -0.5, 0.75, -0.75, -0.5, 0, 0.75, -0.5];
+
+test('backface sign keeps outward faces toward camera and rejects reversed winding', () => {
+  assert.ok(signedArea(-0.75, -0.75, 0.75, -0.75, 0, 0.75) > 0);
+  const forward = trianglePipeline(front);
+  const reverse = trianglePipeline([...front.slice(6), ...front.slice(3, 6), ...front.slice(0, 3)]);
+  assert.equal(forward.drawn, 1); assert.equal(forward.culled, 0);
+  assert.equal(reverse.drawn, 0); assert.equal(reverse.culled, 1);
+  assert.equal(trianglePipeline([...front.slice(6), ...front.slice(3, 6), ...front.slice(0, 3)], 'wireframe').drawn, 1);
+});
+
+test('depth rejects equal or farther fragments and accepts a nearer replacement', () => {
+  const buffer = new Float64Array(1).fill(Infinity);
+  assert.equal(depthTest(buffer, 0, 0.5), true);
+  assert.equal(depthTest(buffer, 0, 0.8), false);
+  assert.equal(depthTest(buffer, 0, 0.5), false);
+  assert.equal(buffer[0], 0.5);
+  assert.equal(depthTest(buffer, 0, 0.2), true);
+  assert.equal(buffer[0], 0.2);
+});
+
+test('scanline coverage fills a 4x4 square exactly once across its shared diagonal', () => {
+  const vertices = [-1,-1,-0.5, 1,-1,-0.5, 1,1,-0.5, -1,-1,-0.5, 1,1,-0.5, -1,1,-0.5];
+  const raster = trianglePipeline(vertices, 'flat', 4);
+  raster.scanline(-1); raster.scanline(4); raster.scanline(1.5);
+  assert.equal(raster.shaded, 0);
+  for (let row = 0; row < 4; row += 1) {
+    raster.scanline(row);
+    assert.equal(raster.shaded, (row + 1) * 4);
+    assert.equal(raster.rejectedCount, 0);
+    assert.equal(raster.depth.filter(Number.isFinite).length, (row + 1) * 4);
+  }
+});
+
+test('clipped triangles keep coverage bounded and wholly clipped faces disappear', () => {
+  const partial = trianglePipeline([-3,-1,-0.5, 3,-1,-0.5, 0,3,-0.5]);
+  partial.render();
+  assert.equal(partial.shaded, 256);
+  assert.equal(partial.rejectedCount, 0);
+  assert.ok(partial.depth.every((value) => value >= 0 && value <= 1));
+  const outside = trianglePipeline([2,-1,-0.5, 3,-1,-0.5, 2,1,-0.5]);
+  assert.equal(outside.triangleCount, 0);
+  const crossing = trianglePipeline([-0.8,-0.8,-2, 0.8,-0.8,0, 0,0.8,0], 'wireframe');
+  assert.ok(crossing.triangleCount > 0);
+  crossing.stage = 'flat'; crossing.render();
+  assert.ok(crossing.shaded > 0);
+  assert.ok(crossing.depth.filter(Number.isFinite).every((value) => value >= 0 && value <= 1));
+});
+
+test('scanline theater produces the same frame and rejection counts as full rendering', () => {
+  const a = new Scene(192, 144), b = new Scene(192, 144);
+  a.orbit('blinn-phong', 0.6, 0.05, 0.18, 4.8); b.orbit('blinn-phong', 0.6, 0.05, 0.18, 4.8);
+  a.raster.render();
+  for (let row = 0; row < b.raster.height; row += 1) {
+    b.raster.scanline(row);
+    assert.ok(b.raster.depth.slice((row + 1) * b.raster.width).every((depth) => depth === Infinity));
+  }
+  assert.deepEqual(a.raster.pixels, b.raster.pixels);
+  assert.deepEqual(a.raster.depth, b.raster.depth);
+  assert.deepEqual(a.raster.rejected, b.raster.rejected);
+  assert.equal(a.raster.shaded, b.raster.shaded);
+  assert.equal(a.raster.rejectedCount, b.raster.rejectedCount);
+  assert.ok(a.raster.rejectedCount > 100);
+  b.raster.clear(); assert.equal(b.raster.shaded, 0); assert.equal(b.raster.rejectedCount, 0);
+  assert.ok(b.raster.pixels.every((value) => value === 255));
+});
+
+test('all stage views render; lit stages preserve the silhouette and change the light', () => {
+  const demo = new Scene();
+  const masks = [], images = [];
+  for (const stage of stages) {
+    demo.orbit(stage, 0.6, 0.05, 0.18, 4.8); demo.raster.render();
+    assert.equal(demo.raster.drawn + demo.raster.culled, 240);
+    assert.ok(demo.raster.pixels.some((value) => value < 255));
+    if (['flat', 'gouraud', 'blinn-phong'].includes(stage)) {
+      masks.push(demo.raster.depth.map((value) => Number.isFinite(value) ? 1 : 0));
+      images.push(demo.raster.pixels.slice());
+    }
+  }
+  assert.deepEqual(masks[0], masks[1]); assert.deepEqual(masks[1], masks[2]);
+  assert.notDeepEqual(images[0], images[1]); assert.notDeepEqual(images[1], images[2]);
+  assert.equal(mesh.smoothMesh.length / 9, 80);
+});
+
+test('frustum containment covers all six planes, straddling bounds, and rotated cameras', () => {
+  const view = new Float64Array(16), projection = new Float64Array(16), scratch = new Float64Array(32);
+  viewMatrix(view, 0, 0, 0, 0, 0); projectionMatrix(projection, 1, 0.5, 12);
+  const visible = (x, y, z, radius = 0.1) => boundsVisible(view, projection, scratch, x, y, z, radius);
+  assert.equal(visible(0, 0, -3), true);
+  for (const position of [[-10,0,-3],[10,0,-3],[0,-10,-3],[0,10,-3],[0,0,1],[0,0,-14]]) {
+    assert.equal(visible(...position), false);
+  }
+  assert.equal(visible(0, 0, -0.5, 0.2), true);
+  assert.equal(visible(0, 0, -12, 0.2), true);
+  assert.equal(visible(Math.tan(Math.PI / 6) * 3, 0, -3, 0.2), true);
+  viewMatrix(view, Math.PI / 2, 0, 0, 0, 0);
+  assert.equal(visible(-3, 0, 0), true); assert.equal(visible(3, 0, 0), false);
+});
+
+test('frustum bounds rejection preserves rendered pixels across camera headings', () => {
+  const culled = new Scene(), all = new Scene();
+  for (let yaw = -180; yaw <= 180; yaw += 15) {
+    culled.frustum(yaw * Math.PI / 180);
+    all.raster.begin('blinn-phong');
+    for (let i = 0; i < objects.length; i += 1) {
+      const object = objects[i];
+      modelMatrix(all.model, i * 0.3, object.radius, object.x, 0, object.z);
+      all.raster.submit(mesh.coarseMesh, all.model, culled.view, culled.projection);
+    }
+    all.raster.render();
+    assert.deepEqual(culled.raster.pixels, all.raster.pixels);
+    assert.ok(culled.drawnObjects > 0 && culled.drawnObjects < objects.length);
+  }
+});
+
+test('the new raster pipeline resolves intersecting surfaces regardless of submission order', () => {
+  const a = [-0.8,-0.8,-0.9, 0.8,-0.8,-0.1, 0,0.8,-0.5];
+  const b = [-0.8,-0.8,-0.1, 0.8,-0.8,-0.9, 0,0.8,-0.5];
+  const first = trianglePipeline([...a,...b]); first.render();
+  const second = trianglePipeline([...b,...a]); second.render();
+  assert.deepEqual(first.pixels, second.pixels);
+  assert.deepEqual(first.depth, second.depth);
+  assert.ok(first.rejectedCount > 0 && second.rejectedCount > 0);
 });
