@@ -5,7 +5,7 @@ export type PendulumPoint = PendulumState & { time: number };
 // Solve the two coupled Lagrange equations, then integrate with RK4.
 type Torque = { shoulder: number; elbow: number };
 
-function derivative(s: PendulumState, torque: Torque): PendulumState {
+export function pendulumDerivative(s: PendulumState, torque: Torque): PendulumState {
   const a = s.q1;
   const b = s.q1 + s.q2;
   const u = s.v1;
@@ -19,19 +19,19 @@ function derivative(s: PendulumState, torque: Torque): PendulumState {
   return { q1: s.v1, q2: s.v2, v1: acc1, v2: acc2 - acc1 };
 }
 
-function advance(s: PendulumState, d: PendulumState, dt: number): PendulumState {
+export function advancePendulum(s: PendulumState, d: PendulumState, dt: number): PendulumState {
   return { q1: s.q1 + d.q1 * dt, q2: s.q2 + d.q2 * dt, v1: s.v1 + d.v1 * dt, v2: s.v2 + d.v2 * dt };
 }
 
 const noTorque = () => ({ shoulder: 0, elbow: 0 });
 
 export function stepPendulum(state: PendulumState, dt: number, torque: (s: PendulumState) => Torque = noTorque): PendulumState {
-  const evaluate = (s: PendulumState) => derivative(s, torque(s));
+  const evaluate = (s: PendulumState) => pendulumDerivative(s, torque(s));
   const k1 = evaluate(state);
-  const k2 = evaluate(advance(state, k1, dt / 2));
-  const k3 = evaluate(advance(state, k2, dt / 2));
-  const k4 = evaluate(advance(state, k3, dt));
-  return advance(state, {
+  const k2 = evaluate(advancePendulum(state, k1, dt / 2));
+  const k3 = evaluate(advancePendulum(state, k2, dt / 2));
+  const k4 = evaluate(advancePendulum(state, k3, dt));
+  return advancePendulum(state, {
     q1: (k1.q1 + 2 * k2.q1 + 2 * k3.q1 + k4.q1) / 6,
     q2: (k1.q2 + 2 * k2.q2 + 2 * k3.q2 + k4.q2) / 6,
     v1: (k1.v1 + 2 * k2.v1 + 2 * k3.v1 + k4.v1) / 6,

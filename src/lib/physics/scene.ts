@@ -115,6 +115,10 @@ export function createClock(dt: number) {
   let previous = 0, remainder = 0;
   return (elapsed: number, advance: () => void) => {
     const current = Math.max(0, elapsed) / 1000;
+    if (current < previous) {
+      previous = 0;
+      remainder = 0;
+    }
     remainder += Math.min(0.35, Math.max(0, current - previous));
     previous = current;
     while (remainder + 1e-12 >= dt) {

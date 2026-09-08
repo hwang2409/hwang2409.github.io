@@ -17,7 +17,7 @@ async function physicsUrl(name) {
 }
 async function physics(name) { return import(await physicsUrl(name)); }
 
-const { simulatePendulum, pendulumPositions, pendulumBytes } = await physics('pendulum');
+const { simulatePendulum, pendulumPositions, pendulumBytes, stepPendulum } = await physics('pendulum');
 const { sampleIndex } = await physics('sampling');
 const { simulateStack } = await physics('stack');
 const { inclineForces } = await physics('friction');
@@ -156,6 +156,15 @@ clockB(300, () => stepsB++);
 assert.equal(stepsA, stepsB, 'fixed-step accumulator is independent of frame partition');
 assert.equal(stepsA, 54);
 
+// Live elapsed can exceed the first reduced-motion [step] timestamp.
+const switched = createScene(), switchedClock = createClock(SCENE_DT);
+for (const elapsed of [300, 600, 900, 1203]) switchedClock(elapsed, () => stepScene(switched));
+const liveTime = switched.time;
+switchedClock(350, () => stepScene(switched));
+assert.ok(Math.abs(switched.time - liveTime - 0.35) < 1e-12, 'first reduced-motion step advances 63 physics steps');
+switchedClock(700, () => stepScene(switched));
+assert.ok(Math.abs(switched.time - liveTime - 0.7) < 1e-12, 'second reduced-motion step advances normally');
+
 const broad = createBroadPhase();
 assert.deepEqual(broad.bodies, createBroadPhase().bodies, 'seeded broad phase repeats');
 for (let frame = 0; frame < 240; frame += 1) {
@@ -190,15 +199,35 @@ for (const q of [0.2, 0.8, 1.8, 2.8]) {
   const derivative = (muscleGeometry(q + h, 0).length - muscleGeometry(q - h, 0).length) / (2 * h);
   assert.ok(Math.abs(derivative + muscleGeometry(q, 0).momentArm) < 1e-9, 'tendon moment arm equals negative length Jacobian');
 }
+// Compare one full step against a refined reference and the former Euler-first scheme.
+const firstStep = createArm(), refined = createArm(), oldScheme = createArm();
+const armDt = 1 / 240;
+stepArm(firstStep, armDt);
+for (let i = 0; i < 256; i += 1) stepArm(refined, armDt / 256);
+oldScheme.activation += armDt * oldScheme.control / 0.02;
+oldScheme.state = stepPendulum(oldScheme.state, armDt, s => {
+  const g = muscleGeometry(s.q2, s.v2);
+  return { shoulder: -0.8 * s.v1, elbow: muscleForce(oldScheme.activation, g.length, g.velocity) * g.momentArm - 0.6 * s.v2 };
+});
+// Full-step RK4 truncation error is below 2e-5; Euler-first errors exceed 0.01.
+assert.ok(Math.abs(firstStep.activation - refined.activation) < 2e-5, 'activation follows RK4 on the first step');
+for (const key of ['q1', 'q2', 'v1', 'v2']) {
+  assert.ok(Math.abs(firstStep.state[key] - refined.state[key]) < 2e-5, `mechanical stage integration: ${key}`);
+}
+assert.ok(Math.abs(firstStep.activation - oldScheme.activation) > 0.01, 'first activation differs from Euler-pre-step');
+assert.ok(Math.abs(firstStep.state.v2 - oldScheme.state.v2) > 0.005, 'first elbow velocity differs from Euler-pre-step');
 const relaxed = createArm(); relaxed.control = 0;
 const active = createArm(); active.control = 0.8;
+const activeReplay = createArm(); activeReplay.control = 0.8;
 const armEnergy = energy(relaxed.state);
 let maxArmEnergy = armEnergy;
 for (let i = 0; i < 2400; i += 1) {
-  stepArm(relaxed, 1 / 240); stepArm(active, 1 / 240);
+  stepArm(relaxed, 1 / 240); stepArm(active, 1 / 240); stepArm(activeReplay, 1 / 240);
   maxArmEnergy = Math.max(maxArmEnergy, energy(relaxed.state));
   assert.ok(Object.values(active.state).every(Number.isFinite));
 }
 assert.ok(maxArmEnergy <= armEnergy + 1e-6, 'zero activation cannot add mechanical energy');
+assert.equal(relaxed.activation, 0);
+assert.deepEqual(active, activeReplay, 'coupled muscle stages replay deterministically');
 assert.ok(Math.abs(active.state.q2 - relaxed.state.q2) > 0.3, 'activation moves the gravity-loaded elbow');
 console.log(`composed checks passed; playground peak ${peakEnergy.toFixed(2)}/${initialEnergy.toFixed(2)} J; sweep ${broad.count}/780 pairs`);
