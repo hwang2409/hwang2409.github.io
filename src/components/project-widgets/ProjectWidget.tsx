@@ -9,6 +9,10 @@ import PipelineWidget from './PipelineWidget';
 import ScanlineWidget from './ScanlineWidget';
 import DepthViewWidget from './DepthViewWidget';
 import FrustumWidget from './FrustumWidget';
+import TextureFilteringWidget from './TextureFilteringWidget';
+import MipmapWidget from './MipmapWidget';
+import ProjectionWidget from './ProjectionWidget';
+import NearClippingWidget from './NearClippingWidget';
 
 import PendulumTreeWidget from './PendulumTreeWidget';
 import SolverIterationsWidget from './SolverIterationsWidget';
@@ -39,6 +43,10 @@ const widgets = {
   'scanline-theater': ScanlineWidget,
   'depth-buffer-view': DepthViewWidget,
   'frustum-culling': FrustumWidget,
+  'texture-filtering': TextureFilteringWidget,
+  'mipmap-levels': MipmapWidget,
+  projection: ProjectionWidget,
+  'near-plane-clipping': NearClippingWidget,
 } as const;
 
 export type ProjectWidgetName = keyof typeof widgets;

@@ -21,7 +21,7 @@ rebuild. start with the finished picture, then take it apart:
 
 <!-- widget: raster-pipeline -->
 
-<p class="project-demo-note">these eight demos are small, dependency-free TypeScript rasterizers. they mirror chimy2's concepts; they do not run its Rust code, wasm, or WebGL.</p>
+<p class="project-demo-note">these twelve demos are small, dependency-free TypeScript rasterizers. they mirror chimy2's concepts; they do not run its Rust code, wasm, or WebGL.</p>
 
 ## one frame, one line at a time
 
@@ -35,6 +35,20 @@ the strip records rejected fragments on the current line. turn off the
 hatching to see the finished image underneath. this deliberately slow scan
 uses the same pixel routine as the rotating scene. chimy2's parallel path
 instead bins triangles into tiles, with private buffers for each worker.
+
+## cut before dividing
+
+a triangle can cross the camera's near plane. dropping the whole triangle
+makes it disappear too soon; projecting it unchanged lets rejected geometry
+fill the screen. [chimy2 clips first](https://github.com/hwang2409/tooling/blob/main/chimy2/src/clip.rs):
+keep the inside vertices and intersect each crossing edge with the plane.
+
+<!-- widget: near-plane-clipping -->
+
+move the camera forward. one outside corner leaves a quad, split into two
+triangles along the solid diagonal. two outside corners leave one triangle;
+three leave nothing. the map and rendered view use the same output vertices.
+without clipping, a corner behind the camera projects onto the wrong side.
 
 ## start with a framebuffer
 
@@ -73,6 +87,20 @@ switch buffers and move the camera. the grayscale view linearizes stored
 depth so distance changes are readable. lighting disappears; overlaps
 remain. white pixels have never passed a depth test.
 
+## choose the camera's projection
+
+six equal frames make a corridor. the [camera](https://github.com/hwang2409/tooling/blob/main/chimy2/src/camera.rs)
+uses perspective: divide projected coordinates by distance, and far frames
+shrink. chimy2's math also provides an orthographic matrix, which keeps scale
+constant with distance.
+
+<!-- widget: projection -->
+
+switch projections. the scene and view stay fixed: parallel rails converge
+under perspective and stay parallel under orthographic. the field-of-view
+slider changes the perspective crop without moving the camera. it cannot
+change the orthographic view, so that control is disabled there.
+
 ## perspective changes the weights
 
 i had also skipped perspective-correct interpolation. screen-space
@@ -85,6 +113,30 @@ face the checkerboard toward the camera: both halves agree. tilt it: the
 affine version distorts. the fix interpolates `u/w`, `v/w`, and `1/w`, then
 divides the first two by the third. this demo uses nearest sampling and
 no mipmaps to keep that difference visible.
+
+## a texture between texels
+
+UVs rarely land exactly on a texel. nearest takes one sample; bilinear
+weights four neighbors. both read the same small ring texture here.
+
+<!-- widget: texture-filtering -->
+
+zoom in. nearest grows hard blocks, while bilinear makes a continuous
+transition. like chimy2's texture path, this demo blends linear values and
+encodes them to sRGB afterward. smoothing does not recover missing detail.
+
+## small details need smaller textures
+
+the opposite problem appears in the distance: one pixel covers many checks.
+four samples cannot summarize them. the [mipmap pipeline](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/srgb-mipmaps.md)
+builds successively smaller textures by averaging linear texels.
+
+<!-- widget: mipmap-levels -->
+
+turn mipmaps off to see distant checks shimmer. turn on false-color levels
+to read the selection as a grayscale ramp. this floor derives its texture
+footprint from ray-plane derivatives, then blends neighboring mip levels.
+chimy2 derives footprints from triangle varyings instead.
 
 ## light a surface, not just its corners
 
@@ -121,8 +173,8 @@ window; `softbuffer` exposes its pixels. the math, clipping, rasterization,
 asset parsing, and tile workers are hand-written. the
 [texture pipeline](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/srgb-mipmaps.md)
 filters in linear light, builds mipmaps, and derives texture footprints
-from perspective-correct UV derivatives. the demos here do not implement
-that sampler.
+from perspective-correct UV derivatives. the floor above isolates sampling;
+it does not implement chimy2's general shader interface.
 
 above that core sit [glTF scenes](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/gltf.md),
 [environment lighting](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/ibl.md),
