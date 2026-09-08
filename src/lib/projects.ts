@@ -72,16 +72,15 @@ function parseDate(value: string | null | undefined, filePath: string) {
 }
 
 function parseImageDimension(
-  value: number | string | null | undefined,
+  value: number,
   field: string,
   filePath: string
 ) {
-  const dimension = Number(value);
-  if (!Number.isInteger(dimension) || dimension <= 0) {
+  if (!Number.isInteger(value) || value <= 0) {
     invalidMetadata(filePath, `${field} must be a positive integer`);
   }
 
-  return dimension;
+  return value;
 }
 
 function readProject(slug: string): Project | null {
