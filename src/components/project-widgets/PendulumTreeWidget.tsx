@@ -50,7 +50,7 @@ export default function PendulumTreeWidget() {
 
   return (
     <section className="project-widget" aria-label="joint-space pendulum">
-      <InteractiveCanvas hint="drag either link, then release · use joint sliders for keyboard control" draw={draw} resetKey={replay} className="project-widget-draggable" aria-label="two-link pendulum; drag a link or use the angle controls below"
+      <InteractiveCanvas hint="drag either link, then release" draw={draw} resetKey={replay} className="project-widget-draggable" aria-label="two-link pendulum; drag a link or use the angle controls below"
         onPointerDown={event => {
           const rect = event.currentTarget.getBoundingClientRect();
           const layout = pendulumLayout(rect.width, rect.height, bounds);
@@ -67,9 +67,6 @@ export default function PendulumTreeWidget() {
           drag(event);
         }} onPointerMove={drag} onPointerUp={release} onPointerCancel={release} />
       <WidgetControls>
-        <ControlGroup label="release">
-          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
-        </ControlGroup>
         <ControlGroup label="starting angles">
           <Slider label="joint 1" valueText={`${angles.q1.toFixed(2)} rad`} id="pendulum-q1" min={-Math.PI} max={Math.PI} step="0.01" value={angles.q1}
             onChange={e => changeAngle('q1', Number(e.target.value))} />

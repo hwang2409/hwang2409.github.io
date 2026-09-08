@@ -13,13 +13,12 @@ i wanted to recreate MuJoCo from scratch in rust: bodies, contacts, joint
 trees, actuators, and models loaded from MJCF. zero runtime dependencies.
 feature parity is the direction, not a finished claim.
 
-start with the playground. drop a box onto the stack, pull a ball across it,
-or turn gravity off. the layers below explain what has to agree for that
-small scene to work.
+drop a box, pull a ball, or turn gravity off. the layers below explain what
+makes this scene work.
 
 <!-- widget: playground -->
 
-<p class="project-demo-note">these fifteen dependency-free typescript demos explain the math. they do not run newt, use wasm, or establish MuJoCo parity. newt itself is a CPU engine; a separate renderer consumes its poses.</p>
+<p class="project-demo-note">these fifteen TypeScript demos explain the math; they do not run newt or establish MuJoCo parity.</p>
 
 ## a body and a step
 
@@ -30,17 +29,16 @@ update. quaternion normalization happens at the end, not between stages.
 
 <!-- widget: integrators -->
 
-throw the same projectile three ways. explicit euler uses the old velocity;
-newt's semi-implicit euler uses the new one. RK4 recovers the constant-gravity
-arc at its samples. explicit euler is only a comparison. newt also has
-implicitfast, which handles supported joint damping and actuator velocity
-terms implicitly; tendon coupling and force-clamp derivatives remain limited.
+explicit euler uses the old velocity; newt's semi-implicit euler uses the
+new one. RK4 recovers the constant-gravity arc at its samples. explicit
+euler is only a comparison. newt also has implicitfast, which handles
+supported joint damping and actuator velocity terms implicitly; tendon
+coupling and force-clamp derivatives remain limited.
 
 ## make the clock boring
 
 the world advances by a fixed `dt`, not the last frame's duration. a viewer
 accumulates time, spends it in whole steps, and carries the remainder.
-change the generated frame jitter below: only the frame-step bounce changes.
 
 <!-- widget: timestep -->
 
@@ -52,16 +50,13 @@ another engine.
 
 ## repeatable does not mean predictable
 
-the pendulums integrate separately. identical inputs produce identical trace
-bytes. [perturb] changes one starting angle by `1e-6` radians. the log plot
-makes separation visible before your eye can distinguish the rods.
+identical pendulum inputs produce identical trace bytes. perturb one
+starting angle by `1e-6` radians to expose their sensitivity.
 
 <!-- widget: determinism-replay -->
 
-upward stretches on the log plot expose exponential separation; later growth
-saturates and fluctuates. the plot shows actual angle differences, not a fitted
-line. this browser calculation uses JavaScript math. it does not prove newt's
-cross-platform scalar policy.
+the log plot shows actual angle differences, not a fitted line. this
+JavaScript calculation does not prove newt's cross-platform scalar policy.
 
 ## contact starts as a spring
 
@@ -71,10 +66,9 @@ pull. applying that force away from the center also creates torque.
 
 <!-- widget: spring -->
 
-change damping or pull the mass. oscillation, settling, and slow overdamped
-return come from the same equation. newt's penalty path remains available as
-the legacy default. before building stacks, i checked static compression,
-bounce energy loss, and equal-and-opposite collision forces.
+newt's penalty path remains the legacy default. before building stacks, i
+checked static compression, bounce energy loss, and equal-and-opposite
+collision forces.
 
 ## from bodies to joint coordinates
 
@@ -86,28 +80,23 @@ in length.
 
 <!-- widget: pendulum-tree -->
 
-move the parent angle: the child's frame moves with it. these rods remain
-connected by construction. the demo solves two coupled point-mass equations
-with RK4. newt uses Featherstone's ABA: an outward velocity pass, an inward
-articulated-inertia pass, then outward acceleration recovery. CRB mass matrices
-and RNE inverse dynamics supply independent round-trip checks.
+the demo solves two coupled point-mass equations with RK4. newt uses
+Featherstone's ABA: an outward velocity pass, an inward articulated-inertia
+pass, then outward acceleration recovery. CRB mass matrices and RNE inverse
+dynamics supply independent round-trip checks.
 
-give the arm a torque, calculate acceleration, then ask what torque would
-produce it. newt checks ABA against an independent RNE pass. the browser
-version below checks coupled equations against cartesian forces and moments.
+the browser round trip checks coupled equations against cartesian forces and
+moments: apply torque, calculate acceleration, then recover the torque.
 
 <!-- widget: inverse-dynamics -->
 
-the lines should overlap. this is an instantaneous dynamics check along a
-simulated trajectory, not proof that the integrator has no time-step error.
-newt's documented round-trip tolerance is `5e-4`; browser arithmetic is f64.
+this instantaneous dynamics check does not measure integrator error. newt's
+documented round-trip tolerance is `5e-4`; browser arithmetic is f64.
 
 ## finding what touches
 
-broad phase chooses pairs; narrow phase finds contact geometry. the visualizer
-compares all pairs with a sweep over sorted x bounds and a y-overlap test.
-switch modes while it moves: the motion stays the same, the candidate work
-changes.
+broad phase chooses pairs; narrow phase finds contact geometry. compare all
+pairs with a sweep over sorted x bounds and a y-overlap test.
 
 <!-- widget: broad-phase -->
 
@@ -125,24 +114,21 @@ v1 added soft constraints. a Jacobian maps joint velocity into contact motion;
 allows finite compliance, so a small overlap under load can be intentional.
 friction bounds tangential force by `μN`.
 
-drop the ball with hard contact, then soften it. finite stiffness permits
-penetration before the restoring force wins. this spring model exposes that
-tradeoff; newt's regularized constraints use a different force law.
+finite stiffness permits penetration before the restoring force wins. this
+spring model differs from newt's regularized constraint force law.
 
 <!-- widget: contact-softness -->
 
 <!-- widget: friction-cone -->
 
-raise the incline until `tan(θ)` exceeds `μ`. the required support leaves the
-cone and the block slides. this cross-section assumes equal static and
-kinetic friction and no rotation. newt's PGS supports elliptic and pyramidal
-cones; their different boundaries change the force projection.
+sliding starts when `tan(θ)` exceeds `μ`. this cross-section assumes equal
+static and kinetic friction and no rotation. newt's PGS supports elliptic
+and pyramidal cones; their different boundaries change the force projection.
 
 ## one correction changes the next
 
-fixing a floor contact changes the box above it. fixing that contact changes
-the next. a solver must send those corrections through the stack repeatedly.
-increase the sweeps below and watch the measured overlap shrink.
+each contact correction affects the next box. a solver sends corrections
+through the stack repeatedly.
 
 <!-- widget: solver-iterations -->
 
@@ -152,21 +138,18 @@ contacts with rotation, friction, and restitution impulses. newt also ships
 Newton with a dense Hessian and line search; CG is not counted as implemented,
 and the documented Newton path rejects elliptic cones.
 
-a solver can also remember its last answer. warm start applies the prior
-frame's impulses before the first sweep. cold start has to rebuild the
-support forces from zero, even when the stack barely changed.
+warm start applies the prior frame's impulses before the first sweep. cold
+start rebuilds support forces from zero.
 
 <!-- widget: warm-start -->
 
-this velocity-space comparison adds warm start to the same four-box setup.
-it illustrates a solver technique, not a claim that newt implements caching.
-a small kick changes the answer; reuse still reduces the measured work here.
+this velocity-space comparison illustrates a solver technique; it does not
+claim that newt implements caching.
 
 ## put the pieces under load
 
-a heavy projectile makes the coupling visible. aim low to remove support,
-or high to peel boxes off the wall. the projectile has eight times each
-box's mass. every impact changes the constraints the next sweep will see.
+the projectile has eight times each box's mass. aim low to remove support or
+high to peel boxes off the wall.
 
 <!-- widget: projectile-stack -->
 
@@ -185,15 +168,13 @@ or shortening speed.
 
 <!-- widget: muscle-arm -->
 
-raise activation and watch elbow torque change as the tendon shortens.
 this demo uses newt's documented active curve shapes with a simple straight
 tendon and damped two-link dynamics; it omits passive muscle force. newt also
 supports fixed and spatial tendons, wrapping, and length Jacobians. its muscle
 loader requires a length range instead of discovering one automatically.
 
-a straight tendon is only the first case. swing the link below: the tendon
-finds two tangent points and an arc around the peg. when it clears the peg,
-the arc shrinks to zero and the length stays continuous.
+wrapping adds two tangent points and an arc around the peg. tendon length
+stays continuous when the straight path clears it.
 
 <!-- widget: tendon-wrap -->
 
@@ -236,6 +217,5 @@ raising a tolerance does not explain a mismatch.
 
 performance work then removed repeated allocation in ABA, tendon, and Newton
 workspace while preserving fixtures. timings vary by scene and machine;
-there is no general real-time guarantee. starting from zero made the boundaries
-visible. the useful result is being able to change one, replay the inputs,
-and explain why the motion changed.
+there is no general real-time guarantee. the useful result is being able to
+replay inputs and explain why the motion changed.

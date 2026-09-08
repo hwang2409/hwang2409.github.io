@@ -38,13 +38,10 @@ export default function SolverIterationsWidget() {
 
   return (
     <section className="project-widget" aria-label="iterative stack correction">
-      <InteractiveCanvas hint="increase solver iterations · compare the overlap between boxes" draw={draw} resetKey={replay} staticElapsed={5000} aria-label="four boxes with measured residual penetration" />
+      <InteractiveCanvas hint="increase the solver iterations" draw={draw} resetKey={replay} staticElapsed={5000} aria-label="four boxes with measured residual penetration" />
       <WidgetControls
-        note="vertical motion only, dt = 1/12 s; each sweep shares a contact correction between neighboring boxes">
-        <ControlGroup label="release">
-          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
-        </ControlGroup>
-        <ControlGroup label="solver">
+        note="vertical motion only; dt = 1/12 s.">
+        <ControlGroup>
           <Slider label="iterations" valueText={`${iterations}`} id="solver-iterations" min="1" max="30" step="1" value={iterations}
             onChange={e => { setIterations(Number(e.target.value)); setReplay(r => r + 1); }} />
         </ControlGroup>

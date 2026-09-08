@@ -45,9 +45,9 @@ export default function WarmStartWidget() {
   }, [run]);
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="cold versus warm-started stack solver">
-      <InteractiveCanvas hint="perturb the top box · compare cold and warm solver counts" draw={draw} resetKey={reset} aria-label="two four-box stacks with live iteration counts and contact velocity residuals" />
-      <WidgetControls label="stack"
-        note="[perturb] replays with a downward 0.015 m/s kick to the top box at t = 1 s. warm reuses prior impulses; cold starts at zero. both stop at the same residual. the kick’s counts remain below.">
+      <InteractiveCanvas hint="perturb the top box" draw={draw} resetKey={reset} aria-label="two four-box stacks with live iteration counts and contact velocity residuals" />
+      <WidgetControls
+        note="[perturb] adds a 0.015 m/s downward kick at t = 1 s. both solvers stop at the same residual.">
         <button type="button" onClick={() => restart(true)}>[perturb]</button>
         <button type="button" onClick={() => restart(false)}>[reset]</button>
       </WidgetControls>

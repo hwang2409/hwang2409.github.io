@@ -93,7 +93,7 @@ export default function PlaygroundWidget({ wall = false }: { wall?: boolean }) {
   };
   return (
     <section className={`project-widget ${styles.scene}`} aria-label={wall ? 'projectile versus stacked wall' : 'physics playground'}>
-      <InteractiveCanvas hint={wall ? 'set the shot angle and speed, then fire at the wall' : 'drag a body and release · or select a body, set its shot, and fling'} draw={draw} resetKey={reset} redrawKey={revision}
+      <InteractiveCanvas hint={wall ? 'aim, then fire' : 'drag a body, then release'} draw={draw} resetKey={reset} redrawKey={revision}
         className={wall ? undefined : 'project-widget-draggable'}
         aria-label={wall ? 'a heavy ball hits fifteen rotating boxes' : 'boxes and balls with gravity; drag a body to pull and release it'}
         onPointerDown={wall ? undefined : down} onPointerUp={wall ? undefined : release}
@@ -103,7 +103,7 @@ export default function PlaygroundWidget({ wall = false }: { wall?: boolean }) {
           const p = coordinates(event); drag.x = p.x; drag.y = p.y; refresh();
         }} />
       <WidgetControls readout={{ role: "status", children: message || (wall ? '8 kg projectile · 1 kg boxes' : 'click empty space to add a box') }}
-        note="2d rigid bodies · dt = 1/180 s · friction 0.55 · restitution 0.3. energy includes gravity and rotation; spawning and flinging add energy. reduced motion: [step] advances 0.35 s.">
+        note="dt = 1/180 s; friction 0.55; restitution 0.3. spawning and flinging add energy.">
         <ControlGroup label="launch" actions={<button type="button" disabled={wall && scene.bodies.length >= BODY_LIMIT} onClick={launch}>{wall ? '[fire]' : '[fling body]'}</button>}>
           {!wall && (<ControlField label="body to fling">
             <select id={`${id}-body`} value={runtime.selected} onChange={e => { runtime.selected = Number(e.target.value); refresh(); }}>

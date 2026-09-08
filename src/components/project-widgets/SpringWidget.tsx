@@ -90,7 +90,7 @@ export default function SpringWidget() {
 
   return (
     <section className="project-widget" aria-label="spring and damping">
-      <InteractiveCanvas hint="drag the mass, then release · use displacement for keyboard control"
+      <InteractiveCanvas hint="pull the mass, then release"
         className="project-widget-draggable"
         aria-label="draggable mass on a spring with a motion trace"
         draw={draw}
@@ -119,22 +119,14 @@ export default function SpringWidget() {
         }}
       />
       <WidgetControls>
-        <ControlGroup label="release">
-          <button type="button" onClick={() => setReplayKey(value => value + 1)}>[replay]</button>
-        </ControlGroup>
-        <ControlGroup label="starting position">
+        <ControlGroup>
           <Slider label="displacement" valueText={`${displacement.toFixed(2)}`} id="spring-displacement" min="-0.9" max="1.4" step="0.01" value={displacement}
             onChange={(event) => {
               setDisplacement(Number(event.target.value));
               setReplayKey((value) => value + 1);
             }} />
-        </ControlGroup>
-        <ControlGroup label="spring">
           <Slider label="damping" valueText={`${damping.toFixed(1)}`} id="spring-damping" min="0" max="100" step="1" value={dampingValue}
             onChange={(event) => { setDampingValue(Number(event.target.value)); setReplayKey(value => value + 1); }} />
-          <div className="project-widget-scale" aria-hidden="true">
-            <span>under-damped</span><span>critical</span><span>over-damped</span>
-          </div>
         </ControlGroup>
       </WidgetControls>
     </section>

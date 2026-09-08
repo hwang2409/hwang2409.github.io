@@ -150,7 +150,7 @@ export default function IntegratorsWidget() {
 
   return (
     <section className="project-widget" aria-label="integrator comparison">
-      <InteractiveCanvas hint="drag to aim the launch · use velocity sliders for keyboard control"
+      <InteractiveCanvas hint="drag to aim"
         className="project-widget-draggable"
         aria-label="projectile trails for explicit euler, semi-implicit euler, and rk4"
         draw={draw}
@@ -179,10 +179,7 @@ export default function IntegratorsWidget() {
         <span><i className="legend-swatch legend-dotted" />rk4</span>
       </div>
       <WidgetControls>
-        <ControlGroup label="launch">
-          <button type="button" onClick={() => setReplayKey((value) => value + 1)}>[replay]</button>
-        </ControlGroup>
-        <ControlGroup label="starting velocity">
+        <ControlGroup>
           <Slider label="velocity x" valueText={`${velocity.x.toFixed(1)} m/s`} id="launcher-velocity-x" min={velocityXRange.min} max={velocityXRange.max} step="0.1" value={velocity.x}
             onChange={(event) => { setVelocity((current) => ({ ...current, x: Number(event.target.value) })); setReplayKey(value => value + 1); }} />
           <Slider label="velocity y" valueText={`${velocity.y.toFixed(1)} m/s`} id="launcher-velocity-y" min={velocityYRange.min} max={velocityYRange.max} step="0.1" value={velocity.y}

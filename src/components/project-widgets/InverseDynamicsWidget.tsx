@@ -65,11 +65,9 @@ export default function InverseDynamicsWidget() {
   }, [run]);
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="inverse dynamics round trip">
-      <InteractiveCanvas hint="adjust torque amplitude · compare applied and recovered torque" draw={draw} resetKey={reset} aria-label="two-link arm above applied and recovered shoulder and elbow torque plots; a cursor follows the motion" />
-      <WidgetControls label="torque" actions={
-          <button type="button" onClick={() => restart(run.amplitude)}>[replay]</button>
-        }
-        note="two unit point masses and rods. shoulder = A sin(2t), elbow = A/2 cos(3t). inverse dynamics uses recorded instantaneous accelerations, not finite differences. this f64 browser residual is not newt’s f32 tolerance.">
+      <InteractiveCanvas hint="adjust torque amplitude" draw={draw} resetKey={reset} aria-label="two-link arm above applied and recovered shoulder and elbow torque plots; a cursor follows the motion" />
+      <WidgetControls
+        note="unit masses and rods; shoulder = A sin(2t), elbow = A/2 cos(3t). inverse uses instantaneous accelerations.">
         <Slider label="torque amplitude" valueText={`${run.amplitude.toFixed(1)} N·m`} id={id} min="0" max="8" step="0.5" value={run.amplitude} onChange={e => restart(Number(e.target.value))} />
       </WidgetControls>
     </section>

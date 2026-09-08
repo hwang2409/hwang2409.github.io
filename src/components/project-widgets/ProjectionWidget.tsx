@@ -11,7 +11,6 @@ import styles from './RasterWidgets.module.css';
 export default function ProjectionWidget() {
   const [mode, setMode] = useState<Projection>('perspective');
   const [fov, setFov] = useState(60);
-  const [revision, setRevision] = useState(0);
   const paint = useMemo(() => rasterPainter(renderProjection(mode, fov)), [mode, fov]);
   const draw = useMemo(() => (context: CanvasRenderingContext2D, width: number, height: number) => {
     clearCanvas(context, width, height);
@@ -20,14 +19,12 @@ export default function ProjectionWidget() {
   }, [paint]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="orthographic and perspective projection">
-    <InteractiveCanvas hint="switch projection · adjust field of view in perspective mode" draw={draw} resetKey={revision}
+    <InteractiveCanvas hint="switch projection" draw={draw}
       aria-label={`six equal frames in a corridor under ${mode} projection`} />
-    <WidgetControls label="camera" actions={<>
+    <WidgetControls actions={<>
         <button type="button" aria-pressed={mode === 'orthographic'} onClick={() => setMode('orthographic')}>[orthographic]</button>
         <button type="button" aria-pressed={mode === 'perspective'} onClick={() => setMode('perspective')}>[perspective]</button>
-        <button type="button" onClick={() => { setMode('perspective'); setFov(60); setRevision((v) => v + 1); }}>[reset]</button>
-      </>}
-      note="all six frames have equal dimensions. orthographic keeps parallel rails; perspective makes the far frames smaller. field of view changes the crop.">
+      </>}>
       <Slider label="field of view" valueText={mode === 'perspective' ? `${fov}°` : 'perspective only'} min={35} max={95} step={1} value={fov} disabled={mode === 'orthographic'} onChange={(e) => setFov(e.currentTarget.valueAsNumber)} />
     </WidgetControls>
   </section>;

@@ -49,13 +49,10 @@ export default function DeterminismWidget() {
 
   return (
     <section className={`project-widget ${styles.chaos}`} aria-label="deterministic replay and sensitive initial conditions">
-      <InteractiveCanvas hint="replay both pendulums · toggle the tiny starting-angle change" draw={draw} resetKey={replay} staticElapsed={40000} aria-label="two double pendulums; reduced motion previews the perturbed final state" />
+      <InteractiveCanvas hint="change one starting angle" draw={draw} resetKey={replay} staticElapsed={40000} aria-label="two double pendulums; reduced motion previews the perturbed final state" />
       <WidgetControls
-        note="40 simulated seconds. the plot shows angular separation on a log scale; steady upward stretches show exponential growth. exact agreement sits at the plot floor. static preview shows the perturbed end state; [step] starts from rest.">
-        <ControlGroup label="replay">
-          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
-        </ControlGroup>
-        <ControlGroup label="starting angles">
+        note="40 simulated seconds. reduced motion previews the perturbed end state; [step] starts from rest.">
+        <ControlGroup>
           <button type="button" aria-pressed={perturbed} onClick={() => { setPerturbed(p => !p); setReplay(r => r + 1); }}>[perturb by 1e-6 rad]</button>
         </ControlGroup>
       </WidgetControls>

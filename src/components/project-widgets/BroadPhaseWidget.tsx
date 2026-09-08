@@ -15,9 +15,8 @@ function session() {
 }
 
 export default function BroadPhaseWidget() {
-  const [runtime, setRuntime] = useState(session);
+  const [runtime] = useState(session);
   const [revision, setRevision] = useState(0);
-  const [reset, setReset] = useState(0);
   const draw = useCallback((context: CanvasRenderingContext2D, width: number, height: number, elapsed: number, staticPreview: boolean) => {
     const { scene } = runtime;
     if (!staticPreview) runtime.clock(elapsed, () => stepBroadPhase(scene, 1 / 120));
@@ -45,12 +44,9 @@ export default function BroadPhaseWidget() {
   }, [runtime]);
   return (
     <section className={`project-widget ${styles.scene}`} aria-label="broad-phase candidate pairs">
-      <InteractiveCanvas hint="choose a pair search · compare the candidate lines and counts" draw={draw} resetKey={reset} redrawKey={revision} aria-label="forty drifting circles with bounding boxes and candidate-pair lines" />
+      <InteractiveCanvas hint="compare pair searches" draw={draw} redrawKey={revision} aria-label="forty drifting circles with bounding boxes and candidate-pair lines" />
       <WidgetControls
-        note="same seeded motion in both modes. all pairs sends every pair onward; sweep sorts x bounds, then checks y overlap. lines mark candidates, not confirmed contacts. bodies pass through each other.">
-        <ControlGroup label="motion">
-          <button type="button" onClick={() => { setRuntime(session()); setReset(n => n + 1); }}>[reset]</button>
-        </ControlGroup>
+        note="lines mark candidates, not contacts; bodies pass through each other.">
         <ControlGroup label="pair search">
           <button type="button" aria-pressed={!runtime.sweep} onClick={() => { runtime.sweep = false; setRevision(n => n + 1); }}>[all pairs]</button>
           <button type="button" aria-pressed={runtime.sweep} onClick={() => { runtime.sweep = true; setRevision(n => n + 1); }}>[sweep]</button>

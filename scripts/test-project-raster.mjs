@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
-import { createElement } from 'react';
+import { createElement, Fragment } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 // Use the existing TypeScript compiler, as in test-project-physics.mjs.
@@ -60,6 +60,22 @@ test('pause controls expose both toggle states and preserve the click action', a
     button.props.onClick();
     assert.equal(clicks, 1);
   }
+});
+
+test('control groups label multiple controls, never a lone control or decorative sibling', async () => {
+  const { ControlGroup, Slider, PauseButton, WidgetControls } = await loadTypeScript('../src/components/project-widgets/WidgetControls.tsx', require);
+  const slider = createElement(Slider, { label: 'angle', valueText: '45°', defaultValue: 45 });
+  const action = createElement(PauseButton, { paused: false, onClick() {} });
+  for (const children of [slider, createElement(Fragment, null, false, slider),
+    createElement('div', null, slider, createElement('span', null, 'degrees'))]) {
+    const html = renderToStaticMarkup(createElement(ControlGroup, { label: 'angle' }, children));
+    assert.doesNotMatch(html, /<legend>|<fieldset/);
+    assert.match(html, /<label/);
+  }
+  const props = { actions: createElement(Fragment, null, action), children: slider };
+  assert.match(renderToStaticMarkup(createElement(ControlGroup, { ...props, label: 'camera' })), /<legend>camera<\/legend>/);
+  assert.doesNotMatch(renderToStaticMarkup(createElement(ControlGroup, props)), /<legend>/);
+  assert.match(renderToStaticMarkup(createElement(WidgetControls, props)), /\[pause\]/);
 });
 
 // Exercise the real dispatcher; stub only its client widget imports.
