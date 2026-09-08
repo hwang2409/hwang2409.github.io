@@ -47,6 +47,18 @@ assert.equal(sampleIndex(a, -1), 0);
 assert.equal(sampleIndex(a, 1e6), a.length - 1);
 const slow = simulatePendulum(0.1, 0.2, 1, 0.02);
 assert.equal(sampleIndex(slow, 0.105), 5);
+for (const trace of [a, slow]) {
+  for (let index = 0; index < trace.length; index += 1) {
+    assert.equal(sampleIndex(trace, trace[index].time), index, `exact timestamp at sample ${index}`);
+    if (index + 1 < trace.length) {
+      const midpoint = (trace[index].time + trace[index + 1].time) / 2;
+      assert.equal(sampleIndex(trace, midpoint), index, `between samples ${index} and ${index + 1}`);
+    }
+  }
+}
+for (const time of [-1, 2, 100]) {
+  assert.equal(sampleIndex([{ time: 2 }], time), 0);
+}
 
 const low = simulateStack(1).at(-1);
 const high = simulateStack(30).at(-1);

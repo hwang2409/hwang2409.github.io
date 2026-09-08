@@ -93,11 +93,12 @@ contact ordering matters. so does the order of arithmetic. a different last
 bit today can become a different contact tomorrow.
 
 i used a deterministic scalar policy. basic arithmetic and square root stay
-on the IEEE path. sin, cos, tan, exp, and ln use hand-written range reduction
-and polynomial approximations instead of platform libm. range reduction
-brings an input into a small interval where a polynomial can approximate it
-well. sin and cos reduce around multiples of π/2 before evaluating their
-small-interval polynomials.
+on the IEEE path. sin and cos use hand-written range reduction and polynomial
+approximations instead of platform libm. range reduction brings an input into
+a small interval where a polynomial can approximate it well. sin and cos
+reduce around multiples of π/2 before evaluating their small-interval
+polynomials. tan takes the ratio of those reduced sine and cosine values.
+asin and atan2 use their own argument reductions and truncated Taylor series.
 
 i also kept state and contacts in deterministic order, with index-based tie
 breaks. the golden trajectories serialize state at fixed step counts. the

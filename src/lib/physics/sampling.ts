@@ -1,5 +1,14 @@
-// Uniform traces carry their own interval. Clamp both ends before indexing.
+// Find the last sample at or before time, clamped to the trace endpoints.
 export function sampleIndex(trace: readonly { time: number }[], time: number) {
-  const dt = trace.length > 1 ? trace[1].time - trace[0].time : 1;
-  return Math.max(0, Math.min(trace.length - 1, Math.floor((time - trace[0].time) / dt)));
+  let low = 0;
+  let high = trace.length - 1;
+  while (low < high) {
+    const middle = Math.ceil((low + high) / 2);
+    if (trace[middle].time <= time) {
+      low = middle;
+    } else {
+      high = middle - 1;
+    }
+  }
+  return low;
 }
