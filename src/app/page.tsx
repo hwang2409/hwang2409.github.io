@@ -1,4 +1,5 @@
 import PixelMascot from '@/components/PixelMascot';
+import Shipping from '@/components/Shipping';
 import SpotifyNow from '@/components/SpotifyNow';
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
         <SpotifyNow />
       </section>
 
-
+      <Shipping />
     </>
   );
 }
