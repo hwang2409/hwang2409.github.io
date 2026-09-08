@@ -3,6 +3,10 @@
 import IntegratorsWidget from './IntegratorsWidget';
 import SpringWidget from './SpringWidget';
 import TimestepWidget from './TimestepWidget';
+import TriangleRasterWidget from './TriangleRasterWidget';
+import ZBufferWidget from './ZBufferWidget';
+import PerspectiveTextureWidget from './PerspectiveTextureWidget';
+import ShadingModelWidget from './ShadingModelWidget';
 
 import PendulumTreeWidget from './PendulumTreeWidget';
 import SolverIterationsWidget from './SolverIterationsWidget';
@@ -17,6 +21,10 @@ const widgets = {
   'solver-iterations': SolverIterationsWidget,
   'friction-cone': FrictionConeWidget,
   'determinism-replay': DeterminismWidget,
+  'triangle-raster': TriangleRasterWidget,
+  'zbuffer-toggle': ZBufferWidget,
+  'perspective-texture': PerspectiveTextureWidget,
+  'shading-model': ShadingModelWidget,
 } as const;
 
 export type ProjectWidgetName = keyof typeof widgets;
