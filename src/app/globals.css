@@ -14,7 +14,7 @@
   --text-lg: 1.15rem;
   --text-base: 1rem;
   --text-sm: 0.85rem;
-  --page-width: 40rem;
+  --page-width: 44rem;
   color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -28,7 +28,8 @@ html {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-mono);
-  font-size: var(--text-base);
+  /* root size: every rem token (type ramp, spacing, page width) scales from here */
+  font-size: 15px;
   font-variant-numeric: tabular-nums;
 }
 

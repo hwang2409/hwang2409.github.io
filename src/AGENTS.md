@@ -28,7 +28,7 @@ src/
 
 - Use `@/*` imports for `src/*`.
 - New UI must follow `../DESIGN.md`: the site uses shared tokens, mono type, and a flat canvas.
-- Base type is 16px JetBrains Mono-first with visible focus states.
+- Base type is 15px JetBrains Mono-first with visible focus states.
 - Everything is one centered column; use whitespace and proximity for structure.
 - Every page uses the shared header and muted footer.
 - Client components start with `'use client'`; keep server route files thin when possible.

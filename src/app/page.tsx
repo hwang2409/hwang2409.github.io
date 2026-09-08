@@ -9,7 +9,6 @@ export default function Home() {
         <h1 id="home-name">henry wang</h1>
         <p className="home-role">software engineer</p>
         <p>software engineer at uwaterloo, interested in ML systems, computer graphics, and small technical tools. currently engineering at <a href="https://phoebe.work/" target="_blank" rel="noopener noreferrer">phoebe.work</a>; previously <a href="https://fish.audio" target="_blank" rel="noopener noreferrer">fish.audio</a> and <a href="https://www.nationgraph.com/" target="_blank" rel="noopener noreferrer">nationgraph</a>.</p>
-        <p>interests: ML systems, computer graphics, game theory, snowboarding, and music.</p>
       </section>
 
       <section className="home-section" aria-labelledby="projects-title">
