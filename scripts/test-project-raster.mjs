@@ -12,9 +12,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 // CommonJS output lets Node resolve the models' extensionless local imports.
 const directory = await mkdtemp(new URL('../.raster-check-', import.meta.url));
 const require = createRequire(import.meta.url);
-let triangle, depth, perspective, shading, transform, mesh, pipeline, scene;
+let triangle, depth, perspective, shading, transform, mesh, pipeline, scene, filtering, mipmaps, camera, clipping;
 try {
-  for (const name of ['triangle', 'frame', 'depth', 'perspective', 'shading', 'transform', 'mesh', 'pipeline', 'scene']) {
+  for (const name of ['triangle', 'frame', 'depth', 'perspective', 'shading', 'transform', 'mesh', 'pipeline', 'scene',
+    'textureFiltering', 'mipmapFloor', 'cameraProjection', 'nearClipping']) {
     const source = await readFile(new URL(`../src/lib/raster/${name}.ts`, import.meta.url), 'utf8');
     const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
     await writeFile(join(directory, `${name}.js`), outputText);
@@ -27,6 +28,10 @@ try {
   mesh = require(join(directory, 'mesh.js'));
   pipeline = require(join(directory, 'pipeline.js'));
   scene = require(join(directory, 'scene.js'));
+  filtering = require(join(directory, 'textureFiltering.js'));
+  mipmaps = require(join(directory, 'mipmapFloor.js'));
+  camera = require(join(directory, 'cameraProjection.js'));
+  clipping = require(join(directory, 'nearClipping.js'));
 } finally {
   await rm(directory, { recursive: true, force: true });
 }
@@ -66,6 +71,10 @@ const widgetImports = {
   './ScanlineWidget': { default: widgetStub('scanline-theater') },
   './DepthViewWidget': { default: widgetStub('depth-buffer-view') },
   './FrustumWidget': { default: widgetStub('frustum-culling') },
+  './TextureFilteringWidget': { default: widgetStub('texture-filtering') },
+  './MipmapWidget': { default: widgetStub('mipmap-levels') },
+  './ProjectionWidget': { default: widgetStub('projection') },
+  './NearClippingWidget': { default: widgetStub('near-plane-clipping') },
   './PendulumTreeWidget': { default: widgetStub('pendulum-tree') },
   './SolverIterationsWidget': { default: widgetStub('solver-iterations') },
   './FrictionConeWidget': { default: widgetStub('friction-cone') },
@@ -430,4 +439,151 @@ test('the new raster pipeline resolves intersecting surfaces regardless of submi
   assert.deepEqual(first.pixels, second.pixels);
   assert.deepEqual(first.depth, second.depth);
   assert.ok(first.rejectedCount > 0 && second.rejectedCount > 0);
+});
+
+test('bilinear weights partition unity and sampling preserves each corner', () => {
+  const weights = new Float64Array(4);
+  const texture = { size: 2, texels: new Float64Array([0.01, 0.2, 0.5, 0.9]) };
+  for (let x = 0; x <= 20; x += 1) {
+    for (let y = 0; y <= 20; y += 1) {
+      filtering.bilinearWeights(weights, x / 20, y / 20);
+      close(weights.reduce((sum, value) => sum + value, 0), 1);
+      assert.ok(weights.every((value) => value >= 0 && value <= 1));
+      const actual = filtering.sampleBilinear(texture, x / 20, y / 20, weights);
+      const top = 0.01 + (0.2 - 0.01) * x / 20, bottom = 0.5 + (0.9 - 0.5) * x / 20;
+      close(actual, top + (bottom - top) * y / 20);
+    }
+  }
+  for (const [x, y, expected] of [[0,0,0.01],[1,0,0.2],[0,1,0.5],[1,1,0.9]]) {
+    assert.equal(filtering.sampleBilinear(texture, x, y, weights), expected);
+    assert.equal(filtering.sampleNearest(texture, x, y), expected);
+  }
+  assert.equal(filtering.sampleBilinear(texture, -3, 0, weights), 0.01);
+  close(filtering.sampleBilinear(texture, -0.5, 0, weights, true), 0.105);
+  close(filtering.sampleBilinear(texture, 1.5, 0, weights, true), 0.105);
+  assert.equal(filtering.encodeGray(0), 0); assert.equal(filtering.encodeGray(1), 255);
+  assert.equal(filtering.encodeGray(0.5), 188);
+  for (const zoom of [1, 2, 4, 8]) {
+    const nearest = filtering.renderFiltering(zoom, false), smooth = filtering.renderFiltering(zoom, true);
+    assert.notDeepEqual(nearest.pixels, smooth.pixels);
+    const nearestValues = new Set(nearest.pixels.filter((_, i) => i % 4 === 0));
+    const smoothValues = new Set(smooth.pixels.filter((_, i) => i % 4 === 0));
+    assert.equal(nearestValues.size, 2);
+    assert.ok(smoothValues.size > 50);
+  }
+});
+
+test('mip chains average linear texels and do not duplicate odd edges', () => {
+  const levels = mipmaps.buildMipmaps({ size: 3, texels: new Float64Array([0, 1, 2, 3, 4, 5, 6, 7, 8]) });
+  assert.deepEqual(levels.map((level) => level.size), [3, 2, 1]);
+  assert.deepEqual([...levels[1].texels], [2, 3.5, 6.5, 8]);
+  assert.equal(levels[2].texels[0], 5);
+  const floor = new mipmaps.MipmapFloor();
+  close(floor.levels.at(-1).texels[0], (0.015 + 0.85) / 2);
+});
+
+test('mip level selection increases monotonically with distance along a view ray', () => {
+  for (const ray of [0, 0.3, 1]) {
+    let previous = 0;
+    for (let distance = 0.25; distance <= 64; distance += 0.25) {
+      const lod = mipmaps.floorLod(distance, distance * ray, 110, 32, 6);
+      assert.ok(lod >= previous && lod <= 6);
+      previous = lod;
+    }
+    assert.equal(previous, 6);
+  }
+  close(mipmaps.floorLod(4, 0, 128, 32, 6), 2);
+  close(mipmaps.floorLod(8, 0, 128, 32, 6), 4);
+});
+
+test('mipmaps suppress distant temporal aliasing and false-color shows the selected levels', () => {
+  const floor = new mipmaps.MipmapFloor(), pixels = floor.frame.pixels;
+  const temporalChange = (enabled) => {
+    floor.render(0, enabled, false); const first = pixels.slice();
+    floor.render(0.03, enabled, false);
+    let difference = 0;
+    for (let y = 26; y < 65; y += 1) {
+      for (let x = 0; x < floor.frame.width; x += 1) {
+        const offset = (y * floor.frame.width + x) * 4;
+        difference += Math.abs(first[offset] - pixels[offset]);
+      }
+    }
+    return difference;
+  };
+  const unfiltered = temporalChange(false), filtered = temporalChange(true);
+  assert.ok(unfiltered > 10000);
+  assert.ok(filtered < unfiltered / 4, `${filtered} should be much lower than ${unfiltered}`);
+  floor.render(0, true, true);
+  const tones = new Set(pixels.filter((_, i) => i % 4 === 0));
+  assert.ok(tones.size >= 5);
+  floor.render(0, false, true);
+  assert.equal(new Set(pixels.filter((_, i) => i % 4 === 0)).size, 2); // sky + level zero
+  assert.equal(floor.frame.pixels, pixels, 'animation must reuse the framebuffer');
+});
+
+test('projection matrices preserve parallel edges in ortho and converge them in perspective', () => {
+  const quad = [[-1,-0.8,-3], [1,-0.8,-3], [1,0.8,-9], [-1,0.8,-9]];
+  for (const mode of ['orthographic', 'perspective']) {
+    const matrix = camera.cameraProjection(mode, 60), out = new Float64Array(4);
+    const points = quad.map(([x, y, z]) => {
+      apply(out, 0, matrix, x, y, z);
+      return [out[0] / out[3], out[1] / out[3]];
+    });
+    const nearWidth = points[1][0] - points[0][0], farWidth = points[2][0] - points[3][0];
+    if (mode === 'orthographic') {
+      close(farWidth, nearWidth);
+      close(points[3][0] - points[0][0], points[2][0] - points[1][0]);
+      close(points[3][1] - points[0][1], points[2][1] - points[1][1]);
+    } else {
+      close(farWidth / nearWidth, 1 / 3);
+      assert.ok(points[3][0] > points[0][0]); assert.ok(points[2][0] < points[1][0]);
+    }
+    for (const [distance, expected] of [[1, -1], [20, 1]]) {
+      apply(out, 0, matrix, 0, 0, -distance); close(out[2] / out[3], expected);
+    }
+  }
+  assert.deepEqual(camera.renderProjection('orthographic', 35).pixels, camera.renderProjection('orthographic', 95).pixels);
+  assert.notDeepEqual(camera.renderProjection('perspective', 35).pixels, camera.renderProjection('perspective', 95).pixels);
+  assert.notDeepEqual(camera.renderProjection('orthographic', 60).pixels, camera.renderProjection('perspective', 60).pixels);
+});
+
+test('near clipping emits the expected polygon, including exact plane endpoints', () => {
+  for (const [zs, expected] of [
+    [[-2,-3,-4],3], [[-0.5,-3,-4],4], [[-0.5,-0.75,-4],3], [[0,1,2],0],
+    [[-1,-3,-4],3], [[-1,-0.5,-4],3], [[-1,-1,-4],3], [[-1,-1,-0.5],2], [[-1,0,1],1],
+  ]) {
+    const input = new Float64Array([-1,0,zs[0], 1,0,zs[1], 0,1,zs[2]]), output = new Float64Array(12);
+    const count = clipping.clipNear(input, output, 1);
+    assert.equal(count, expected, `depths ${zs}`);
+    const unique = new Set();
+    for (let i = 0; i < count; i += 1) {
+      const point = [...output.slice(i * 3, i * 3 + 3)];
+      assert.ok(point[2] <= -1); unique.add(point.join(','));
+      // Every output vertex lies on an original triangle edge.
+      const onEdge = [0,1,2].some((a) => {
+        const b = (a + 1) % 3;
+        const delta = [0,1,2].map((axis) => input[b * 3 + axis] - input[a * 3 + axis]);
+        const axis = delta.findIndex((value) => value !== 0);
+        const t = (point[axis] - input[a * 3 + axis]) / delta[axis];
+        return t >= 0 && t <= 1 && point.every((value, axis) => Math.abs(value - input[a * 3 + axis] - delta[axis] * t) < 1e-10);
+      });
+      assert.ok(onEdge);
+    }
+    assert.equal(unique.size, count, 'plane endpoints must not produce duplicate vertices');
+  }
+});
+
+test('the clipping demo exposes triangle-to-quad transitions and the unclipped artifact', () => {
+  assert.equal(clipping.renderNearClipping(-0.5, true).count, 3);
+  assert.equal(clipping.renderNearClipping(0.7, true).count, 4);
+  assert.equal(clipping.renderNearClipping(2.5, true).count, 3);
+  assert.equal(clipping.renderNearClipping(4.5, true).count, 0);
+  for (const dolly of [0.7, 1.5, 2.5, 4.5]) {
+    const clipped = clipping.renderNearClipping(dolly, true), raw = clipping.renderNearClipping(dolly, false);
+    assert.notDeepEqual(clipped.frame.pixels, raw.frame.pixels);
+    assert.ok(clipped.output.slice(0, clipped.count * 3).every(Number.isFinite));
+  }
+  const singular = clipping.renderNearClipping(1.13, false);
+  assert.equal(singular.singular, true);
+  assert.ok(singular.frame.pixels.every((value) => value === 255));
 });
