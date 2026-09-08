@@ -482,7 +482,7 @@ dd {
 
 .prose h3 {
   margin-top: var(--space-4);
-  font-size: var(--text-lg);
+  color: var(--muted);
 }
 
 .prose p,
