@@ -6,7 +6,36 @@ import { getProject, getProjects } from '@/lib/projects';
 import { markdownToHtmlWithSections } from '@/lib/markdown';
 import Contents from '@/components/Contents';
 import LightboxImageTrigger from '@/components/LightboxImageTrigger';
+import ProjectWidget, { type ProjectWidgetName } from '@/components/project-widgets/ProjectWidget';
 import { formatDate } from '@/lib/dates';
+
+const widgetMarker = /<!--\s*widget:\s*(integrators|timestep|spring)\s*-->/gu;
+
+function ProjectContent({ html }: { html: string }) {
+  const blocks: Array<{ html: string } | { widget: ProjectWidgetName }> = [];
+  let lastIndex = 0;
+
+  for (const match of html.matchAll(widgetMarker)) {
+    if (match.index > lastIndex) blocks.push({ html: html.slice(lastIndex, match.index) });
+    const widget = match[1];
+    if (widget === 'integrators' || widget === 'timestep' || widget === 'spring') {
+      blocks.push({ widget });
+    }
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < html.length) blocks.push({ html: html.slice(lastIndex) });
+
+  return (
+    <div className="prose project-prose">
+      {blocks.map((block, index) => (
+        'widget' in block ? <ProjectWidget key={`${block.widget}-${index}`} name={block.widget} /> : (
+          <div key={`prose-${index}`} dangerouslySetInnerHTML={{ __html: block.html }} />
+        )
+      ))}
+    </div>
+  );
+}
 
 export async function generateMetadata({
   params,
@@ -46,7 +75,7 @@ export default async function ProjectPage({
         loading="eager"
       />
       <Contents sections={sections} />
-      <div className="prose" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <ProjectContent html={htmlContent} />
       {blogPost ? (
         <p className="project-blog-link">
           for more information, read <Link href={`/blog/${blogPost.slug}`}>{blogPost.title}</Link> -&gt;
