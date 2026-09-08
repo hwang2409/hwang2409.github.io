@@ -4,6 +4,9 @@ excerpt: a local markdown vault and agent workspace that keeps my coding work mo
 date: 09/04/2026
 order: 1
 image: /projects/wiki-1.png
+imageAlt: wiki workspace with a rendered note and live agent runs
+imageWidth: 1800
+imageHeight: 1080
 blog: wiki
 ---
 

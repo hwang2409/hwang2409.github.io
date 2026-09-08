@@ -36,7 +36,7 @@ export default async function ProjectPage({
       <h1 className="post-title page-title">{project.title}</h1>
       <p className="post-meta">{project.date}</p>
       <p className="post-excerpt">{project.excerpt}</p>
-      <ProjectImage project={project} className="project-hero" />
+      <ProjectImage project={project} className="project-hero" loading="eager" />
       <Contents sections={sections} />
       <div className="prose" dangerouslySetInnerHTML={{ __html: htmlContent }} />
       {blogPost ? (

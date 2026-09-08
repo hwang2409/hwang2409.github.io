@@ -4,6 +4,9 @@ excerpt: a standalone agent harness that owns the loop instead of hiding it in a
 date: 09/04/2026
 order: 2
 image: /projects/zeta-1.png
+imageAlt: zeta terminal harness with transcript and composer
+imageWidth: 1726
+imageHeight: 1392
 ---
 
 Zeta began with a simple question: what should still be true when an agent

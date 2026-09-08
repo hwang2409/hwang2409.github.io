@@ -3,9 +3,11 @@ import type { Project } from '@/lib/projects';
 export default function ProjectImage({
   project,
   className,
+  loading,
 }: {
   project: Project;
   className: string;
+  loading: 'eager' | 'lazy';
 }) {
   if (!project.image) return null;
 
@@ -14,7 +16,11 @@ export default function ProjectImage({
     <img
       className={className}
       src={project.image}
-      alt={`${project.title}: ${project.excerpt}`}
+      alt={project.imageAlt}
+      width={project.imageWidth}
+      height={project.imageHeight}
+      loading={loading}
+      decoding="async"
     />
   );
 }

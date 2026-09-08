@@ -4,6 +4,9 @@ excerpt: a deterministic physics engine and software renderer built together fro
 date: 09/04/2026
 order: 3
 image: /projects/newt-chimy2-1.png
+imageAlt: newt biped walk demo rendered through chimy2
+imageWidth: 960
+imageHeight: 640
 ---
 
 Most physics demos hide the handoff between simulation and rendering. This one

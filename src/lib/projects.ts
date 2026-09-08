@@ -9,6 +9,9 @@ export interface Project {
   excerpt: string;
   order: number;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   blog?: string;
   content: string;
 }
@@ -68,6 +71,14 @@ function parseDate(value: string | null | undefined, filePath: string) {
     .join('-');
 }
 
+function parseImageDimension(value: number | null | undefined, field: string, filePath: string) {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+    invalidMetadata(filePath, `${field} must be a positive integer`);
+  }
+
+  return value;
+}
+
 function readProject(slug: string): Project | null {
   const filePath = path.join(process.cwd(), 'content', 'projects', `${slug}.md`);
 
@@ -85,8 +96,19 @@ function readProject(slug: string): Project | null {
 
   const order = data.order;
   const imagePath = data.image ? String(data.image).trim() : '';
+  if (imagePath && !imagePath.startsWith('/')) {
+    invalidMetadata(filePath, 'image must start with /');
+  }
+
   const image = imagePath && fs.existsSync(path.join(process.cwd(), 'public', imagePath.replace(/^\/+/, '')))
     ? imagePath
+    : undefined;
+  const imageAlt = imagePath ? parseRequiredText(data.imageAlt, 'imageAlt', filePath) : undefined;
+  const imageWidth = imagePath
+    ? parseImageDimension(data.imageWidth, 'imageWidth', filePath)
+    : undefined;
+  const imageHeight = imagePath
+    ? parseImageDimension(data.imageHeight, 'imageHeight', filePath)
     : undefined;
   const blog = data.blog ? String(data.blog).trim() : undefined;
 
@@ -97,6 +119,9 @@ function readProject(slug: string): Project | null {
     excerpt,
     order,
     image,
+    imageAlt,
+    imageWidth,
+    imageHeight,
     blog,
     content: content.trim(),
   };
