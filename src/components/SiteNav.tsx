@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+// /resume stays a live route, shared by URL only; it is intentionally absent here
 const navigationItems = [
   { label: 'blog', href: '/blog', section: 'blog' },
   { label: 'projects', href: '/projects', section: 'projects' },
   { label: 'music', href: '/music', section: 'music' },
   { label: 'now', href: '/now', section: 'now' },
-  { label: 'resume', href: '/resume', section: 'resume' },
 ] as const;
 
 function currentSection(pathname: string) {
