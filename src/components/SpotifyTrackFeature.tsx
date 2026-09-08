@@ -51,6 +51,7 @@ export function SpotifyTrackFeature(track: SpotifyTrackFeatureProps) {
         href={track.url}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={`${track.label}: ${track.title} by ${formatArtists(track.artists)}`}
       >
         {content}
       </a>

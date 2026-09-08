@@ -28,8 +28,8 @@ function assertNever(value: never): never {
 function unavailableMusicState(message: string) {
   return (
     <>
-      <section className={styles.musicSection} aria-labelledby="music-now-playing">
-        <h2 id="music-now-playing">now playing</h2>
+      <section className={styles.musicSection} aria-labelledby="music-listening">
+        <h2 id="music-listening">listening</h2>
         <p className={styles.empty}>{message}</p>
       </section>
       <section className={styles.musicSection} aria-labelledby="music-tracks">
@@ -55,8 +55,8 @@ function renderMusicState(state: MusicState) {
     case 'ready':
       return (
         <>
-          <section className={styles.musicSection} aria-labelledby="music-now-playing">
-            <h2 id="music-now-playing">now playing</h2>
+          <section className={styles.musicSection} aria-labelledby="music-listening">
+            <h2 id="music-listening">listening</h2>
             <MusicPlaybackPanel now={state.data.now} />
           </section>
           <MusicTracksPanel stats={state.data.stats} />

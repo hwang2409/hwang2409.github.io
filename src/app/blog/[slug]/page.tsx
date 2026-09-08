@@ -11,6 +11,7 @@ import SourceMapToggle from '@/components/SourceMapToggle';
 import BlogTokenGhost from '@/components/BlogTokenGhost';
 import { getClientNGramModel } from '@/lib/siteData';
 import Contents from '@/components/Contents';
+import { formatDate } from '@/lib/dates';
 
 export async function generateMetadata({
   params,
@@ -49,7 +50,7 @@ export default async function BlogPostPage({
     <article className="post-article blog-article">
       <h1 className="post-title page-title">{post.title}</h1>
       <div className="post-header">
-        <p className="post-meta"><time dateTime={post.date}>{post.date}</time> · {post.kind} · {post.readingMinutes} min read</p>
+        <p className="post-meta"><time dateTime={formatDate(post.date)}>{formatDate(post.date)}</time> · {post.kind} · {post.readingMinutes} min read</p>
         <p className="post-excerpt">{post.excerpt}</p>
         <div className="post-tools">
           <BlogCaseToggle />

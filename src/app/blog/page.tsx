@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAllBlogPosts } from '@/lib/blog';
+import { formatDate } from '@/lib/dates';
 
 export const metadata = {
   title: 'blog',
@@ -17,7 +18,7 @@ export default function Blog() {
       <ul className="post-list">
         {blogPosts.map((post) => (
           <li key={post.slug}>
-            <span className="post-link-row"><time className="post-date" dateTime={post.date}>{post.date}</time><Link href={`/blog/${post.slug}`} className="post-link-title">{post.title}</Link></span>
+            <span className="post-link-row"><time className="post-date" dateTime={formatDate(post.date)}>{formatDate(post.date)}</time><Link href={`/blog/${post.slug}`} className="post-link-title">{post.title}</Link></span>
           </li>
         ))}
       </ul>

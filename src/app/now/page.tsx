@@ -1,5 +1,6 @@
 import { markdownToHtml } from '@/lib/markdown';
 import { getNowLog } from '@/lib/now';
+import { formatDate } from '@/lib/dates';
 
 export const metadata = {
   title: 'now',
@@ -23,7 +24,7 @@ export default async function Now() {
       <ol className="now-timeline" aria-label="current notes over time">
         {entries.map((entry) => (
           <li className="now-entry" key={`${entry.date}-${entry.category}`}>
-            <time className="now-date">{entry.date}</time>
+            <time className="now-date" dateTime={formatDate(entry.date)}>{formatDate(entry.date)}</time>
             <div className="now-copy">
               <span className="now-category">{entry.category}</span>
               <div
