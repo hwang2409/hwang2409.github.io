@@ -23,7 +23,7 @@ inverts the foreground and background.
 the primary stack is `var(--font-jetbrains-mono), ui-monospace, "SF Mono",
 Menlo, Consolas, monospace`. jetbrains mono is bundled with
 `next/font/google`, so visitors get the same font across platforms. the base
-size is 15px and the line height is 1.7. the centered content column is 44rem
+size is 15px and the line height is 1.7. the centered content column is 55rem
 wide at most, with one rem of side padding.
 
 the vertical rhythm uses five steps: `.35rem`, `.7rem`, `1.25rem`, `2rem`, and
@@ -36,13 +36,13 @@ music, and now. the `/resume` route stays live but unlisted, shared by URL
 only. on home, the header shows only navigation, so the
 page has one semantic `h1` instead of a repeated name. the header wraps on small
 screens. every page has the same small muted footer with email, github, linkedin,
-x, and copyright.
+x, and copyright; it stays pinned to the viewport bottom while the page scrolls.
 
 ## page content
 
-the home page has a name, role, short about paragraph, project list, music
-line, and mascot; contact links live in the shared footer. the mascot uses
-grayscale pixels and modest breathing room.
+the home page has a name, short about paragraph, mascot, and music line;
+projects live on their own page and contact links live in the shared footer.
+the mascot uses grayscale pixels and modest breathing room.
 
 the blog index shows one row per post with a muted date and title link. posts show
 a title, date line, tools, prose, optional contents list, and previous or next

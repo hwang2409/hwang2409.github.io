@@ -14,7 +14,7 @@
   --text-lg: 1.15rem;
   --text-base: 1rem;
   --text-sm: 0.85rem;
-  --page-width: 44rem;
+  --page-width: 55rem;
   color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -176,10 +176,14 @@ dd {
 }
 
 .site-footer {
+  position: sticky;
+  bottom: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1) var(--space-3);
-  padding: var(--space-4) 0 var(--space-3);
+  padding: var(--space-2) 0 calc(var(--space-2) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  background: var(--background);
   color: var(--muted);
   font-size: var(--text-sm);
 }
@@ -244,7 +248,7 @@ dd {
 }
 
 .home-intro {
-  max-width: 38rem;
+  max-width: 52rem;
 }
 
 .home-intro p {
@@ -253,30 +257,6 @@ dd {
 
 .home-role {
   margin-bottom: 0;
-}
-
-.home-projects,
-.project-list {
-  padding-left: 1.2rem;
-}
-
-.project-list li {
-  margin-bottom: var(--space-3);
-}
-
-.project-list li:last-child {
-  margin-bottom: 0;
-}
-
-.home-projects li {
-  display: grid;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
-}
-
-.home-projects li span {
-  color: var(--muted);
-  font-size: var(--text-sm);
 }
 
 /* projects */
@@ -370,7 +350,7 @@ dd {
 }
 
 .post-title {
-  max-width: 38rem;
+  max-width: 52rem;
   margin-bottom: var(--space-2);
 }
 
@@ -442,7 +422,7 @@ dd {
 }
 
 .prose {
-  max-width: 38rem;
+  max-width: 52rem;
   color: var(--foreground);
   font-size: var(--text-base);
 }
