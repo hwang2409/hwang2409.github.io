@@ -43,8 +43,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={jetBrainsMono.variable}>
       <body>
-        <a href="#main-content" className="skip-link">skip to content</a>
         <div className="site-shell">
+          <a href="#main-content" className="skip-link">skip to content</a>
           <SiteNav />
           <main id="main-content" className="site-main">{children}</main>
 

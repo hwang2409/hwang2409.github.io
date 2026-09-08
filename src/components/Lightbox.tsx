@@ -40,9 +40,6 @@ function addImageTrigger(image: HTMLImageElement) {
   const trigger = document.createElement('button');
   trigger.type = 'button';
   trigger.className = 'lightbox-trigger lightbox-image-trigger';
-  if (image.classList.contains('project-hero')) {
-    trigger.classList.add('lightbox-project-trigger');
-  }
   trigger.dataset.lightboxTrigger = 'image';
   trigger.setAttribute(
     'aria-label',
@@ -138,7 +135,7 @@ export default function Lightbox() {
 
   useEffect(() => {
     function enhanceMedia() {
-      document.querySelectorAll<HTMLImageElement>('.prose img, .project-hero').forEach(addImageTrigger);
+      document.querySelectorAll<HTMLImageElement>('.prose img').forEach(addImageTrigger);
       document.querySelectorAll<HTMLElement>('.mermaid-diagram[data-source]').forEach(addDiagramTrigger);
     }
 
