@@ -20,13 +20,11 @@ inverts the foreground and background.
 
 ## type and layout
 
-the primary stack is `Consolas, "Consolas for Powerline", Inconsolata,
-ui-monospace, "SF Mono", Menlo, monospace`. inconsolata is bundled with
-`next/font/google`, so non-windows platforms do not fall back to a system mono
-font. "Consolas for Powerline" matches the patched Consolas builds common on
-developer machines, whose family name differs from plain Consolas. the base size is 16px and the
-line height is 1.7. the centered content column is 40rem wide at most, with one
-rem of side padding.
+the primary stack is `var(--font-jetbrains-mono), ui-monospace, "SF Mono",
+Menlo, Consolas, monospace`. jetbrains mono is bundled with
+`next/font/google`, so visitors get the same font across platforms. the base
+size is 16px and the line height is 1.7. the centered content column is 40rem
+wide at most, with one rem of side padding.
 
 the vertical rhythm uses five steps: `.35rem`, `.7rem`, `1.25rem`, `2rem`, and
 `3rem`. sections use the largest step. related content uses the smaller steps.
