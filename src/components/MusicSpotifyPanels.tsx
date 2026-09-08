@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import styles from '@/components/SpotifyStats.module.css';
 import MusicCoverShelf, { type MusicCoverItem } from '@/components/MusicCoverShelf';
 import { formatArtists, SpotifyTrackFeature } from '@/components/SpotifyTrackFeature';
@@ -21,6 +24,34 @@ function playbackLabel(now: SpotifyNow): string {
 }
 
 function NowBlock({ now }: { readonly now: SpotifyNow }) {
+  const track = now.track;
+  const [progressMs, setProgressMs] = useState(track?.progressMs ?? null);
+  const progressUnavailable = progressMs === null;
+
+  useEffect(() => {
+    setProgressMs(track?.progressMs ?? null);
+  }, [track?.durationMs, track?.progressMs, track?.title, track?.url]);
+
+  useEffect(() => {
+    if (
+      track === null ||
+      !track.isPlaying ||
+      progressUnavailable ||
+      track.durationMs === null ||
+      track.durationMs <= 0
+    ) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setProgressMs((current) => (
+        current === null ? null : Math.min(current + 1000, track.durationMs ?? current)
+      ));
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [progressUnavailable, track]);
+
   if (now.status !== 'ok') {
     return <p className={styles.empty}>{now.note}</p>;
   }
@@ -39,6 +70,8 @@ function NowBlock({ now }: { readonly now: SpotifyNow }) {
       imageUrl={now.track.imageUrl}
       fallback="now"
       emphasizeLabel={now.playbackKind === 'current'}
+      progressMs={now.playbackKind === 'current' && now.track.isPlaying ? progressMs : null}
+      durationMs={now.playbackKind === 'current' && now.track.isPlaying ? now.track.durationMs : null}
     />
   );
 }
@@ -84,22 +117,21 @@ function albumCoverItems(stats: SpotifyStats): MusicCoverItem[] {
   }));
 }
 
-function StatsMessage({ stats }: { readonly stats: SpotifyStats }) {
-  return <p className={styles.empty}>{stats.note}</p>;
+function StatsMessage({ stats }: { readonly stats: SpotifyStats | null }) {
+  return <p className={styles.empty}>{stats?.note ?? 'checking spotify.'}</p>;
 }
 
 export function MusicPlaybackPanel({ now }: { readonly now: SpotifyNow }) {
   return <NowBlock now={now} />;
 }
 
-export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats }) {
+export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats | null }) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-tracks">
       <div className={styles.header}>
         <h2 id="music-tracks">top tracks</h2>
-        <span>{stats.timeRangeLabel}</span>
       </div>
-      {stats.status === 'ok' ? (
+      {stats?.status === 'ok' ? (
         <MusicCoverShelf
           items={stats.topTracks.map(trackCoverItem)}
           empty="spotify returned no top tracks yet."
@@ -109,14 +141,13 @@ export function MusicTracksPanel({ stats }: { readonly stats: SpotifyStats }) {
   );
 }
 
-export function MusicArtistsPanel({ stats }: { readonly stats: SpotifyStats }) {
+export function MusicArtistsPanel({ stats }: { readonly stats: SpotifyStats | null }) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-artists">
       <div className={styles.header}>
         <h2 id="music-artists">top artists</h2>
-        <span>{stats.timeRangeLabel}</span>
       </div>
-      {stats.status === 'ok' ? (
+      {stats?.status === 'ok' ? (
         <MusicCoverShelf
           items={stats.topArtists.map(artistCoverItem)}
           empty="spotify returned no top artists yet."
@@ -126,14 +157,13 @@ export function MusicArtistsPanel({ stats }: { readonly stats: SpotifyStats }) {
   );
 }
 
-export function MusicAlbumsPanel({ stats }: { readonly stats: SpotifyStats }) {
+export function MusicAlbumsPanel({ stats }: { readonly stats: SpotifyStats | null }) {
   return (
     <section className={styles.musicSection} aria-labelledby="music-albums">
       <div className={styles.header}>
         <h2 id="music-albums">top albums</h2>
-        <span>{stats.timeRangeLabel}</span>
       </div>
-      {stats.status === 'ok' ? (
+      {stats?.status === 'ok' ? (
         <MusicCoverShelf
           items={albumCoverItems(stats)}
           empty="spotify returned no top albums yet."
@@ -143,8 +173,8 @@ export function MusicAlbumsPanel({ stats }: { readonly stats: SpotifyStats }) {
   );
 }
 
-export function MusicGenresPanel({ stats }: { readonly stats: SpotifyStats }) {
-  if (stats.status !== 'ok' || stats.topGenres.length === 0) {
+export function MusicGenresPanel({ stats }: { readonly stats: SpotifyStats | null }) {
+  if (!stats || stats.status !== 'ok' || stats.topGenres.length === 0) {
     return null;
   }
 

@@ -50,18 +50,24 @@ def spotify_now_response(
     access_token: str,
 ) -> SpotifyNowResponse:
     current = _current_track(client, api_url, access_token)
-    if current is not None:
+    if current is not None and current.is_playing and current.item is not None:
         return _ok_now_response(
             playback_kind="current",
             track=_public_playback_track(
                 current.item,
                 is_playing=True,
                 played_at=None,
+                progress_ms=current.progress_ms,
             ),
             note="Current Spotify playback is read from Spotify Web API. Tokens stay on the backend.",
         )
 
-    recent = _recent_track(client, api_url, access_token)
+    recent = _recent_track(
+        client,
+        api_url,
+        access_token,
+        exclude_track_id=current.item.id if current and current.item else None,
+    )
     if recent is not None:
         return _ok_now_response(
             playback_kind="recent",
@@ -69,6 +75,7 @@ def spotify_now_response(
                 recent.track,
                 is_playing=False,
                 played_at=recent.played_at,
+                progress_ms=None,
             ),
             note="No active Spotify playback; showing the latest recently played track.",
         )
@@ -120,7 +127,7 @@ def _current_track(
             detail="unexpected payload",
         ) from error
 
-    if not current.is_playing or current.item is None:
+    if current.item is None:
         return None
 
     return current
@@ -130,10 +137,11 @@ def _recent_track(
     client: httpx2.Client,
     api_url: str,
     access_token: str,
+    exclude_track_id: str | None,
 ) -> SpotifyRecentlyPlayedItem | None:
     response = client.get(
         f"{api_url}{RECENTLY_PLAYED_PATH}",
-        params={"limit": 1},
+        params={"limit": 20},
         headers=_auth_headers(access_token),
     )
     _raise_for_spotify_status(response, "recent playback")
@@ -146,13 +154,33 @@ def _recent_track(
             detail="unexpected payload",
         ) from error
 
-    return page.items[0] if page.items else None
+    candidates = [
+        item
+        for item in page.items
+        if item.track.type in {None, "track"}
+        and (exclude_track_id is None or item.track.id != exclude_track_id)
+    ]
+    return max(
+        candidates,
+        key=lambda item: _played_at_timestamp(item.played_at),
+        default=None,
+    )
+
+
+def _played_at_timestamp(value: str) -> datetime:
+    try:
+        timestamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return datetime.min.replace(tzinfo=UTC)
+
+    return timestamp if timestamp.tzinfo is not None else timestamp.replace(tzinfo=UTC)
 
 
 def _public_playback_track(
     item: SpotifyPlaybackTrackItem,
     is_playing: bool,
     played_at: str | None,
+    progress_ms: int | None,
 ) -> PublicSpotifyPlaybackTrack:
     return PublicSpotifyPlaybackTrack(
         title=item.name,
@@ -162,6 +190,8 @@ def _public_playback_track(
         image_url=_first_image_url(item.album.images),
         played_at=played_at,
         is_playing=is_playing,
+        progress_ms=progress_ms,
+        duration_ms=item.duration_ms,
     )
 
 

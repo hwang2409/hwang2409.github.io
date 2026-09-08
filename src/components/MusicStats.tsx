@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   MusicAlbumsPanel,
   MusicArtistsPanel,
@@ -9,11 +9,18 @@ import {
   MusicTracksPanel,
 } from '@/components/MusicSpotifyPanels';
 import styles from '@/components/SpotifyStats.module.css';
-import { fetchSpotifyNow, fetchSpotifyStats, type SpotifyNow, type SpotifyStats } from '@/lib/spotify';
+import {
+  fetchSpotifyNow,
+  fetchSpotifyStats,
+  type SpotifyNow,
+  type SpotifyStats,
+  type SpotifyTimeRange,
+} from '@/lib/spotify';
 
 type MusicData = {
   readonly now: SpotifyNow;
-  readonly stats: SpotifyStats;
+  readonly stats: SpotifyStats | null;
+  readonly statsLoading: boolean;
 };
 
 type MusicState =
@@ -48,7 +55,44 @@ function unavailableMusicState(message: string) {
   );
 }
 
-function renderMusicState(state: MusicState) {
+const TIME_RANGE_OPTIONS: readonly { value: SpotifyTimeRange; label: string }[] = [
+  { value: 'short_term', label: 'last month' },
+  { value: 'medium_term', label: 'last 6 months' },
+  { value: 'long_term', label: 'last year' },
+];
+
+function TimeRangeSelector({
+  selectedRange,
+  onChange,
+  disabled,
+}: {
+  readonly selectedRange: SpotifyTimeRange;
+  readonly onChange: (range: SpotifyTimeRange) => void;
+  readonly disabled: boolean;
+}) {
+  return (
+    <div className={styles.rangeSelector} role="group" aria-label="time range" aria-busy={disabled}>
+      {TIME_RANGE_OPTIONS.map((option) => (
+        <button
+          className={option.value === selectedRange ? styles.rangeSelected : undefined}
+          disabled={disabled}
+          key={option.value}
+          onClick={() => onChange(option.value)}
+          type="button"
+          aria-pressed={option.value === selectedRange}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function renderMusicState(
+  state: MusicState,
+  selectedRange: SpotifyTimeRange,
+  onRangeChange: (range: SpotifyTimeRange) => void,
+) {
   switch (state.kind) {
     case 'loading':
       return unavailableMusicState('checking spotify.');
@@ -59,6 +103,11 @@ function renderMusicState(state: MusicState) {
             <h2 id="music-listening">listening</h2>
             <MusicPlaybackPanel now={state.data.now} />
           </section>
+          <TimeRangeSelector
+            disabled={state.data.statsLoading}
+            onChange={onRangeChange}
+            selectedRange={selectedRange}
+          />
           <MusicTracksPanel stats={state.data.stats} />
           <MusicArtistsPanel stats={state.data.stats} />
           <MusicAlbumsPanel stats={state.data.stats} />
@@ -74,6 +123,8 @@ function renderMusicState(state: MusicState) {
 
 export default function MusicStats() {
   const [state, setState] = useState<MusicState>({ kind: 'loading' });
+  const [selectedRange, setSelectedRange] = useState<SpotifyTimeRange>('medium_term');
+  const statsRequestId = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -113,12 +164,19 @@ export default function MusicStats() {
         });
     }
 
+    function refreshOnVisibilityChange() {
+      if (!document.hidden) {
+        pollNow();
+      }
+    }
+
     async function loadMusic() {
       try {
         const [now, stats] = await Promise.all([fetchSpotifyNow(), fetchSpotifyStats()]);
         if (!cancelled) {
-          setState({ kind: 'ready', data: { now, stats } });
-          intervalId = window.setInterval(pollNow, 10_000);
+          setState({ kind: 'ready', data: { now, stats, statsLoading: false } });
+          intervalId = window.setInterval(pollNow, 30_000);
+          document.addEventListener('visibilitychange', refreshOnVisibilityChange);
         }
       } catch {
         if (!cancelled) {
@@ -134,12 +192,57 @@ export default function MusicStats() {
       if (intervalId !== undefined) {
         window.clearInterval(intervalId);
       }
+      document.removeEventListener('visibilitychange', refreshOnVisibilityChange);
     };
   }, []);
 
+  function changeRange(range: SpotifyTimeRange) {
+    if (range === selectedRange) {
+      return;
+    }
+
+    setSelectedRange(range);
+    const requestId = statsRequestId.current + 1;
+    statsRequestId.current = requestId;
+    setState((current) => {
+      if (current.kind !== 'ready') {
+        return current;
+      }
+
+      return {
+        kind: 'ready',
+        data: { ...current.data, stats: null, statsLoading: true },
+      };
+    });
+
+    fetchSpotifyStats(range)
+      .then((stats) => {
+        if (statsRequestId.current !== requestId) {
+          return;
+        }
+
+        setState((current) => (
+          current.kind === 'ready'
+            ? { kind: 'ready', data: { ...current.data, stats, statsLoading: false } }
+            : current
+        ));
+      })
+      .catch(() => {
+        if (statsRequestId.current !== requestId) {
+          return;
+        }
+
+        setState((current) => (
+          current.kind === 'ready'
+            ? { kind: 'ready', data: { ...current.data, statsLoading: false } }
+            : current
+        ));
+      });
+  }
+
   return (
     <section className={styles.music} aria-label="music">
-      {renderMusicState(state)}
+      {renderMusicState(state, selectedRange, changeRange)}
     </section>
   );
 }

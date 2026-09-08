@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Final, Generic, NewType, TypeVar
 
 from app.spotify_models import SpotifyNowResponse, SpotifyStatsResponse
@@ -13,7 +13,8 @@ SpotifyNowCacheKey = NewType("SpotifyNowCacheKey", str)
 SpotifyResponse = TypeVar("SpotifyResponse", SpotifyStatsResponse, SpotifyNowResponse)
 
 DEFAULT_SPOTIFY_CACHE_SECONDS: Final = 1_800.0
-DEFAULT_SPOTIFY_NOW_CACHE_SECONDS: Final = 20.0
+# Playback changes faster than the stats endpoints. Keep it live by default.
+DEFAULT_SPOTIFY_NOW_CACHE_SECONDS: Final = 0.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,14 +29,14 @@ class SpotifyResponseCache(Generic[SpotifyResponse]):
     """Mutable in-process cache holder for public Spotify responses."""
 
     ttl_seconds: float
-    entry: CachedSpotifyResponse[SpotifyResponse] | None = None
+    entries: dict[str, CachedSpotifyResponse[SpotifyResponse]] = field(default_factory=dict)
 
     def get(self, cache_key: str) -> SpotifyResponse | None:
         if self.ttl_seconds <= 0:
-            self.entry = None
+            self.entries.clear()
             return None
 
-        entry = self.entry
+        entry = self.entries.get(cache_key)
         if entry is None:
             return None
 
@@ -45,7 +46,7 @@ class SpotifyResponseCache(Generic[SpotifyResponse]):
         if time.monotonic() < entry.expires_at:
             return entry.response
 
-        self.entry = None
+        self.entries.pop(cache_key, None)
         return None
 
     def remember(
@@ -54,10 +55,10 @@ class SpotifyResponseCache(Generic[SpotifyResponse]):
         response: SpotifyResponse,
     ) -> SpotifyResponse:
         if self.ttl_seconds <= 0:
-            self.entry = None
+            self.entries.clear()
             return response
 
-        self.entry = CachedSpotifyResponse(
+        self.entries[cache_key] = CachedSpotifyResponse(
             cache_key=cache_key,
             response=response,
             expires_at=time.monotonic() + self.ttl_seconds,
