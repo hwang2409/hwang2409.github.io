@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import SiteNav from '@/components/SiteNav';
+import Lightbox from '@/components/Lightbox';
 import './globals.css';
 
 const jetBrainsMono = localFont({
@@ -42,8 +43,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={jetBrainsMono.variable}>
       <body>
-        <a href="#main-content" className="skip-link">skip to content</a>
         <div className="site-shell">
+          <a href="#main-content" className="skip-link">skip to content</a>
           <SiteNav />
           <main id="main-content" className="site-main">{children}</main>
 
@@ -75,6 +76,7 @@ export default function RootLayout({
             <span className="site-copyright">building thingamajigs</span>
           </footer>
         </div>
+        <Lightbox />
       </body>
     </html>
   );
