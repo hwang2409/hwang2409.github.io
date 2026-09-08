@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import SiteNav from '@/components/SiteNav';
+import Lightbox from '@/components/Lightbox';
 import './globals.css';
 
 const jetBrainsMono = localFont({
@@ -75,6 +76,7 @@ export default function RootLayout({
             <span className="site-copyright">building thingamajigs</span>
           </footer>
         </div>
+        <Lightbox />
       </body>
     </html>
   );
