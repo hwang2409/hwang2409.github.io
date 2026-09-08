@@ -1,3 +1,5 @@
+import { contactCorrection } from './contacts';
+
 export type StackPoint = { time: number; heights: number[]; penetration: number };
 
 // Four unit masses, unit box height, vertical translation only. Sequential
@@ -15,7 +17,7 @@ export function simulateStack(iterations: number, duration = 5, dt = 1 / 12): St
     for (let sweep = 0; sweep < iterations; sweep += 1) {
       heights[0] = Math.max(0.5, heights[0]);
       for (let i = 1; i < heights.length; i += 1) {
-        const correction = Math.max(0, 1 - (heights[i] - heights[i - 1])) / 2;
+        const correction = contactCorrection(1 - (heights[i] - heights[i - 1]), 1, 1);
         heights[i] += correction;
         heights[i - 1] -= correction;
       }

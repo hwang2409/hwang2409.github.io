@@ -9,7 +9,7 @@ import LightboxImageTrigger from '@/components/LightboxImageTrigger';
 import ProjectWidget, { type ProjectWidgetName } from '@/components/project-widgets/ProjectWidget';
 import { formatDate } from '@/lib/dates';
 
-const widgetMarker = /<!--\s*widget:\s*(integrators|timestep|spring|pendulum-tree|solver-iterations|friction-cone|determinism-replay|triangle-raster|zbuffer-toggle|perspective-texture|shading-model)\s*-->/gu;
+const widgetMarker = /<!--\s*widget:\s*(playground|projectile-stack|broad-phase|muscle-arm|integrators|timestep|spring|pendulum-tree|solver-iterations|friction-cone|determinism-replay|triangle-raster|zbuffer-toggle|perspective-texture|shading-model)\s*-->/gu;
 
 function ProjectContent({ html }: { html: string }) {
   const blocks: Array<{ html: string } | { widget: ProjectWidgetName }> = [];
@@ -18,7 +18,9 @@ function ProjectContent({ html }: { html: string }) {
   for (const match of html.matchAll(widgetMarker)) {
     if (match.index > lastIndex) blocks.push({ html: html.slice(lastIndex, match.index) });
     const widget = match[1];
-    if (widget === 'integrators' || widget === 'timestep' || widget === 'spring'
+    if (widget === 'playground' || widget === 'projectile-stack'
+      || widget === 'broad-phase' || widget === 'muscle-arm'
+      || widget === 'integrators' || widget === 'timestep' || widget === 'spring'
       || widget === 'pendulum-tree' || widget === 'solver-iterations'
       || widget === 'friction-cone' || widget === 'determinism-replay'
       || widget === 'triangle-raster' || widget === 'zbuffer-toggle'
@@ -70,15 +72,20 @@ export default async function ProjectPage({
       <h1 className="post-title page-title">{project.title}</h1>
       <p className="post-meta"><time dateTime={formatDate(project.date)}>{formatDate(project.date)}</time></p>
       <p className="post-excerpt">{project.excerpt}</p>
-      <LightboxImageTrigger
+      {project.slug !== 'newt' ? <LightboxImageTrigger
         src={project.image}
         alt={project.imageAlt}
         width={project.imageWidth}
         height={project.imageHeight}
         className="project-hero"
         loading="eager"
-      />
-      <Contents sections={sections} />
+      /> : null}
+      {project.slug === 'newt' ? (
+        <details>
+          <summary>jump to a demo or section</summary>
+          <Contents sections={sections} />
+        </details>
+      ) : <Contents sections={sections} />}
       <ProjectContent html={htmlContent} />
       {blogPost ? (
         <p className="project-blog-link">
