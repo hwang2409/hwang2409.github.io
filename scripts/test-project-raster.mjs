@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 
 // Use the existing TypeScript compiler, as in test-project-physics.mjs.
@@ -31,6 +32,30 @@ const { edge, interpolate, rasterize } = triangle;
 const { renderDepth } = depth;
 const { perspectiveAttribute, renderChecker } = perspective;
 const { blinnPhong, lightDirection, renderSphere } = shading;
+
+test('every project content widget marker is accepted by the page registry', async () => {
+  const source = await readFile(new URL('../src/components/project-widgets/ProjectWidget.tsx', import.meta.url), 'utf8');
+  const { outputText } = ts.transpileModule(source, { compilerOptions: {
+    module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX,
+  } });
+  // Only inspect registry names; client component imports need no DOM or rendering.
+  const registry = {};
+  runInNewContext(outputText, { exports: registry, require: () => ({}) });
+  const projects = new URL('../content/projects/', import.meta.url);
+  let count = 0;
+  for (const file of (await readdir(projects)).filter((name) => name.endsWith('.md'))) {
+    const content = await readFile(new URL(file, projects), 'utf8');
+    for (const match of content.matchAll(/<!--\s*widget:\s*(.*?)\s*-->/gu)) {
+      const accepted = [...match[0].matchAll(registry.widgetMarker)];
+      assert.equal(accepted.length, 1, `${file}: unmapped widget ${match[1]}`);
+      assert.equal(accepted[0][1], match[1]);
+      assert.ok(registry.isProjectWidgetName(match[1]), `${file}: rejected widget ${match[1]}`);
+      count += 1;
+    }
+  }
+  assert.ok(count > 0, 'no project markers were checked');
+  assert.equal(registry.isProjectWidgetName('toString'), false);
+});
 
 test('edge signs and barycentric interpolation match pixel centers', () => {
   const a = { x: 0, y: 0 }, b = { x: 4, y: 0 }, c = { x: 0, y: 4 };

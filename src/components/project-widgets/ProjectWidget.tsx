@@ -1,5 +1,3 @@
-'use client';
-
 import IntegratorsWidget from './IntegratorsWidget';
 import SpringWidget from './SpringWidget';
 import TimestepWidget from './TimestepWidget';
@@ -44,6 +42,12 @@ const widgets = {
 } as const;
 
 export type ProjectWidgetName = keyof typeof widgets;
+
+export const widgetMarker = new RegExp(`<!--\\s*widget:\\s*(${Object.keys(widgets).join('|')})\\s*-->`, 'gu');
+
+export function isProjectWidgetName(name: string): name is ProjectWidgetName {
+  return Object.prototype.hasOwnProperty.call(widgets, name);
+}
 
 export default function ProjectWidget({ name }: { name: ProjectWidgetName }) {
   const Widget = widgets[name];

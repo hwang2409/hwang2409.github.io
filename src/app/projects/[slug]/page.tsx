@@ -6,10 +6,8 @@ import { getProject, getProjects } from '@/lib/projects';
 import { markdownToHtmlWithSections } from '@/lib/markdown';
 import Contents from '@/components/Contents';
 import LightboxImageTrigger from '@/components/LightboxImageTrigger';
-import ProjectWidget, { type ProjectWidgetName } from '@/components/project-widgets/ProjectWidget';
+import ProjectWidget, { isProjectWidgetName, widgetMarker, type ProjectWidgetName } from '@/components/project-widgets/ProjectWidget';
 import { formatDate } from '@/lib/dates';
-
-const widgetMarker = /<!--\s*widget:\s*(playground|projectile-stack|broad-phase|muscle-arm|integrators|timestep|spring|pendulum-tree|solver-iterations|friction-cone|determinism-replay|triangle-raster|zbuffer-toggle|perspective-texture|shading-model)\s*-->/gu;
 
 function ProjectContent({ html }: { html: string }) {
   const blocks: Array<{ html: string } | { widget: ProjectWidgetName }> = [];
@@ -18,13 +16,7 @@ function ProjectContent({ html }: { html: string }) {
   for (const match of html.matchAll(widgetMarker)) {
     if (match.index > lastIndex) blocks.push({ html: html.slice(lastIndex, match.index) });
     const widget = match[1];
-    if (widget === 'playground' || widget === 'projectile-stack'
-      || widget === 'broad-phase' || widget === 'muscle-arm'
-      || widget === 'integrators' || widget === 'timestep' || widget === 'spring'
-      || widget === 'pendulum-tree' || widget === 'solver-iterations'
-      || widget === 'friction-cone' || widget === 'determinism-replay'
-      || widget === 'triangle-raster' || widget === 'zbuffer-toggle'
-      || widget === 'perspective-texture' || widget === 'shading-model') {
+    if (isProjectWidgetName(widget)) {
       blocks.push({ widget });
     }
     lastIndex = match.index + match[0].length;
