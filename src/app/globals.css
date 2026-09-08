@@ -354,18 +354,19 @@ dd {
   touch-action: none;
 }
 
+/* Shared control chrome for every project demo. */
 .project-widget-step,
 .project-widget-controls button {
+  min-width: 40px;
   min-height: 40px;
-  padding: 0.35rem 0;
-  border: 0;
-  border-bottom: 1px solid transparent;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: 0;
   background: transparent;
   color: var(--foreground);
+  font: inherit;
   cursor: pointer;
-  transition-property: color, text-decoration-color, transform;
-  transition-duration: 120ms;
-  transition-timing-function: ease;
+  transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
 }
 
 .project-widget-step:active,
@@ -377,30 +378,118 @@ dd {
   position: absolute;
   right: 0.75rem;
   bottom: 0.75rem;
-  padding-inline: 0.5rem;
   background: var(--background);
-}
-
-.project-widget-step:hover,
-.project-widget-step:focus-visible,
-.project-widget-controls button:hover,
-.project-widget-controls button:focus-visible {
-  border-bottom-color: currentColor;
-}
-
-.project-widget-controls,
-.project-widget-legend,
-.project-widget-scale {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-1) var(--space-3);
-  color: var(--muted);
   font-size: var(--text-sm);
 }
 
+.project-widget-step:hover,
+.project-widget-controls button:hover {
+  border-color: var(--border);
+  background: var(--code);
+}
+
+.project-widget-controls button[aria-pressed='true'] {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.project-widget-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+.project-widget-controls :is(button, input, select):focus-visible,
+.project-widget-step:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+.project-widget-controls {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.project-widget-group {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-2) 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.project-widget-group > legend {
+  float: left;
+  width: 8rem;
+  padding: var(--space-1) var(--space-2) 0 0;
+  color: var(--muted);
+}
+
+.project-widget-group-content {
+  margin-left: 8rem;
+  min-width: 0;
+}
+
+.project-widget-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.project-widget-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+}
+
+.project-widget-field {
+  display: grid;
+  flex: 1 1 12rem;
+  gap: var(--space-1);
+  min-width: 0;
+  color: var(--muted);
+}
+
+.project-widget-field-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-2);
+}
+
+.project-widget-value {
+  margin-left: auto;
+  color: var(--foreground);
+  text-align: right;
+}
+
+.project-widget-field :is(input, select) {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+  accent-color: var(--foreground);
+  color: var(--foreground);
+  background: var(--background);
+  font: inherit;
+}
+
+.project-widget-field select {
+  border: 1px solid var(--border);
+  border-radius: 0;
+}
+
 .project-widget-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
   margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
 
 .project-widget-legend span {
@@ -424,60 +513,12 @@ dd {
   background: repeating-linear-gradient(to right, var(--muted) 0 1px, transparent 1px 5px);
 }
 
-.project-widget-controls {
-  margin-top: var(--space-1);
-}
-
-.project-widget-controls span:last-of-type {
-  color: var(--foreground);
-}
-
-.project-widget-slider {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-2);
-}
-
-.project-widget-slider input {
-  width: min(18rem, 100%);
-  min-width: 0;
-  min-height: 40px;
-  margin: 0;
-  accent-color: var(--foreground);
-}
-
-.project-widget-slider > span,
-.project-widget-slider > button,
-.project-widget-damping {
-  grid-column: 1 / -1;
-  justify-self: start;
-}
-
-@media (max-width: 480px) {
-  .project-widget-slider {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.project-widget-damping {
-  display: grid;
-  gap: var(--space-1);
-  width: min(18rem, 100%);
-  min-width: 0;
-}
-
-.project-widget-damping input {
-  width: 100%;
-  min-width: 0;
-  margin-inline: 0;
-}
-
 .project-widget-scale {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: -0.2rem;
-  padding-inline: 0.1rem;
+  width: 100%;
+  gap: var(--space-1);
+  color: var(--muted);
   font-size: 0.72rem;
 }
 
@@ -489,10 +530,32 @@ dd {
   text-align: right;
 }
 
-.project-widget-hint {
-  margin: var(--space-1) 0 0;
+.project-widget-hint,
+.project-widget-note,
+.project-widget-readout {
+  margin: var(--space-2) 0 0;
   color: var(--muted);
   font-size: var(--text-sm);
+  text-wrap: pretty;
+}
+
+.project-widget-readout {
+  min-height: 1.7em;
+  padding: var(--space-2);
+  background: var(--code);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 520px) {
+  .project-widget-group > legend {
+    float: none;
+    width: auto;
+    padding: 0 var(--space-2) 0 0;
+  }
+
+  .project-widget-group-content {
+    margin-left: 0;
+  }
 }
 
 .home-mascot {

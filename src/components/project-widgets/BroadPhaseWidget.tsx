@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { createBroadPhase, findPairs, stepBroadPhase } from '@/lib/physics/broadphase';
 import { createClock } from '@/lib/physics/scene';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls, ControlGroup } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { sceneLayout } from './sceneDrawing';
 import colors from './colors';
@@ -44,13 +45,17 @@ export default function BroadPhaseWidget() {
   }, [runtime]);
   return (
     <section className={`project-widget ${styles.scene}`} aria-label="broad-phase candidate pairs">
-      <InteractiveCanvas draw={draw} resetKey={reset} redrawKey={revision} aria-label="forty drifting circles with bounding boxes and candidate-pair lines" />
-      <div className={`project-widget-controls ${styles.controls}`}>
-        <button type="button" aria-pressed={!runtime.sweep} onClick={() => { runtime.sweep = false; setRevision(n => n + 1); }}>[all pairs]</button>
-        <button type="button" aria-pressed={runtime.sweep} onClick={() => { runtime.sweep = true; setRevision(n => n + 1); }}>[sweep]</button>
-        <button type="button" onClick={() => { setRuntime(session()); setReset(n => n + 1); }}>[reset]</button>
-      </div>
-      <p className="project-widget-hint">same seeded motion in both modes. all pairs sends every pair onward; sweep sorts x bounds, then checks y overlap. lines mark candidates, not confirmed contacts. bodies pass through each other.</p>
+      <InteractiveCanvas hint="choose a pair search · compare the candidate lines and counts" draw={draw} resetKey={reset} redrawKey={revision} aria-label="forty drifting circles with bounding boxes and candidate-pair lines" />
+      <WidgetControls
+        note="same seeded motion in both modes. all pairs sends every pair onward; sweep sorts x bounds, then checks y overlap. lines mark candidates, not confirmed contacts. bodies pass through each other.">
+        <ControlGroup label="motion">
+          <button type="button" onClick={() => { setRuntime(session()); setReset(n => n + 1); }}>[reset]</button>
+        </ControlGroup>
+        <ControlGroup label="pair search">
+          <button type="button" aria-pressed={!runtime.sweep} onClick={() => { runtime.sweep = false; setRevision(n => n + 1); }}>[all pairs]</button>
+          <button type="button" aria-pressed={runtime.sweep} onClick={() => { runtime.sweep = true; setRevision(n => n + 1); }}>[sweep]</button>
+        </ControlGroup>
+      </WidgetControls>
     </section>
   );
 }

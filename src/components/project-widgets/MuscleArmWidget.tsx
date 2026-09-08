@@ -5,6 +5,7 @@ import { armReadout, createArm, muscleGeometry, muscleLength, stepArm } from '@/
 import { pendulumPositions } from '@/lib/physics/pendulum';
 import { createClock } from '@/lib/physics/scene';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import styles from './NewtWidgets.module.css';
@@ -64,15 +65,17 @@ export default function MuscleArmWidget() {
   }, [runtime]);
   return (
     <section className={`project-widget ${styles.scene}`} aria-label="two-link arm with muscle actuator">
-      <InteractiveCanvas draw={draw} resetKey={reset} redrawKey={revision} aria-label="gravity-loaded two-link arm; a muscle pulls between upper arm and forearm, with its force-length curve below" />
-      <div className={`project-widget-controls ${styles.controls}`}>
-        <label htmlFor={`${id}-activation`}>activation target: {runtime.arm.control.toFixed(2)}
-          <input id={`${id}-activation`} type="range" min="0" max="1" step="0.01" value={runtime.arm.control}
+      <InteractiveCanvas hint="raise activation to pull the forearm · reset to compare from rest" draw={draw} resetKey={reset} redrawKey={revision} aria-label="gravity-loaded two-link arm; a muscle pulls between upper arm and forearm, with its force-length curve below" />
+      <WidgetControls
+        note="two unit point masses, coupled RK4 dynamics, joint damping. active force = 100 N × activation × length curve × velocity curve. a straight tendon converts force to elbow torque; passive muscle force is omitted.">
+        <ControlGroup label="arm">
+          <button type="button" onClick={() => { setRuntime(session(runtime.arm.control)); setReset(n => n + 1); }}>[reset]</button>
+        </ControlGroup>
+        <ControlGroup label="muscle">
+          <Slider label="activation target" valueText={`${runtime.arm.control.toFixed(2)}`} id={`${id}-activation`} min="0" max="1" step="0.01" value={runtime.arm.control}
             onChange={e => { runtime.arm.control = Number(e.target.value); setRevision(n => n + 1); }} />
-        </label>
-        <button type="button" onClick={() => { setRuntime(session(runtime.arm.control)); setReset(n => n + 1); }}>[reset]</button>
-      </div>
-      <p className="project-widget-hint">two unit point masses, coupled RK4 dynamics, joint damping. active force = 100 N × activation × length curve × velocity curve. a straight tendon converts force to elbow torque; passive muscle force is omitted.</p>
+        </ControlGroup>
+      </WidgetControls>
     </section>
   );
 }

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { renderDepth } from '@/lib/raster/depth';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls, ControlGroup } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import { rasterPainter } from './rasterCanvas';
 import styles from './RasterWidgets.module.css';
@@ -15,7 +16,7 @@ export default function ZBufferWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="painter's algorithm and per-pixel depth">
-      <InteractiveCanvas aria-label={depthTest ? 'depth test: the dark triangle is in front on the left, the light triangle on the right' : 'painter mode: the last triangle covers the entire overlap incorrectly'}
+      <InteractiveCanvas hint="choose a depth method · swap draw order to test the overlap" aria-label={depthTest ? 'depth test: the dark triangle is in front on the left, the light triangle on the right' : 'painter mode: the last triangle covers the entire overlap incorrectly'}
         resetKey={revision}
         draw={(context, width, height) => {
           clearCanvas(context, width, height);
@@ -23,13 +24,16 @@ export default function ZBufferWidget() {
           paint(context, (width - 240 * scale) / 2, 30, 240 * scale, 180 * scale);
           context.fillText(depthTest ? 'nearest fragment wins' : 'last triangle wins', 12, 20);
         }} />
-      <div className="project-widget-controls">
-        <button type="button" aria-pressed={!depthTest} onClick={() => { setDepthTest(false); setRevision((v) => v + 1); }}>[painter]</button>
-        <button type="button" aria-pressed={depthTest} onClick={() => { setDepthTest(true); setRevision((v) => v + 1); }}>[z-buffer]</button>
-        <button type="button" onClick={() => { setReverse((v) => !v); setRevision((v) => v + 1); }}>[swap order]</button>
-        <output>{reverse ? 'dark drawn last' : 'light drawn last'}</output>
-      </div>
-      <p className="project-widget-hint">the triangles cross in depth. swap their order: painter mode changes; the z-buffer result stays the same.</p>
+      <WidgetControls readout={{ children: <output>{reverse ? 'dark drawn last' : 'light drawn last'}</output> }}
+        note="the triangles cross in depth. swap their order: painter mode changes; the z-buffer result stays the same.">
+        <ControlGroup label="draw order">
+          <button type="button" onClick={() => { setReverse((v) => !v); setRevision((v) => v + 1); }}>[swap order]</button>
+        </ControlGroup>
+        <ControlGroup label="depth method">
+          <button type="button" aria-pressed={!depthTest} onClick={() => { setDepthTest(false); setRevision((v) => v + 1); }}>[painter]</button>
+          <button type="button" aria-pressed={depthTest} onClick={() => { setDepthTest(true); setRevision((v) => v + 1); }}>[z-buffer]</button>
+        </ControlGroup>
+      </WidgetControls>
     </section>
   );
 }

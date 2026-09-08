@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react';
 import { simulateWarmStart, WARM_DT } from '@/lib/physics/warmStart';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 import { demoPlayback } from './demoPlayback';
@@ -44,12 +45,12 @@ export default function WarmStartWidget() {
   }, [run]);
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="cold versus warm-started stack solver">
-      <InteractiveCanvas draw={draw} resetKey={reset} aria-label="two four-box stacks with live iteration counts and contact velocity residuals" />
-      <div className={`project-widget-controls ${styles.controls}`}>
+      <InteractiveCanvas hint="perturb the top box · compare cold and warm solver counts" draw={draw} resetKey={reset} aria-label="two four-box stacks with live iteration counts and contact velocity residuals" />
+      <WidgetControls label="stack"
+        note="[perturb] replays with a downward 0.015 m/s kick to the top box at t = 1 s. warm reuses prior impulses; cold starts at zero. both stop at the same residual. the kick’s counts remain below.">
         <button type="button" onClick={() => restart(true)}>[perturb]</button>
         <button type="button" onClick={() => restart(false)}>[reset]</button>
-      </div>
-      <p className="project-widget-hint">[perturb] replays with a downward 0.015 m/s kick to the top box at t = 1 s. warm reuses prior impulses; cold starts at zero. both stop at the same residual. the kick’s counts remain below.</p>
+      </WidgetControls>
     </section>
   );
 }

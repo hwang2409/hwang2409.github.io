@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react';
 import { inclineForces } from '@/lib/physics/friction';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import { clearCanvas } from './canvas';
 import colors from './colors';
 
@@ -50,15 +51,18 @@ export default function FrictionConeWidget() {
 
   return (
     <section className="project-widget" aria-label="friction threshold on an incline">
-      <InteractiveCanvas draw={draw} resetKey={replay} staticElapsed={3000} aria-label="block on a slope with the required support force and friction cone" />
-      <div className="project-widget-controls project-widget-slider">
-        <label htmlFor="incline-angle">incline: {angle}°</label>
-        <input id="incline-angle" type="range" min="0" max="50" value={angle} onChange={e => { setAngle(Number(e.target.value)); setReplay(r => r + 1); }} />
-        <label htmlFor="incline-friction">friction μ: {friction.toFixed(2)}</label>
-        <input id="incline-friction" type="range" min="0" max="1.2" step="0.01" value={friction} onChange={e => { setFriction(Number(e.target.value)); setReplay(r => r + 1); }} />
-        <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
-      </div>
-      <p className="project-widget-hint">{forces.acceleration === 0 ? 'sticks' : 'slides'}: required ratio {forces.ratio.toFixed(3)}, available μ {friction.toFixed(2)}. the dark line is required support; the two light lines bound the cone.</p>
+      <InteractiveCanvas hint="adjust the incline or friction · watch the block stick or slide" draw={draw} resetKey={replay} staticElapsed={3000} aria-label="block on a slope with the required support force and friction cone" />
+      <WidgetControls readout={{ children: <>{forces.acceleration === 0 ? 'sticks' : 'slides'}: required ratio {forces.ratio.toFixed(3)}, available μ {friction.toFixed(2)}. the dark line is required support; the two light lines bound the cone.</> }}>
+        <ControlGroup label="release">
+          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
+        </ControlGroup>
+        <ControlGroup label="incline">
+          <Slider label="incline" valueText={`${angle}°`} id="incline-angle" min="0" max="50" value={angle}
+            onChange={e => { setAngle(Number(e.target.value)); setReplay(r => r + 1); }} />
+          <Slider label="friction μ" valueText={`${friction.toFixed(2)}`} id="incline-friction" min="0" max="1.2" step="0.01" value={friction}
+            onChange={e => { setFriction(Number(e.target.value)); setReplay(r => r + 1); }} />
+        </ControlGroup>
+      </WidgetControls>
     </section>
   );
 }

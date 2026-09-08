@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls, ControlGroup, Slider } from './WidgetControls';
 import colors from './colors';
 import { clearCanvas, crisp } from './canvas';
 import { dampingForSlider, sampleSpring, simulateSpring } from '@/lib/physics/spring';
@@ -89,7 +90,7 @@ export default function SpringWidget() {
 
   return (
     <section className="project-widget" aria-label="spring and damping">
-      <InteractiveCanvas
+      <InteractiveCanvas hint="drag the mass, then release · use displacement for keyboard control"
         className="project-widget-draggable"
         aria-label="draggable mass on a spring with a motion trace"
         draw={draw}
@@ -117,38 +118,25 @@ export default function SpringWidget() {
           setReplayKey((value) => value + 1);
         }}
       />
-      <div className="project-widget-controls project-widget-slider">
-        <div className="project-widget-damping">
-          <label htmlFor="spring-damping">damping: {damping.toFixed(1)}</label>
-          <input
-            id="spring-damping"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={dampingValue}
-            onChange={(event) => { setDampingValue(Number(event.target.value)); setReplayKey(value => value + 1); }}
-          />
+      <WidgetControls>
+        <ControlGroup label="release">
+          <button type="button" onClick={() => setReplayKey(value => value + 1)}>[replay]</button>
+        </ControlGroup>
+        <ControlGroup label="starting position">
+          <Slider label="displacement" valueText={`${displacement.toFixed(2)}`} id="spring-displacement" min="-0.9" max="1.4" step="0.01" value={displacement}
+            onChange={(event) => {
+              setDisplacement(Number(event.target.value));
+              setReplayKey((value) => value + 1);
+            }} />
+        </ControlGroup>
+        <ControlGroup label="spring">
+          <Slider label="damping" valueText={`${damping.toFixed(1)}`} id="spring-damping" min="0" max="100" step="1" value={dampingValue}
+            onChange={(event) => { setDampingValue(Number(event.target.value)); setReplayKey(value => value + 1); }} />
           <div className="project-widget-scale" aria-hidden="true">
             <span>under-damped</span><span>critical</span><span>over-damped</span>
           </div>
-        </div>
-        <label htmlFor="spring-displacement">displacement: {displacement.toFixed(2)}</label>
-        <input
-          id="spring-displacement"
-          type="range"
-          min="-0.9"
-          max="1.4"
-          step="0.01"
-          value={displacement}
-          onChange={(event) => {
-            setDisplacement(Number(event.target.value));
-            setReplayKey((value) => value + 1);
-          }}
-        />
-        <button type="button" onClick={() => setReplayKey(value => value + 1)}>[replay]</button>
-      </div>
-      <p className="project-widget-hint">drag the mass to set its starting displacement</p>
+        </ControlGroup>
+      </WidgetControls>
     </section>
   );
 }

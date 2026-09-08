@@ -1,7 +1,7 @@
 'use client';
 
 import type { CanvasHTMLAttributes, ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { canvasFont } from './canvas';
 
 type DrawCanvas = (
@@ -14,6 +14,7 @@ type DrawCanvas = (
 
 type InteractiveCanvasProps = Omit<CanvasHTMLAttributes<HTMLCanvasElement>, 'children'> & {
   draw: DrawCanvas;
+  hint: string;
   resetKey?: number;
   redrawKey?: number;
   staticElapsed?: number;
@@ -22,6 +23,7 @@ type InteractiveCanvasProps = Omit<CanvasHTMLAttributes<HTMLCanvasElement>, 'chi
 
 export default function InteractiveCanvas({
   draw,
+  hint,
   resetKey = 0,
   redrawKey = 0,
   staticElapsed = 0,
@@ -29,6 +31,7 @@ export default function InteractiveCanvas({
   className,
   ...canvasProps
 }: InteractiveCanvasProps) {
+  const hintId = useId();
   const redrawRef = useRef<(() => void) | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -131,14 +134,17 @@ export default function InteractiveCanvas({
   useEffect(() => { redrawRef.current?.(); }, [redrawKey]);
 
   return (
-    <div className="project-widget-canvas-wrap">
-      <canvas ref={canvasRef} className={className} {...canvasProps} />
-      {reducedMotion ? (
-        <button className="project-widget-step" type="button" onClick={() => setMotionStep({ resetKey, count: step + 1 })}>
-          [step]
-        </button>
-      ) : null}
-      {children}
-    </div>
+    <>
+      <div className="project-widget-canvas-wrap">
+        <canvas ref={canvasRef} className={className} aria-describedby={hintId} {...canvasProps} />
+        {reducedMotion ? (
+          <button className="project-widget-step" type="button" onClick={() => setMotionStep({ resetKey, count: step + 1 })}>
+            [step]
+          </button>
+        ) : null}
+        {children}
+      </div>
+      <p className="project-widget-hint" id={hintId}>{hint}</p>
+    </>
   );
 }

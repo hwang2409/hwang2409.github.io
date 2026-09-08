@@ -3,6 +3,7 @@
 import { useCallback, useId, useState, type PointerEvent } from 'react';
 import { BODY_LIMIT, createClock, createScene, fireProjectile, SCENE_DT, spawnBody, stepScene } from '@/lib/physics/scene';
 import InteractiveCanvas from './InteractiveCanvas';
+import { WidgetControls, ControlField, ControlGroup, Slider } from './WidgetControls';
 import { containsBody, drawScene, sceneLayout } from './sceneDrawing';
 import styles from './NewtWidgets.module.css';
 
@@ -92,7 +93,7 @@ export default function PlaygroundWidget({ wall = false }: { wall?: boolean }) {
   };
   return (
     <section className={`project-widget ${styles.scene}`} aria-label={wall ? 'projectile versus stacked wall' : 'physics playground'}>
-      <InteractiveCanvas draw={draw} resetKey={reset} redrawKey={revision}
+      <InteractiveCanvas hint={wall ? 'set the shot angle and speed, then fire at the wall' : 'drag a body and release · or select a body, set its shot, and fling'} draw={draw} resetKey={reset} redrawKey={revision}
         className={wall ? undefined : 'project-widget-draggable'}
         aria-label={wall ? 'a heavy ball hits fifteen rotating boxes' : 'boxes and balls with gravity; drag a body to pull and release it'}
         onPointerDown={wall ? undefined : down} onPointerUp={wall ? undefined : release}
@@ -101,31 +102,30 @@ export default function PlaygroundWidget({ wall = false }: { wall?: boolean }) {
           if (drag.pointer !== event.pointerId) return;
           const p = coordinates(event); drag.x = p.x; drag.y = p.y; refresh();
         }} />
-      <div className={`project-widget-controls ${styles.controls}`}>
-        {wall ? null : <>
-          <button type="button" disabled={scene.bodies.length >= BODY_LIMIT} onClick={() => spawn('box')}>[spawn box]</button>
-          <button type="button" disabled={scene.bodies.length >= BODY_LIMIT} onClick={() => spawn('ball')}>[spawn ball]</button>
-          <label htmlFor={`${id}-gravity`}>gravity: {scene.gravity.toFixed(1)} m/s²
-            <input id={`${id}-gravity`} type="range" min="0" max="20" step="0.1" value={scene.gravity}
-              onChange={e => { scene.gravity = Number(e.target.value); refresh(); }} />
-          </label>
-          <label htmlFor={`${id}-body`}>body to fling
+      <WidgetControls readout={{ role: "status", children: message || (wall ? '8 kg projectile · 1 kg boxes' : 'click empty space to add a box') }}
+        note="2d rigid bodies · dt = 1/180 s · friction 0.55 · restitution 0.3. energy includes gravity and rotation; spawning and flinging add energy. reduced motion: [step] advances 0.35 s.">
+        <ControlGroup label="launch" actions={<button type="button" disabled={wall && scene.bodies.length >= BODY_LIMIT} onClick={launch}>{wall ? '[fire]' : '[fling body]'}</button>}>
+          {!wall && (<ControlField label="body to fling">
             <select id={`${id}-body`} value={runtime.selected} onChange={e => { runtime.selected = Number(e.target.value); refresh(); }}>
               {scene.bodies.map((b, i) => <option key={i} value={i}>{i + 1}: {b.kind}</option>)}
             </select>
-          </label>
-        </>}
-        <label htmlFor={`${id}-angle`}>angle: {angle}°
-          <input id={`${id}-angle`} type="range" min={wall ? 0 : -180} max={wall ? 45 : 180} value={angle} onChange={e => setAngle(Number(e.target.value))} />
-        </label>
-        <label htmlFor={`${id}-speed`}>speed: {speed} m/s
-          <input id={`${id}-speed`} type="range" min="2" max="20" value={speed} onChange={e => setSpeed(Number(e.target.value))} />
-        </label>
-        <button type="button" disabled={wall && scene.bodies.length >= BODY_LIMIT} onClick={launch}>{wall ? '[fire]' : '[fling body]'}</button>
-        <button type="button" onClick={() => { setRuntime(session(wall)); setReset(n => n + 1); setMessage('scene reset'); }}>[reset]</button>
-      </div>
-      <p className={`project-widget-hint ${styles.status}`} role="status">{message || (wall ? '8 kg projectile · 1 kg boxes · choose a shot, then fire' : 'click empty space to add a box; drag any body, then release')}</p>
-      <p className="project-widget-hint">2d rigid bodies · dt = 1/180 s · friction 0.55 · restitution 0.3. energy includes gravity and rotation; spawning and flinging add energy. reduced motion: [step] advances 0.35 s.</p>
+          </ControlField>)}
+          <Slider label="angle" valueText={`${angle}°`} id={`${id}-angle`} min={wall ? 0 : -180} max={wall ? 45 : 180} value={angle}
+            onChange={e => setAngle(Number(e.target.value))} />
+          <Slider label="speed" valueText={`${speed} m/s`} id={`${id}-speed`} min="2" max="20" value={speed}
+            onChange={e => setSpeed(Number(e.target.value))} />
+        </ControlGroup>
+        <ControlGroup label="scene" actions={<>
+          <button type="button" onClick={() => { setRuntime(session(wall)); setReset(n => n + 1); setMessage('scene reset'); }}>[reset]</button>
+          {!wall && <>
+            <button type="button" disabled={scene.bodies.length >= BODY_LIMIT} onClick={() => spawn('box')}>[spawn box]</button>
+            <button type="button" disabled={scene.bodies.length >= BODY_LIMIT} onClick={() => spawn('ball')}>[spawn ball]</button>
+          </>}
+        </>}>
+          {!wall && <Slider label="gravity" valueText={`${scene.gravity.toFixed(1)} m/s²`} id={`${id}-gravity`} min="0" max="20" step="0.1" value={scene.gravity}
+            onChange={e => { scene.gravity = Number(e.target.value); refresh(); }} />}
+        </ControlGroup>
+      </WidgetControls>
     </section>
   );
 }
