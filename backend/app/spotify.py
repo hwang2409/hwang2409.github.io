@@ -51,6 +51,9 @@ TIME_RANGE_LABELS: Final[dict[TimeRange, str]] = {
     "long_term": "last year",
 }
 SPOTIFY_ITEM_LIMIT: Final = 5
+# Tracks are fetched deeper than the display count so the album shelf,
+# which dedupes tracks by album, can always fill five unique albums.
+SPOTIFY_TRACK_FETCH_LIMIT: Final = 20
 
 _LIMITS: Final = httpx2.Limits(
     max_connections=200,
@@ -117,7 +120,7 @@ def _get_top_tracks(
 ) -> SpotifyTopTracksPage:
     response = client.get(
         f"{SPOTIFY_API_URL}/me/top/tracks",
-        params={"time_range": time_range, "limit": SPOTIFY_ITEM_LIMIT},
+        params={"time_range": time_range, "limit": SPOTIFY_TRACK_FETCH_LIMIT},
         headers={"Authorization": f"Bearer {access_token}"},
     )
     try:

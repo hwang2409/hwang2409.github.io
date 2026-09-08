@@ -56,11 +56,28 @@
 .rangeSelector {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.7rem;
+  gap: 0.25rem 0.35rem;
   align-items: center;
-  justify-self: start;
+  margin-left: auto;
   color: var(--muted);
   font-size: var(--text-sm);
+}
+
+/* Every option reserves bracket space; only the selected one shows them,
+   so switching ranges never shifts the row. */
+.rangeSelector button::before {
+  content: "[ ";
+  opacity: 0;
+}
+
+.rangeSelector button::after {
+  content: " ]";
+  opacity: 0;
+}
+
+.rangeSelector .rangeSelected::before,
+.rangeSelector .rangeSelected::after {
+  opacity: 1;
 }
 
 .rangeSelector button {
