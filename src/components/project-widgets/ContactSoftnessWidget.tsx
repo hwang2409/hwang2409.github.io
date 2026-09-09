@@ -42,11 +42,9 @@ export default function ContactSoftnessWidget() {
   }, [run]);
   return (
     <section className={`project-widget ${styles.demo}`} aria-label="contact softness">
-      <InteractiveCanvas hint="adjust softness · drop again to compare penetration" draw={draw} resetKey={reset} aria-label="a dropped ball compresses a spring contact; penetration depth appears above" />
-      <WidgetControls label="contact" actions={
-          <button type="button" onClick={() => restart(run.softness)}>[drop again]</button>
-        }
-        note="0 = hard, 1 = soft. unit mass, spring–damper contact, fixed damping ratio 0.18. stiffness is an analogy for compliance, not newt’s solimp mapping.">
+      <InteractiveCanvas hint="soften the contact" draw={draw} resetKey={reset} aria-label="a dropped ball compresses a spring contact; penetration depth appears above" />
+      <WidgetControls
+        note="unit mass; damping ratio 0.18. stiffness models compliance, not newt’s solimp mapping.">
         <Slider label="softness" valueText={`${run.softness.toFixed(2)} · ${contactStiffness(run.softness).toFixed(0)} N/m`} id={id} min="0" max="1" step="0.01" value={run.softness} onChange={e => restart(Number(e.target.value))} />
       </WidgetControls>
     </section>

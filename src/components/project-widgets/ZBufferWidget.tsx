@@ -16,7 +16,7 @@ export default function ZBufferWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="painter's algorithm and per-pixel depth">
-      <InteractiveCanvas hint="choose a depth method · swap draw order to test the overlap" aria-label={depthTest ? 'depth test: the dark triangle is in front on the left, the light triangle on the right' : 'painter mode: the last triangle covers the entire overlap incorrectly'}
+      <InteractiveCanvas hint="swap the draw order" aria-label={depthTest ? 'depth test: the dark triangle is in front on the left, the light triangle on the right' : 'painter mode: the last triangle covers the entire overlap incorrectly'}
         resetKey={revision}
         draw={(context, width, height) => {
           clearCanvas(context, width, height);
@@ -24,9 +24,8 @@ export default function ZBufferWidget() {
           paint(context, (width - 240 * scale) / 2, 30, 240 * scale, 180 * scale);
           context.fillText(depthTest ? 'nearest fragment wins' : 'last triangle wins', 12, 20);
         }} />
-      <WidgetControls readout={{ children: <output>{reverse ? 'dark drawn last' : 'light drawn last'}</output> }}
-        note="the triangles cross in depth. swap their order: painter mode changes; the z-buffer result stays the same.">
-        <ControlGroup label="draw order">
+      <WidgetControls readout={{ children: <output>{reverse ? 'dark drawn last' : 'light drawn last'}</output> }}>
+        <ControlGroup>
           <button type="button" onClick={() => { setReverse((v) => !v); setRevision((v) => v + 1); }}>[swap order]</button>
         </ControlGroup>
         <ControlGroup label="depth method">

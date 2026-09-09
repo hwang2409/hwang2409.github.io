@@ -45,7 +45,7 @@ export default function TriangleRasterWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="triangle coverage and barycentric weights">
-      <InteractiveCanvas hint="drag a vertex · edit its coordinates for keyboard control"
+      <InteractiveCanvas hint="drag a vertex"
         className="project-widget-draggable"
         aria-label="drag vertices a, b, and c; equivalent coordinate inputs follow"
         resetKey={revision}
@@ -122,11 +122,11 @@ export default function TriangleRasterWidget() {
         onPointerCancel={() => { dragging.current = null; }}
       />
       <WidgetControls readout={{ children: <output>{cells.length} covered pixels</output> }}
-        note="a is dark, b is gray, c is light; pixel centers decide coverage.">
-        <ControlGroup label="triangle">
+        note="a: dark; b: gray; c: light.">
+        <ControlGroup>
           <button type="button" onClick={() => { setVertices(initial); setRevision((value) => value + 1); }}>[reset]</button>
         </ControlGroup>
-        <ControlGroup label="coordinates">
+        <ControlGroup>
           <div className={styles.vertices}>
             {vertices.map((p, index) => (
               <fieldset key={names[index]}>

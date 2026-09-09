@@ -95,16 +95,14 @@ export default function TimestepWidget() {
 
   return (
     <section className="project-widget" aria-label="fixed and variable timestep comparison">
-      <InteractiveCanvas hint="adjust frame jitter · replay to compare with the previous run" aria-label="bouncing ball with fixed and variable timestep traces" draw={draw} resetKey={replayKey} />
+      <InteractiveCanvas hint="generate new frame timing" aria-label="bouncing ball with fixed and variable timestep traces" draw={draw} resetKey={replayKey} />
       <div className="project-widget-legend" aria-label="timestep legend">
         <span><i className="legend-swatch legend-solid" />current run</span>
         <span><i className="legend-swatch legend-dashed" />previous run</span>
       </div>
       <WidgetControls>
-        <ControlGroup label="replay">
-          <button type="button" onClick={replay}>[replay]</button>
-        </ControlGroup>
-        <ControlGroup label="frame timing">
+        <ControlGroup>
+          <button type="button" onClick={replay}>[new timing]</button>
           <Slider label="frame jitter" valueText={`${Math.round(jitter * 100)}%`} id="frame-jitter" min="0" max="1" step="0.01" value={jitter}
             onChange={(event) => { setJitter(Number(event.target.value)); setReplayKey(value => value + 1); }} />
         </ControlGroup>

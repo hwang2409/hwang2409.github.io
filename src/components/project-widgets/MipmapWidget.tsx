@@ -48,22 +48,17 @@ export default function MipmapWidget() {
   }, [floor, paint, mipmaps, falseColor, paused]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="mipmap levels on a receding floor">
-    <InteractiveCanvas hint="toggle mipmaps · show levels or pause to inspect distant checks" draw={draw} resetKey={revision}
+    <InteractiveCanvas hint="toggle mipmaps to compare shimmer" draw={draw} resetKey={revision}
       aria-label={falseColor ? 'mip levels shown as grayscale bands: level zero is dark, level six is light'
         : 'a moving checkered floor, with distant texture samples compared using mipmaps on or off'} />
     <WidgetControls
       note={falseColor
-      ? 'level 0 is dark; level 6 is light. bands show the lower mip of each trilinear blend. mipmaps off uses level 0 everywhere.'
-      : 'turn mipmaps off to see distant checks shimmer. both modes use bilinear sampling; mipmaps also average the smaller details.'}>
-      <ControlGroup label="texture">
+      ? 'dark: level 0; light: level 6. bands show the lower mip of each blend.'
+      : 'both modes use bilinear sampling.'}>
+      <ControlGroup>
         <button type="button" aria-pressed={mipmaps} onClick={() => { setMipmaps(!mipmaps); setRevision((v) => v + 1); }}>[mipmaps {mipmaps ? 'on' : 'off'}]</button>
-        <button type="button" aria-pressed={falseColor} onClick={() => { setFalseColor(!falseColor); setRevision((v) => v + 1); }}>[false-color levels]</button>
-      </ControlGroup>
-      <ControlGroup label="playback">
+        <button type="button" aria-pressed={falseColor} onClick={() => { setFalseColor(!falseColor); setRevision((v) => v + 1); }}>[show mip levels]</button>
         <PauseButton paused={paused} onClick={() => { setPaused(!paused); setRevision((v) => v + 1); }} />
-        <button type="button" onClick={() => {
-          setMipmaps(true); setFalseColor(false); setPaused(false); travel.current = 0; setRevision((v) => v + 1);
-        }}>[reset]</button>
       </ControlGroup>
     </WidgetControls>
   </section>;

@@ -10,7 +10,6 @@ import styles from './RasterWidgets.module.css';
 
 export default function TextureFilteringWidget() {
   const [zoom, setZoom] = useState(2);
-  const [revision, setRevision] = useState(0);
   const nearest = useMemo(() => rasterPainter(renderFiltering(zoom, false)), [zoom]);
   const bilinear = useMemo(() => rasterPainter(renderFiltering(zoom, true)), [zoom]);
   const draw = useMemo(() => (context: CanvasRenderingContext2D, width: number, height: number) => {
@@ -25,12 +24,9 @@ export default function TextureFilteringWidget() {
   }, [nearest, bilinear]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="texture filtering comparison">
-    <InteractiveCanvas hint="adjust zoom · compare nearest and bilinear texture filtering" draw={draw} resetKey={revision}
+    <InteractiveCanvas hint="zoom into the edge" draw={draw}
       aria-label="the same magnified ring texture: nearest on the left, bilinear on the right" />
-    <WidgetControls label="texture" actions={
-        <button type="button" onClick={() => { setZoom(2); setRevision((v) => v + 1); }}>[reset]</button>
-      }
-      note="zoom into the ring’s edge. nearest keeps hard texel boundaries; bilinear blends four neighbors in linear light.">
+    <WidgetControls>
       <Slider label="zoom" valueText={`${zoom.toFixed(1)}×`} min={1} max={8} step={0.1} value={zoom} onChange={(e) => setZoom(e.currentTarget.valueAsNumber)} />
     </WidgetControls>
   </section>;

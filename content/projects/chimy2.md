@@ -12,16 +12,15 @@ imageHeight: 720
 ## where the first one stopped
 
 the original [chimy](https://github.com/hwang2409/chimy) drew meshes in C
-with SDL2. then i stopped. no z-buffer: crossing surfaces looked wrong.
-no textures or lighting. a frozen camera. getting triangles onto the screen
-had left most of the interesting work undone.
+with SDL2. no z-buffer, textures, lighting, or camera movement. crossing
+surfaces looked wrong.
 
 [chimy2](https://github.com/hwang2409/tooling/tree/main/chimy2) is the Rust
 rebuild. start with the finished picture, then take it apart:
 
 <!-- widget: raster-pipeline -->
 
-<p class="project-demo-note">these twelve demos are small, dependency-free TypeScript rasterizers. they mirror chimy2's concepts; they do not run its Rust code, wasm, or WebGL.</p>
+<p class="project-demo-note">these twelve TypeScript demos explain chimy2's concepts; they do not run its Rust code.</p>
 
 ## one frame, one line at a time
 
@@ -31,10 +30,10 @@ screen-space edges decide which pixel centers belong to it.
 
 <!-- widget: scanline-theater -->
 
-the strip records rejected fragments on the current line. turn off the
-hatching to see the finished image underneath. this deliberately slow scan
-uses the same pixel routine as the rotating scene. chimy2's parallel path
-instead bins triangles into tiles, with private buffers for each worker.
+hatching marks rejected fragments; the strip records the current line. this
+slow scan uses the same pixel routine as the rotating scene. chimy2's
+parallel path instead bins triangles into tiles, with private buffers for
+each worker.
 
 ## cut before dividing
 
@@ -45,10 +44,9 @@ keep the inside vertices and intersect each crossing edge with the plane.
 
 <!-- widget: near-plane-clipping -->
 
-move the camera forward. one outside corner leaves a quad, split into two
-triangles along the solid diagonal. two outside corners leave one triangle;
-three leave nothing. the map and rendered view use the same output vertices.
-without clipping, a corner behind the camera projects onto the wrong side.
+one outside corner leaves a quad, split along the solid diagonal; two leave
+a triangle; three leave nothing. without clipping, a corner behind the
+camera projects onto the wrong side.
 
 ## start with a framebuffer
 
@@ -59,9 +57,8 @@ gray value, depth, or a normal.
 
 <!-- widget: triangle-raster -->
 
-drag a corner. coverage and gray values change together. a top-left rule
-assigns each shared edge to one triangle; a zero-area triangle owns no
-samples. the large scene above applies this same idea thousands of times.
+a top-left rule assigns each shared edge to one triangle; a zero-area
+triangle owns no samples.
 
 ## depth belongs to the pixel
 
@@ -71,21 +68,18 @@ there is no correct whole-triangle order.
 
 <!-- widget: zbuffer-toggle -->
 
-swap the order in painter mode, then enable the z-buffer. each pixel now
-keeps its nearest depth, so submission order stops deciding the picture.
-this small example uses orthographic projection to isolate that decision.
+the z-buffer keeps each pixel's nearest depth, independent of submission
+order. orthographic projection isolates that decision here.
 
 ## look inside the depth buffer
 
 in perspective, the rasterizer interpolates post-divide depth in screen
-space. the color is only half the result. every visible surface also
-leaves a distance behind:
+space:
 
 <!-- widget: depth-buffer-view -->
 
-switch buffers and move the camera. the grayscale view linearizes stored
-depth so distance changes are readable. lighting disappears; overlaps
-remain. white pixels have never passed a depth test.
+grayscale linearizes stored depth: near is dark, far is light. white pixels
+have never passed a depth test.
 
 ## choose the camera's projection
 
@@ -96,10 +90,8 @@ constant with distance.
 
 <!-- widget: projection -->
 
-switch projections. the scene and view stay fixed: parallel rails converge
-under perspective and stay parallel under orthographic. the field-of-view
-slider changes the perspective crop without moving the camera. it cannot
-change the orthographic view, so that control is disabled there.
+field of view changes the perspective crop without moving the camera; it has
+no effect on the orthographic view.
 
 ## perspective changes the weights
 
@@ -109,8 +101,7 @@ the near end takes more screen space; the texture must account for that.
 
 <!-- widget: perspective-texture -->
 
-face the checkerboard toward the camera: both halves agree. tilt it: the
-affine version distorts. the fix interpolates `u/w`, `v/w`, and `1/w`, then
+the fix interpolates `u/w`, `v/w`, and `1/w`, then
 divides the first two by the third. this demo uses nearest sampling and
 no mipmaps to keep that difference visible.
 
@@ -121,9 +112,8 @@ weights four neighbors. both read the same small ring texture here.
 
 <!-- widget: texture-filtering -->
 
-zoom in. nearest grows hard blocks, while bilinear makes a continuous
-transition. like chimy2's texture path, this demo blends linear values and
-encodes them to sRGB afterward. smoothing does not recover missing detail.
+like chimy2, this demo blends linear values, then encodes to sRGB. smoothing
+does not recover missing detail.
 
 ## small details need smaller textures
 
@@ -133,9 +123,8 @@ builds successively smaller textures by averaging linear texels.
 
 <!-- widget: mipmap-levels -->
 
-turn mipmaps off to see distant checks shimmer. turn on false-color levels
-to read the selection as a grayscale ramp. this floor derives its texture
-footprint from ray-plane derivatives, then blends neighboring mip levels.
+the level view shows mip selection as a grayscale ramp. this floor derives
+texture footprints from ray-plane derivatives and blends neighboring levels.
 chimy2 derives footprints from triangle varyings instead.
 
 ## light a surface, not just its corners
@@ -147,7 +136,7 @@ halfway direction between light and viewer.
 
 <!-- widget: shading-model -->
 
-drag the light. flat evaluates each face; gouraud interpolates vertex
+flat evaluates each face; gouraud interpolates vertex
 intensities; blinn-phong interpolates normals and evaluates each pixel.
 these are teaching modes, not an exact chimy2 API. the mesh silhouette
 stays the same: smooth lighting does not add triangles.
@@ -161,10 +150,9 @@ when every corner lies outside one frustum plane.
 
 <!-- widget: frustum-culling -->
 
-rotate the camera. the map and rendered view share the same camera and
-projection. boxes crossing an edge stay; their triangles get clipped
-later. shadow passes need a separate light frustum: an offscreen object
-can still cast a visible shadow.
+boxes crossing a frustum edge stay; their triangles get clipped later.
+shadow passes need a separate light frustum: an offscreen object can still
+cast a visible shadow.
 
 ## what the toy leaves out
 
@@ -173,8 +161,7 @@ window; `softbuffer` exposes its pixels. the math, clipping, rasterization,
 asset parsing, and tile workers are hand-written. the
 [texture pipeline](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/srgb-mipmaps.md)
 filters in linear light, builds mipmaps, and derives texture footprints
-from perspective-correct UV derivatives. the floor above isolates sampling;
-it does not implement chimy2's general shader interface.
+from perspective-correct UV derivatives. the floor demo isolates sampling.
 
 above that core sit [glTF scenes](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/gltf.md),
 [environment lighting](https://github.com/hwang2409/tooling/blob/main/chimy2/docs/ibl.md),

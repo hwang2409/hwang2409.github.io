@@ -12,7 +12,6 @@ import styles from './RasterWidgets.module.css';
 export default function ScanlineWidget() {
   const [speed, setSpeed] = useState(30);
   const [paused, setPaused] = useState(false);
-  const [rejection, setRejection] = useState(true);
   const [steps, setSteps] = useState(0);
   const [revision, setRevision] = useState(0);
   const scene = useMemo(() => {
@@ -44,7 +43,7 @@ export default function ScanlineWidget() {
       const w = Math.min(width, (height - 44) * raster.width / raster.height);
       const h = w * raster.height / raster.width;
       const x = (width - w) / 2;
-      paint(context, x, 0, w, h, false, rejection);
+      paint(context, x, 0, w, h, false, true);
       const row = Math.max(0, p.line - 1), y = (row + 0.5) * h / raster.height;
       context.strokeStyle = colors.muted;
       context.setLineDash([4, 4]);
@@ -60,23 +59,19 @@ export default function ScanlineWidget() {
       context.fillText('black strip = rejected fragments', 8, height - 7);
       if (readout.current) readout.current.textContent = `line ${p.line} / ${raster.height} · ${raster.shaded} shaded · ${raster.rejectedCount} rejected${p.line === raster.height ? ' · complete' : ''}`;
     };
-  }, [scene, paint, speed, paused, rejection, steps]);
+  }, [scene, paint, speed, paused, steps]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="scanline theater">
-    <InteractiveCanvas hint="pause, then step one line · show rejected fragments to inspect depth tests" draw={draw} resetKey={revision} aria-label="a frame fills one scanline at a time; hatching marks pixels with rejected depth tests" />
-    <WidgetControls readout={{ ref: readout }}
-      note="the near mesh arrives first. hidden fragments from later meshes fail the depth test. hatching records those attempts.">
-      <ControlGroup label="playback" actions={<><PauseButton paused={paused} onClick={() => setPaused(!paused)} />
+    <InteractiveCanvas hint="pause, then step one line" draw={draw} resetKey={revision} aria-label="a frame fills one scanline at a time; hatching marks pixels with rejected depth tests" />
+    <WidgetControls readout={{ ref: readout }}>
+      <ControlGroup actions={<><PauseButton paused={paused} onClick={() => setPaused(!paused)} />
         <button type="button" onClick={() => { setPaused(true); setSteps((v) => v + 1); }}>[step one line]</button>
         <button type="button" onClick={() => {
           scene.raster.clear(); progress.current = { line: 0, fraction: 0, steps: 0, previewed: false };
-          setSpeed(30); setPaused(false); setRejection(true); setSteps(0); setRevision((v) => v + 1);
+          setSpeed(30); setPaused(false); setSteps(0); setRevision((v) => v + 1);
         }}>[reset demo]</button></>}>
         <Slider label="speed" valueText={`${speed} lines / second`} min={1} max={144} value={speed}
           onChange={(e) => setSpeed(e.currentTarget.valueAsNumber)} />
-      </ControlGroup>
-      <ControlGroup label="view">
-        <button type="button" aria-pressed={rejection} onClick={() => setRejection(!rejection)}>[show rejected]</button>
       </ControlGroup>
     </WidgetControls>
   </section>;

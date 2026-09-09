@@ -12,7 +12,6 @@ import styles from './RasterWidgets.module.css';
 export default function NearClippingWidget() {
   const [dolly, setDolly] = useState(0.7);
   const [clipping, setClipping] = useState(true);
-  const [revision, setRevision] = useState(0);
   const result = useMemo(() => renderNearClipping(dolly, clipping), [dolly, clipping]);
   const paint = useMemo(() => rasterPainter(result.frame), [result]);
   const draw = useMemo(() => (context: CanvasRenderingContext2D, width: number, height: number) => {
@@ -63,13 +62,12 @@ export default function NearClippingWidget() {
   }, [result, paint, dolly]);
 
   return <section className={`project-widget ${styles.widget}`} aria-label="near-plane triangle clipping">
-    <InteractiveCanvas hint="toggle clipping · move the camera past the near plane" draw={draw} resetKey={revision} className={styles.splitCanvas}
+    <InteractiveCanvas hint="move the camera through the triangle" draw={draw} className={styles.splitCanvas}
       aria-label="top-down camera diagram and software-rendered output of the same triangle crossing the near plane" />
-    <WidgetControls label="camera" actions={<>
+    <WidgetControls actions={<>
         <button type="button" aria-pressed={clipping} onClick={() => setClipping(!clipping)}>[clipping {clipping ? 'on' : 'off'}]</button>
-        <button type="button" onClick={() => { setDolly(0.7); setClipping(true); setRevision((v) => v + 1); }}>[reset]</button>
       </>} readout={{ children: <>{result.count} vertices → {Math.max(0, result.count - 2)} triangles{result.singular ? ' · projection undefined at the camera plane' : ''}</> }}
-      note="dashed edges show the input; solid edges show the output and its triangle split. turn clipping off, then dolly past 1.13 to see the projection flip.">
+      note="dashed: input; solid: clipped triangles. with clipping off, dolly past 1.13 to flip the projection.">
       <Slider label="camera dolly" valueText={`${dolly.toFixed(2)} units`} min={-0.5} max={4.5} step={0.05} value={dolly} onChange={(e) => setDolly(e.currentTarget.valueAsNumber)} />
     </WidgetControls>
   </section>;

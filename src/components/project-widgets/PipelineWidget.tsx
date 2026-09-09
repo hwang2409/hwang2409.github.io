@@ -11,12 +11,12 @@ import { scenePainter } from './sceneCanvas';
 import styles from './RasterWidgets.module.css';
 
 const descriptions: Record<Stage, string> = {
-  vertices: 'model → view → projection: 240 triangles become screen coordinates.',
-  wireframe: 'connect projected vertices. hidden edges still show through.',
-  'backface-culled': 'discard faces pointing away from the camera; keep their front edges.',
-  flat: 'fill the remaining faces, depth-test each pixel, light each face once.',
-  gouraud: 'keep coverage and depth; interpolate lighting from the vertices.',
-  'blinn-phong': 'interpolate normals and view positions; calculate lighting at each pixel.',
+  vertices: 'model → view → projection.',
+  wireframe: 'hidden edges remain visible.',
+  'backface-culled': 'discard faces pointing away from the camera.',
+  flat: 'depth test per pixel; lighting per face.',
+  gouraud: 'interpolate vertex lighting.',
+  'blinn-phong': 'interpolate normals; light each pixel.',
 };
 
 export default function PipelineWidget() {
@@ -53,7 +53,7 @@ export default function PipelineWidget() {
   }
 
   return <section className={`project-widget ${styles.widget}`} aria-label="3d rendering pipeline">
-    <InteractiveCanvas hint="drag to orbit · use camera sliders or select a render stage" className={`project-widget-draggable ${styles.flagship}`} draw={draw} resetKey={revision}
+    <InteractiveCanvas hint="drag to orbit" className={`project-widget-draggable ${styles.flagship}`} draw={draw} resetKey={revision}
       aria-label="three rotating triangle meshes; drag to orbit, or use yaw and pitch below"
       onPointerDown={(event) => {
         if (event.button !== 0 || dragging.current) return;
@@ -64,13 +64,13 @@ export default function PipelineWidget() {
       onPointerCancel={() => { dragging.current = null; }} onLostPointerCapture={() => { dragging.current = null; }} />
     <WidgetControls readout={{ ref: readout }}
       note={descriptions[stage]}>
-      <ControlGroup label="playback">
+      <ControlGroup>
         <PauseButton paused={paused} onClick={() => setPaused(!paused)} />
         <button type="button" onClick={() => {
           setStage('blinn-phong'); setYaw(15); setPitch(12); setPaused(false); rotation.current = 0; setRevision((v) => v + 1);
         }}>[reset demo]</button>
       </ControlGroup>
-      <ControlGroup label="camera">
+      <ControlGroup>
         <Slider label="camera yaw" valueText={`${yaw}°`} min={-180} max={180} value={yaw}
           onChange={(e) => setYaw(e.currentTarget.valueAsNumber)} />
         <Slider label="camera pitch" valueText={`${pitch}°`} min={-65} max={65} value={pitch}

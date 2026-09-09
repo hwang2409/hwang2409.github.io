@@ -11,7 +11,6 @@ export default function FrictionConeWidget() {
   const [angle, setAngle] = useState(25);
   const [friction, setFriction] = useState(0.5);
   const [replay, setReplay] = useState(0);
-  const forces = inclineForces(angle, friction);
   const draw = useCallback((context: CanvasRenderingContext2D, width: number, height: number, elapsed: number) => {
     clearCanvas(context, width, height);
     const f = inclineForces(angle, friction);
@@ -51,12 +50,9 @@ export default function FrictionConeWidget() {
 
   return (
     <section className="project-widget" aria-label="friction threshold on an incline">
-      <InteractiveCanvas hint="adjust the incline or friction · watch the block stick or slide" draw={draw} resetKey={replay} staticElapsed={3000} aria-label="block on a slope with the required support force and friction cone" />
-      <WidgetControls readout={{ children: <>{forces.acceleration === 0 ? 'sticks' : 'slides'}: required ratio {forces.ratio.toFixed(3)}, available μ {friction.toFixed(2)}. the dark line is required support; the two light lines bound the cone.</> }}>
-        <ControlGroup label="release">
-          <button type="button" onClick={() => setReplay(r => r + 1)}>[replay]</button>
-        </ControlGroup>
-        <ControlGroup label="incline">
+      <InteractiveCanvas hint="adjust the incline or friction" draw={draw} resetKey={replay} staticElapsed={3000} aria-label="block on a slope with the required support force and friction cone" />
+      <WidgetControls note="dark line: required support; light lines: friction limit.">
+        <ControlGroup>
           <Slider label="incline" valueText={`${angle}°`} id="incline-angle" min="0" max="50" value={angle}
             onChange={e => { setAngle(Number(e.target.value)); setReplay(r => r + 1); }} />
           <Slider label="friction μ" valueText={`${friction.toFixed(2)}`} id="incline-friction" min="0" max="1.2" step="0.01" value={friction}

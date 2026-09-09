@@ -18,7 +18,7 @@ export default function PerspectiveTextureWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="affine and perspective-correct texture mapping">
-      <InteractiveCanvas hint="tilt the checkerboard · compare the seam in both views" aria-label="the same tilted checkerboard: affine interpolation on the left, perspective-correct interpolation on the right"
+      <InteractiveCanvas hint="tilt the checkerboard" aria-label="the same tilted checkerboard: affine interpolation on the left, perspective-correct interpolation on the right"
         resetKey={revision}
         draw={(context, width, height) => {
           clearCanvas(context, width, height);
@@ -36,8 +36,8 @@ export default function PerspectiveTextureWidget() {
           context.lineTo(Math.floor(half) + 0.5, height - 34);
           context.stroke();
         }} />
-      <WidgetControls label="surface" actions={<button type="button" onClick={() => { setTilt(0); setRevision((v) => v + 1); }}>[face on]</button>}
-        note="the affine checker bends across the triangle seam; at 0° both methods agree.">
+      <WidgetControls
+        note="at 0° both methods agree.">
         <Slider label="tilt" valueText={`${tilt}°`} min={0} max={72} step={1} value={tilt}
           onChange={(event) => {
             setTilt(clamp(event.currentTarget.valueAsNumber, 0, 72));

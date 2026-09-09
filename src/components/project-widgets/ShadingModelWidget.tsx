@@ -41,7 +41,7 @@ export default function ShadingModelWidget() {
 
   return (
     <section className={`project-widget ${styles.widget}`} aria-label="sphere shading and light direction">
-      <InteractiveCanvas hint="drag the light handle · use light sliders or choose a shading model" className="project-widget-draggable" aria-label="drag the light handle labeled l; equivalent light angle sliders follow"
+      <InteractiveCanvas hint="drag the light" className="project-widget-draggable" aria-label="drag the light handle labeled l; equivalent light angle sliders follow"
         resetKey={revision}
         draw={(context, width, height) => {
           clearCanvas(context, width, height);
@@ -89,9 +89,8 @@ export default function ShadingModelWidget() {
         }}
         onLostPointerCapture={() => { dragging.current = false; }}
         onPointerCancel={() => { dragging.current = false; }} />
-      <WidgetControls
-        note="flat lights each face; gouraud interpolates vertex light; blinn-phong lights each pixel.">
-        <ControlGroup label="light direction">
+      <WidgetControls>
+        <ControlGroup>
           <Slider label="light azimuth" valueText={`${azimuth}°`} min={-85} max={85} step={1} value={azimuth}
             onChange={(event) => {
               setAzimuth(clamp(event.currentTarget.valueAsNumber, -85, 85)); setRevision((v) => v + 1);

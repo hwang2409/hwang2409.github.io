@@ -65,13 +65,11 @@ export default function MuscleArmWidget() {
   }, [runtime]);
   return (
     <section className={`project-widget ${styles.scene}`} aria-label="two-link arm with muscle actuator">
-      <InteractiveCanvas hint="raise activation to pull the forearm · reset to compare from rest" draw={draw} resetKey={reset} redrawKey={revision} aria-label="gravity-loaded two-link arm; a muscle pulls between upper arm and forearm, with its force-length curve below" />
+      <InteractiveCanvas hint="raise activation to pull the forearm" draw={draw} resetKey={reset} redrawKey={revision} aria-label="gravity-loaded two-link arm; a muscle pulls between upper arm and forearm, with its force-length curve below" />
       <WidgetControls
-        note="two unit point masses, coupled RK4 dynamics, joint damping. active force = 100 N × activation × length curve × velocity curve. a straight tendon converts force to elbow torque; passive muscle force is omitted.">
-        <ControlGroup label="arm">
+        note="active force = 100 N × activation × length curve × velocity curve; passive force omitted.">
+        <ControlGroup>
           <button type="button" onClick={() => { setRuntime(session(runtime.arm.control)); setReset(n => n + 1); }}>[reset]</button>
-        </ControlGroup>
-        <ControlGroup label="muscle">
           <Slider label="activation target" valueText={`${runtime.arm.control.toFixed(2)}`} id={`${id}-activation`} min="0" max="1" step="0.01" value={runtime.arm.control}
             onChange={e => { runtime.arm.control = Number(e.target.value); setRevision(n => n + 1); }} />
         </ControlGroup>
