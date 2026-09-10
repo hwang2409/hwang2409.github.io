@@ -83,6 +83,12 @@ const widgetStub = (name) => function WidgetStub() {
   return createElement('section', { 'data-widget': name }, name);
 };
 const widgetImports = {
+  './WalSegmentWidget': { default: widgetStub('wal-segments') },
+  './VectorQueryWidget': { default: widgetStub('vector-query') },
+  './HnswBuildWidget': { default: widgetStub('hnsw-build') },
+  './RecallWidget': { default: widgetStub('recall-tradeoff') },
+  './Bm25Widget': { default: widgetStub('bm25-scoring') },
+  './HybridSearchWidget': { default: widgetStub('hybrid-search') },
   './ContactSoftnessWidget': { default: widgetStub('contact-softness') },
   './TendonWrapWidget': { default: widgetStub('tendon-wrap') },
   './WarmStartWidget': { default: widgetStub('warm-start') },
