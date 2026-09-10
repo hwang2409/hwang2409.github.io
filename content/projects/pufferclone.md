@@ -13,8 +13,8 @@ turbopuffer is a serverless vector and full-text search database that keeps
 its state in object storage. i wanted to know how a system like that fits
 together, so i wrote one from scratch in rust:
 [pufferclone](https://github.com/hwang2409/tooling/tree/main/pufferclone).
-one process, one crate, no runtime dependencies past `tokio`, `serde`, and
-`aws-sdk-s3`.
+one process, one crate. `tokio` and `axum` run the server, `object_store`
+talks to the S3 and local backends, `serde` handles the wire formats.
 
 the six demos below explain the pieces: a write path that survives crashes,
 two vector indexes to compare, a text index for keyword rank, and a filter
@@ -26,31 +26,126 @@ step that gates them both.
 
 ## documents, namespaces, and the write path
 
-a document has a string id, an optional dense vector, and a bag of typed
-attributes. documents live in namespaces, and every namespace owns its own
-object-store prefix: `ns/<name>/wal/…`, `ns/<name>/segments/…`, and a
-`manifest.json` at the root. schemas are per-namespace hints, not a global
-catalog.
+everything downstream is one type. a `Doc` is a string id, an optional
+dense vector, and a bag of typed attributes:
 
-writes land in the write-ahead log first. a `WalBatch` carries upserts and
-deletes with a monotonic sequence number, gets bincode-encoded, and lands
-at a zero-padded twenty-digit key so lexical order matches insertion order.
-the namespace acknowledges the write only after that put returns. a crashed
-process rehydrates by listing the wal prefix and replaying the batches the
-manifest has not yet retired.
+```rust
+pub struct Doc {
+    // ...
+    pub id: String,
+    // ...
+    pub vector: Option<Vec<f32>>,
+    // ...
+    pub attributes: BTreeMap<String, AttrValue>,
+}
+```
+
+```rust
+pub enum AttrValue {
+    // ...
+    String(String),
+    // ...
+}
+```
+
+documents live in namespaces, and every namespace owns its own object-store
+prefix: `ns/<name>/wal/…`, `ns/<name>/segments/…`, and a `MANIFEST.json`
+at the root. `AttrValue` is the whole attribute vocabulary; the filter
+DSL below can only compare things that fit one of these variants.
+
+writes land in the write-ahead log first. a `WalBatch` carries upserts
+and deletes with a monotonic sequence number and gets bincode-encoded
+before the namespace acknowledges the write:
+
+```rust
+pub struct WalBatch {
+    // ...
+    pub seq: u64,
+    // ...
+    pub upserts: Vec<Doc>,
+    // ...
+    pub deletes: Vec<String>,
+}
+```
+
+```rust
+pub fn wal_key(namespace: &str, seq: u64) -> String {
+    format!("ns/{namespace}/wal/{seq:020}.wal")
+}
+```
+
+the twenty-digit zero-padded key is wide enough for any `u64` and makes
+lexical order match insertion order. a crashed process rehydrates by
+listing the wal prefix and replaying the batches the manifest has not
+yet retired.
 
 the pending buffer flushes when it holds a thousand documents or four
-megabytes of wal, whichever comes first. flushing means building an
-immutable segment from the buffer, writing it to `segments/…`, and swapping
-the manifest to point at the new segment while retiring the wal entries it
-covers. segments never change once published.
+megabytes of wal, whichever comes first. flushing builds an immutable
+segment, writes it under `segments/…`, and swaps the manifest to point at
+it:
+
+```rust
+pub struct SegmentMeta {
+    // ...
+    #[serde(default)]
+    pub last_wal_seq: u64,
+    // ...
+    #[serde(default)]
+    pub sections: Vec<String>,
+}
+```
+
+```rust
+/// The first WAL sequence included in the segment.
+#[serde(default)]
+pub first_wal_seq: u64,
+```
+
+```rust
+pub struct Manifest {
+    // ...
+    pub segments: Vec<SegmentMeta>,
+    // ...
+}
+```
+
+the manifest is the only overwrite-in-place object; every segment file
+is write-once. `last_wal_seq` on each `SegmentMeta` is what tells replay
+which wal entries the segment has already retired. `sections` names the
+opaque index blobs stored next to `docs.bin` under the segment prefix:
+`vectors`, `text`, `tombstones`, and `hnsw` once the segment is large
+enough.
 
 ## exact scan is the honest baseline
 
 before an approximate index earns a place, the exact scan has to be worth
 beating. every namespace ships with one: cosine similarity across every
-vector, sorted, top-k returned. it is simple, deterministic, and correct at
-any recall target because it visits every candidate.
+vector, sorted, top-k returned. the trait names what a vector index has
+to do, and `ExactScan` is the reference implementation:
+
+```rust
+pub trait VectorIndex: Sized {
+    // ...
+    fn build<I, D, V>(documents: I) -> Self
+    where
+        I: IntoIterator<Item = (D, V)>,
+        D: Into<String>,
+        V: Into<Vec<f32>>;
+    // ...
+}
+```
+
+```rust
+pub struct ExactScan {
+    vectors: std::collections::BTreeMap<String, Vec<f32>>,
+}
+```
+
+ties break by id, not by map order. the shared `sort_scores` helper
+sorts by score descending, then falls back to `left.0.cmp(&right.0)`,
+so two hits with the same cosine similarity always land in the same
+order. exact scan is simple, correct at any recall target, and
+cache-friendly enough that it stays honest at small n.
 
 <!-- widget: vector-query -->
 
@@ -69,27 +164,64 @@ where cache-friendly linear scan already runs in about a millisecond.
 ## build the graph, layer by layer
 
 HNSW ships as a segment index once a namespace passes 256 documents. the
-default parameters are `M = 16`, `M0 = 32`, `ef_construction = 200`. the
-build assigns each node a level from a geometric distribution and inserts
-it top-down: search from the current entry point in each upper layer, then
-switch to `ef_construction` breadth once you reach the node's own top layer.
-each new node connects to its nearest `M` neighbours per layer, and every
-neighbour gets pruned back to the cap.
+defaults live as module constants next to the implementation:
+
+```rust
+const DEFAULT_M: usize = 16;
+const DEFAULT_M0: usize = 32;
+const DEFAULT_EF_CONSTRUCTION: usize = 200;
+```
+
+`M` is the neighbour cap on upper layers; `M0` is the wider cap at layer
+zero. `ef_construction` is the beam width used when placing a new node.
+each node stores those neighbours and its position on the insertion-order
+backbone:
+
+```rust
+struct Node {
+    id: String,
+    vector: Vec<f32>,
+    level: usize,
+    neighbors: Vec<Vec<usize>>,
+    backbone_prev: Option<usize>,
+    backbone_next: Option<usize>,
+}
+```
+
+`neighbors` is one adjacency list per layer, length `level + 1`. the
+build assigns each node a level from a hash of its id and inserts it
+top-down: search from the current entry point in each upper layer, then
+switch to `ef_construction` breadth once you reach the node's own top
+layer. each new node connects to its nearest neighbours per layer, and
+every neighbour gets pruned back to the layer's cap.
 
 <!-- widget: hnsw-build -->
 
 pufferclone deliberately keeps the naive "closest M" heuristic instead of
 the paper's diversity rule; the smaller surface is easier to test and
-enough for the v1 segment. the demo also preserves an insertion-order edge
-at layer zero, matching one of pufferclone's small deviations from the
-paper.
+enough for the v1 segment. `backbone_prev` and `backbone_next` are the
+insertion-order edge at layer zero, one of pufferclone's small deviations
+from the paper — the demo preserves it too.
 
 ## efSearch is the recall knob
 
-approximate means the query beam might miss neighbours the exact scan would
-find. `ef_search` sets that beam. wider beams visit more candidates and get
-closer to the exact answer; narrower ones finish sooner and can drop real
-neighbours from the tail.
+approximate means the query beam might miss neighbours the exact scan
+would find. `ef_search` sets that beam. the search entry point takes it
+by value so a caller can raise or lower recall per query:
+
+```rust
+pub fn search_with_ef(
+    &self,
+    query: &[f32],
+    top_k: usize,
+    ef_search: usize,
+) -> Vec<(String, f32)> {
+    // ...
+}
+```
+
+wider beams visit more candidates and get closer to the exact answer;
+narrower ones finish sooner and can drop real neighbours from the tail.
 
 <!-- widget: recall-tradeoff -->
 
@@ -106,11 +238,35 @@ the exact scan takes about twelve milliseconds.
 
 ## BM25 is the second index
 
-text search is a separate index over the same segment. tokenisation
-lowercases the input and splits on any run of non-alphanumeric
-characters; the inverted index stores document frequencies and
-per-document term counts. `text_stats` maintains corpus counts so
-document frequencies can be merged across segments.
+text search is a separate index over the same segment. the postings map
+lives inside `TextIndex`; `TextStats` is the mergeable summary the
+namespace uses to make scores comparable across segments:
+
+```rust
+pub struct TextStats {
+    // ...
+    pub doc_count: usize,
+    // ...
+    pub total_len: usize,
+    // ...
+    pub doc_freq: BTreeMap<String, usize>,
+}
+```
+
+```rust
+pub struct TextIndex {
+    postings: BTreeMap<String, BTreeMap<String, u32>>,
+    doc_lengths: BTreeMap<String, usize>,
+    avgdl: f64,
+}
+```
+
+tokenisation lowercases the input and splits on any run of non-alphanumeric
+characters. `postings` maps a term to a document-frequency map; per-document
+term counts live inside that inner map. `TextStats` is what makes the query
+correct across the memtable and every segment at once: each source computes
+its filtered stats, the namespace merges them, and BM25 runs against the
+merged summary rather than any single segment's view.
 
 <!-- widget: bm25-scoring -->
 
@@ -123,10 +279,27 @@ to make the formula visible, not to configure the real engine.
 ## filter first, then rank
 
 pufferclone accepts a small filter DSL against document attributes and
-applies it before the vector or text search runs. exact scan skips
-disallowed points outright. HNSW keeps disallowed nodes as routing
-candidates so they can still guide the traversal, but never adds them to
-the returned beam.
+applies it before the vector or text search runs. the AST is one tagged
+enum, serialised with the operator name in the `op` field:
+
+```rust
+#[serde(tag = "op", rename_all = "snake_case")]
+pub enum Filter {
+    // ...
+    Eq { field: String, value: AttrValue },
+    // ...
+    And { filters: Vec<Filter> },
+    // ...
+    Or { filters: Vec<Filter> },
+}
+```
+
+equality and membership require matching `AttrValue` types; ordering
+accepts `Int` or `Float` on either side. any other type mismatch is
+`false`, including `Ne` — a missing field never becomes "not equal to
+anything". exact scan skips disallowed points outright. HNSW keeps
+disallowed nodes as routing candidates so they can still guide the
+traversal, but never adds them to the returned beam.
 
 <!-- widget: hybrid-search -->
 
@@ -143,19 +316,43 @@ score-space blend.
 
 ## keep memory bounded
 
-`PUFFERCLONE_MEMORY_BUDGET_BYTES` sets a soft cap on how much of the
-loaded namespace cache stays hot. the coordinator picks the least-recently
-queried or written namespace when the budget spills, closes its indexes,
-and drops it from the cache. a fresh query re-hydrates it from segments on
-the next request. a single namespace that is larger than the whole budget
-still loads on demand, so there is always at least one namespace available
-when the cap cannot be met. the setting is off by default; `0` or a
-non-numeric value is a startup error.
+the coordinator picks the least-recently queried or written namespace when
+the budget spills, closes its indexes, and drops it from the cache. three
+constants set the policy:
+
+```rust
+pub(crate) const HOT_CACHE_CAPACITY: usize = 8;
+pub(crate) const COLD_LOAD_CONCURRENCY: usize = 4;
+pub(crate) const MEMORY_BUDGET_ENV: &str = "PUFFERCLONE_MEMORY_BUDGET_BYTES";
+```
+
+`HOT_CACHE_CAPACITY` caps loaded namespaces; `COLD_LOAD_CONCURRENCY`
+caps the parallel cold loads that hydrate the cache; the env var sets
+the soft byte cap. a fresh query re-hydrates an evicted namespace from
+its segments on the next request. a single namespace that is larger than
+the whole budget still loads on demand, so there is always at least one
+namespace available when the cap cannot be met. the setting is off by
+default; `0` or a non-numeric value is a startup error.
 
 ## the store contract is small
 
-the object-store trait has four operations: put, get, list, delete. put
-is write-once for segment and WAL keys and overwrite for the manifest.
+the object-store trait has four operations. put is write-once for segment
+and WAL keys and overwrite for the manifest; get, list, and delete carry
+no policy:
+
+```rust
+pub trait ObjectStore {
+    // ...
+    fn put(&self, key: &str, bytes: &[u8]) -> Result<()>;
+    // ...
+    fn get(&self, key: &str) -> Result<Vec<u8>>;
+    // ...
+    fn list(&self, prefix: &str) -> Result<Vec<String>>;
+    // ...
+    fn delete(&self, key: &str) -> Result<()>;
+}
+```
+
 the local backend uses a directory tree: hard-link publication makes
 segment writes atomic, and rename swaps the manifest. the S3 backend
 reaches the same guarantees through conditional create for write-once
@@ -170,15 +367,44 @@ MinIO before the process exits.
 
 ## the CLI is the driver
 
-`puf` speaks to the HTTP api at `http://127.0.0.1:8666` by default. it
-knows how to list and drop namespaces, upsert documents from jsonl, and
-issue queries. a hundred-document batch keeps upserts small; a query
-returns the raw json response unless `--json` is on.
+`puf` speaks to the HTTP api at `http://127.0.0.1:8666` by default. the
+top-level `clap` subcommand tree is the entire surface:
+
+```rust
+enum Command {
+    // ...
+    Ns {
+        // ...
+    },
+    // ...
+    Upsert(UpsertArgs),
+    // ...
+    Query(QueryArgs),
+}
+```
+
+```rust
+enum NamespaceCommand {
+    // ...
+    Ls,
+    // ...
+    Rm {
+        // ...
+    },
+}
+```
+
+`namespace` is a positional argument on both `upsert` and `query`.
+`upsert` batches its JSONL input into groups of a hundred; `query`
+prints a tab-separated table by default and switches to JSON when the
+top-level `--json` flag is set. `--filter` takes `field=value`
+pairs and can be repeated; `--filter-in` takes `field=v1,v2` for
+membership tests.
 
 ```sh
 puf ns ls
-puf upsert --namespace notes docs.jsonl
-puf query --namespace notes --vector '[…]' --top-k 10 --filter '{"tag":"code"}'
+puf upsert notes -f docs.jsonl
+puf query notes --vector '0.1,0.2,0.3' --top-k 10 --filter tag=code
 ```
 
 the point of building this was not to compete with turbopuffer. it was to
