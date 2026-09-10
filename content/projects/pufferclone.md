@@ -31,15 +31,20 @@ dense vector, and a bag of typed attributes:
 
 ```rust
 pub struct Doc {
+    // ...
     pub id: String,
+    // ...
     pub vector: Option<Vec<f32>>,
+    // ...
     pub attributes: BTreeMap<String, AttrValue>,
 }
+```
 
+```rust
 pub enum AttrValue {
+    // ...
     String(String),
-    Int(i64),
-    // ... Float(f64), Bool(bool), StringList(Vec<String>)
+    // ...
 }
 ```
 
@@ -54,11 +59,16 @@ before the namespace acknowledges the write:
 
 ```rust
 pub struct WalBatch {
+    // ...
     pub seq: u64,
+    // ...
     pub upserts: Vec<Doc>,
+    // ...
     pub deletes: Vec<String>,
 }
+```
 
+```rust
 pub fn wal_key(namespace: &str, seq: u64) -> String {
     format!("ns/{namespace}/wal/{seq:020}.wal")
 }
@@ -75,16 +85,27 @@ segment, writes it under `segments/…`, and swaps the manifest to point at
 it:
 
 ```rust
-pub struct Manifest {
-    pub segments: Vec<SegmentMeta>,
-    // ... vector_dim, full_text_fields, last_wal_seq
-}
-
 pub struct SegmentMeta {
-    pub id: String,
+    // ...
+    #[serde(default)]
     pub last_wal_seq: u64,
+    // ...
+    #[serde(default)]
     pub sections: Vec<String>,
-    // ... doc_count, first_wal_seq
+}
+```
+
+```rust
+/// The first WAL sequence included in the segment.
+#[serde(default)]
+pub first_wal_seq: u64,
+```
+
+```rust
+pub struct Manifest {
+    // ...
+    pub segments: Vec<SegmentMeta>,
+    // ...
 }
 ```
 
@@ -104,12 +125,17 @@ to do, and `ExactScan` is the reference implementation:
 
 ```rust
 pub trait VectorIndex: Sized {
+    // ...
     fn build<I, D, V>(documents: I) -> Self
-    where /* I: IntoIterator<Item = (D, V)>, D: Into<String>, V: Into<Vec<f32>> */;
-    fn search(&self, query: &[f32], top_k: usize) -> Vec<(String, f32)>;
+    where
+        I: IntoIterator<Item = (D, V)>,
+        D: Into<String>,
+        V: Into<Vec<f32>>;
     // ...
 }
+```
 
+```rust
 pub struct ExactScan {
     vectors: std::collections::BTreeMap<String, Vec<f32>>,
 }
@@ -217,16 +243,21 @@ lives inside `TextIndex`; `TextStats` is the mergeable summary the
 namespace uses to make scores comparable across segments:
 
 ```rust
-const K1: f64 = 1.2;
-const B: f64 = 0.75;
+pub struct TextStats {
+    // ...
+    pub doc_count: usize,
+    // ...
+    pub total_len: usize,
+    // ...
+    pub doc_freq: BTreeMap<String, usize>,
+}
+```
+
+```rust
 pub struct TextIndex {
     postings: BTreeMap<String, BTreeMap<String, u32>>,
-    // ... doc_lengths, avgdl
-}
-
-pub struct TextStats {
-    pub doc_freq: BTreeMap<String, usize>,
-    // ... doc_count, total_len
+    doc_lengths: BTreeMap<String, usize>,
+    avgdl: f64,
 }
 ```
 
@@ -254,12 +285,11 @@ enum, serialised with the operator name in the `op` field:
 ```rust
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Filter {
+    // ...
     Eq  { field: String, value: AttrValue },
-    Ne  { field: String, value: AttrValue },
-    In  { field: String, values: Vec<AttrValue> },
-    Lt  { field: String, value: AttrValue },
-    // ... Lte, Gt, Gte follow the same shape.
+    // ...
     And { filters: Vec<Filter> },
+    // ...
     Or  { filters: Vec<Filter> },
 }
 ```
@@ -312,9 +342,13 @@ no policy:
 
 ```rust
 pub trait ObjectStore {
+    // ...
     fn put(&self, key: &str, bytes: &[u8]) -> Result<()>;
+    // ...
     fn get(&self, key: &str) -> Result<Vec<u8>>;
+    // ...
     fn list(&self, prefix: &str) -> Result<Vec<String>>;
+    // ...
     fn delete(&self, key: &str) -> Result<()>;
 }
 ```
@@ -338,14 +372,25 @@ top-level `clap` subcommand tree is the entire surface:
 
 ```rust
 enum Command {
-    Ns { command: NamespaceCommand },   // #[command(subcommand)]
-    Upsert(UpsertArgs),                 // namespace: String, -f/--file
-    Query(QueryArgs),                   // namespace: String, --text/--vector/…
+    // ...
+    Ns {
+        // ...
+    },
+    // ...
+    Upsert(UpsertArgs),
+    // ...
+    Query(QueryArgs),
 }
+```
 
+```rust
 enum NamespaceCommand {
+    // ...
     Ls,
-    Rm { namespace: String, yes: bool }, // --yes
+    // ...
+    Rm {
+        // ...
+    },
 }
 ```
 
