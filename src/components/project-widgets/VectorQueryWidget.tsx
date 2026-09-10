@@ -50,7 +50,7 @@ export default function VectorQueryWidget() {
         const bounds = event.currentTarget.getBoundingClientRect();
         const plots = comparisonPlots(bounds.width, bounds.height);
         const x = event.clientX - bounds.left, y = event.clientY - bounds.top;
-        const plot = plots.find(p => x >= p.left && x <= p.left + p.width && y >= p.top && y <= p.top + p.height)!;
+        const plot = plots.find(p => x >= p.left && x <= p.left + p.width && y >= p.top && y <= p.top + p.height) ?? plots[0];
         setQuery({ x: Math.max(0, Math.min(1, (x - plot.left - 14) / (plot.width - 28))), y: Math.max(0, Math.min(1, (y - plot.top - 32) / (plot.height - 48))) });
       }}
       onKeyDown={event => {

@@ -106,10 +106,11 @@ the exact scan takes about twelve milliseconds.
 
 ## BM25 is the second index
 
-text search is a separate index over the same segment. tokenisation is
-whitespace with edge trimming; the inverted index stores document
-frequencies and per-document term counts. `text_stats` maintains corpus
-counts so document frequencies can be merged across segments.
+text search is a separate index over the same segment. tokenisation
+lowercases the input and splits on any run of non-alphanumeric
+characters; the inverted index stores document frequencies and
+per-document term counts. `text_stats` maintains corpus counts so
+document frequencies can be merged across segments.
 
 <!-- widget: bm25-scoring -->
 
@@ -153,8 +154,9 @@ non-numeric value is a startup error.
 
 ## the store contract is small
 
-the object-store trait has four operations: read, write-once, overwrite,
-list. the local backend uses a directory tree: hard-link publication makes
+the object-store trait has four operations: put, get, list, delete. put
+is write-once for segment and WAL keys and overwrite for the manifest.
+the local backend uses a directory tree: hard-link publication makes
 segment writes atomic, and rename swaps the manifest. the S3 backend
 reaches the same guarantees through conditional create for write-once
 objects and unconditional put for the manifest. every S3 call crosses the

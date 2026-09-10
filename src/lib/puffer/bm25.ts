@@ -7,9 +7,9 @@ export const corpus = [
   'vector search and text search can rank documents together',
 ];
 
-// The fixture is ASCII; keep Rust's whitespace split and edge-only trimming.
+// Match Rust's tokenizer: lowercase, then split on any run of non-alphanumeric characters.
 export function tokenize(text: string) {
-  return text.toLowerCase().split(/\s+/u).map(term => term.replace(/^[^a-z0-9]+|[^a-z0-9]+$/gu, '')).filter(Boolean);
+  return text.toLowerCase().split(/[^a-z0-9]+/u).filter(Boolean);
 }
 
 export function scoreDocuments(query: string, k1: number, b: number) {

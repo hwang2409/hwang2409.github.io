@@ -9,7 +9,7 @@ import colors from './colors';
 import styles from './PufferWidgets.module.css';
 
 const breadths = [10, 16, 24, 32, 48, 64, 96, 128];
-function measure() {
+const measurements = (() => {
   const graph = buildGraph(points(480, 84), 2, 8);
   const queries = points(24, 238);
   return breadths.map(ef => {
@@ -22,9 +22,8 @@ function measure() {
     }
     return { ef, recall: hits / (queries.length * 10), visited: visited / queries.length };
   });
-}
+})();
 export default function RecallWidget() {
-  const [measurements] = useState(measure);
   const [index, setIndex] = useState(1);
   const selected = measurements[index];
   const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -55,7 +54,7 @@ export default function RecallWidget() {
     ctx.fillText('10', left, bottom + 22);
     ctx.fillText('efSearch', width / 2 - 30, bottom + 22);
     ctx.fillText('128', right - 22, bottom + 22);
-  }, [measurements, selected]);
+  }, [selected]);
   return <section className={`project-widget ${styles.scene}`} aria-label="recall versus search breadth">
     <InteractiveCanvas draw={draw} hint="wider beams trade more visits for better recall. both curves use actual searches." aria-label="recall and mean visited nodes plotted against efSearch" />
     <WidgetControls readout={{ children: `recall@10: ${(selected.recall * 100).toFixed(1)}% · mean visited: ${selected.visited.toFixed(1)}/480` }}
