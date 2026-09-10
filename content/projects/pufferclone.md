@@ -286,11 +286,11 @@ enum, serialised with the operator name in the `op` field:
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Filter {
     // ...
-    Eq  { field: String, value: AttrValue },
+    Eq { field: String, value: AttrValue },
     // ...
     And { filters: Vec<Filter> },
     // ...
-    Or  { filters: Vec<Filter> },
+    Or { filters: Vec<Filter> },
 }
 ```
 
