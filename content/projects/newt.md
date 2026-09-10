@@ -70,7 +70,7 @@ explicit.
 ## make the clock boring
 
 the world advances by a fixed `dt`, not the last frame's duration. a viewer
-accumulates real time, spends it in whole steps, and carries the remainder:
+accumulates step credit, spends it in whole steps, and carries the remainder:
 
 ```rust
 self.step_accumulator += self.speed;
@@ -78,6 +78,7 @@ let steps = self.step_accumulator.floor() as usize;
 self.step_accumulator -= steps as f32;
 for _ in 0..steps {
     self.world.step();
+    // ...
 }
 ```
 
@@ -319,8 +320,10 @@ pub struct Actuator {
     pub tendon_target: Option<usize>,
     pub flavor: ActuatorFlavor,
     pub dyn_type: DynType,        // None | Filter | Muscle
+    // ...
     pub ctrl_range: Option<(f32, f32)>,
     pub force_range: Option<(f32, f32)>,
+    // ...
     pub ctrl: f32,
     pub act: f32,
 }
@@ -367,6 +370,7 @@ pub struct Scene {
     pub trees_by_name: HashMap<String, usize>,
     pub links_by_name: Vec<HashMap<String, usize>>,
     pub geoms_by_name: HashMap<String, usize>,
+    // ...
     pub sites_by_name: HashMap<String, usize>,
     pub actuators_by_name: HashMap<String, (usize, usize)>,
     pub sensors_by_name: HashMap<String, usize>,
