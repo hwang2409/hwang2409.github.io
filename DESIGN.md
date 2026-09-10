@@ -58,6 +58,21 @@ markdown headings render as normal headings. margin notes keep a right gutter on
 wide screens and fold into the prose below that breakpoint. code blocks and
 mermaid diagrams use grayscale tokens only.
 
+## project posts
+
+project posts on `/projects/<slug>` follow a shared shape. each major
+section is anchored by a short trimmed excerpt from the project's real
+source, copied faithfully with `// ...` for elided fields and followed
+by lowercase prose that names the fields and why they exist. excerpts
+run three to ten lines, never full-file dumps, and fences are tagged
+(```rust, ```ts, ```sh). every claim matches the source at its current
+main.
+
+the post reads 0 -> 1: the first type introduces the smallest object at
+the root (a pixel, a document), and each later section adds the next
+type that composes the previous ones. existing widgets stay in place;
+code excerpts replace vague prose, never demos.
+
 ## deliberate absence
 
 the site has no manual headers, status pager, live line counter, blinking cursor,
