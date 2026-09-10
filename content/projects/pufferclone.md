@@ -87,8 +87,11 @@ pub struct Manifest {
 pub struct SegmentMeta {
     pub id: String,
     pub doc_count: usize,
+    #[serde(default)]
     pub first_wal_seq: u64,
+    #[serde(default)]
     pub last_wal_seq: u64,
+    #[serde(default)]
     pub sections: Vec<String>,
 }
 ```
@@ -119,13 +122,15 @@ pub trait VectorIndex: Sized {
 }
 
 pub struct ExactScan {
-    vectors: BTreeMap<String, Vec<f32>>,
+    vectors: std::collections::BTreeMap<String, Vec<f32>>,
 }
 ```
 
-the `BTreeMap` makes iteration ordered, which keeps ties deterministic:
-equal cosine scores break by id. it is simple, correct at any recall
-target, and cache-friendly enough that it stays honest at small n.
+ties break by id, not by map order. the shared `sort_scores` helper
+sorts by score descending, then falls back to `left.0.cmp(&right.0)`,
+so two hits with the same cosine similarity always land in the same
+order. exact scan is simple, correct at any recall target, and
+cache-friendly enough that it stays honest at small n.
 
 <!-- widget: vector-query -->
 
@@ -267,9 +272,7 @@ pub enum Filter {
     Ne  { field: String, value: AttrValue },
     In  { field: String, values: Vec<AttrValue> },
     Lt  { field: String, value: AttrValue },
-    Lte { field: String, value: AttrValue },
-    Gt  { field: String, value: AttrValue },
-    Gte { field: String, value: AttrValue },
+    // ... Lte, Gt, Gte follow the same shape.
     And { filters: Vec<Filter> },
     Or  { filters: Vec<Filter> },
 }
@@ -350,7 +353,10 @@ top-level `clap` subcommand tree is the entire surface:
 ```rust
 enum Command {
     /// Manage namespaces.
-    Ns { command: NamespaceCommand },
+    Ns {
+        #[command(subcommand)]
+        command: NamespaceCommand,
+    },
     /// Upsert documents from JSONL.
     Upsert(UpsertArgs),
     /// Query a namespace.
@@ -361,7 +367,12 @@ enum NamespaceCommand {
     /// List namespaces.
     Ls,
     /// Delete a namespace.
-    Rm { namespace: String, yes: bool },
+    Rm {
+        namespace: String,
+        /// Skip the interactive confirmation prompt.
+        #[arg(long)]
+        yes: bool,
+    },
 }
 ```
 
