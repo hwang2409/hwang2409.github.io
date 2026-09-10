@@ -1,0 +1,10 @@
+.scene > div > canvas { height: 340px; }
+.scene :global(.project-widget-step) { position: static; margin-top: .35rem; }
+.query { cursor: crosshair; touch-action: pan-y; }
+.results { margin: .7rem 0; padding-left: 2rem; }
+.results li { margin-bottom: .7rem; }
+.terms { color: var(--muted); font-size: .85rem; overflow-wrap: anywhere; }
+.chartTable { width: 100%; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) {
+  .comparison > div > canvas { height: 540px; }
+}

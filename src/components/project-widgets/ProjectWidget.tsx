@@ -1,3 +1,9 @@
+import WalSegmentWidget from './WalSegmentWidget';
+import VectorQueryWidget from './VectorQueryWidget';
+import HnswBuildWidget from './HnswBuildWidget';
+import RecallWidget from './RecallWidget';
+import Bm25Widget from './Bm25Widget';
+import HybridSearchWidget from './HybridSearchWidget';
 import ContactSoftnessWidget from './ContactSoftnessWidget';
 import TendonWrapWidget from './TendonWrapWidget';
 import WarmStartWidget from './WarmStartWidget';
@@ -28,6 +34,13 @@ import BroadPhaseWidget from './BroadPhaseWidget';
 import MuscleArmWidget from './MuscleArmWidget';
 
 const widgets = {
+  'wal-segments': WalSegmentWidget,
+  'vector-query': VectorQueryWidget,
+  'hnsw-build': HnswBuildWidget,
+  'recall-tradeoff': RecallWidget,
+  'bm25-scoring': Bm25Widget,
+  'hybrid-search': HybridSearchWidget,
+
   'contact-softness': ContactSoftnessWidget,
   'tendon-wrap': TendonWrapWidget,
   'warm-start': WarmStartWidget,
