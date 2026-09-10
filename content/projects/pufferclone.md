@@ -13,8 +13,8 @@ turbopuffer is a serverless vector and full-text search database that keeps
 its state in object storage. i wanted to know how a system like that fits
 together, so i wrote one from scratch in rust:
 [pufferclone](https://github.com/hwang2409/tooling/tree/main/pufferclone).
-one process, one crate, no runtime dependencies past `tokio`, `serde`, and
-`aws-sdk-s3`.
+one process, one crate. `tokio` and `axum` run the server, `object_store`
+talks to the S3 and local backends, `serde` handles the wire formats.
 
 the six demos below explain the pieces: a write path that survives crashes,
 two vector indexes to compare, a text index for keyword rank, and a filter
@@ -39,9 +39,7 @@ pub struct Doc {
 pub enum AttrValue {
     String(String),
     Int(i64),
-    Float(f64),
-    Bool(bool),
-    StringList(Vec<String>),
+    // ... Float(f64), Bool(bool), StringList(Vec<String>)
 }
 ```
 
@@ -78,21 +76,15 @@ it:
 
 ```rust
 pub struct Manifest {
-    pub vector_dim: Option<usize>,
-    pub full_text_fields: Vec<String>,
     pub segments: Vec<SegmentMeta>,
-    pub last_wal_seq: u64,
+    // ... vector_dim, full_text_fields, last_wal_seq
 }
 
 pub struct SegmentMeta {
     pub id: String,
-    pub doc_count: usize,
-    #[serde(default)]
-    pub first_wal_seq: u64,
-    #[serde(default)]
     pub last_wal_seq: u64,
-    #[serde(default)]
     pub sections: Vec<String>,
+    // ... doc_count, first_wal_seq
 }
 ```
 
@@ -113,10 +105,7 @@ to do, and `ExactScan` is the reference implementation:
 ```rust
 pub trait VectorIndex: Sized {
     fn build<I, D, V>(documents: I) -> Self
-    where
-        I: IntoIterator<Item = (D, V)>,
-        D: Into<String>,
-        V: Into<Vec<f32>>;
+    where /* I: IntoIterator<Item = (D, V)>, D: Into<String>, V: Into<Vec<f32>> */;
     fn search(&self, query: &[f32], top_k: usize) -> Vec<(String, f32)>;
     // ...
 }
@@ -230,17 +219,14 @@ namespace uses to make scores comparable across segments:
 ```rust
 const K1: f64 = 1.2;
 const B: f64 = 0.75;
-
 pub struct TextIndex {
     postings: BTreeMap<String, BTreeMap<String, u32>>,
-    doc_lengths: BTreeMap<String, usize>,
-    avgdl: f64,
+    // ... doc_lengths, avgdl
 }
 
 pub struct TextStats {
-    pub doc_count: usize,
-    pub total_len: usize,
     pub doc_freq: BTreeMap<String, usize>,
+    // ... doc_count, total_len
 }
 ```
 
@@ -352,37 +338,28 @@ top-level `clap` subcommand tree is the entire surface:
 
 ```rust
 enum Command {
-    /// Manage namespaces.
-    Ns {
-        #[command(subcommand)]
-        command: NamespaceCommand,
-    },
-    /// Upsert documents from JSONL.
-    Upsert(UpsertArgs),
-    /// Query a namespace.
-    Query(QueryArgs),
+    Ns { command: NamespaceCommand },   // #[command(subcommand)]
+    Upsert(UpsertArgs),                 // namespace: String, -f/--file
+    Query(QueryArgs),                   // namespace: String, --text/--vector/…
 }
 
 enum NamespaceCommand {
-    /// List namespaces.
     Ls,
-    /// Delete a namespace.
-    Rm {
-        namespace: String,
-        /// Skip the interactive confirmation prompt.
-        #[arg(long)]
-        yes: bool,
-    },
+    Rm { namespace: String, yes: bool }, // --yes
 }
 ```
 
-a hundred-document batch keeps upserts small; a query returns the raw
-json response unless `--json` is on.
+`namespace` is a positional argument on both `upsert` and `query`.
+`upsert` batches its JSONL input into groups of a hundred; `query`
+prints a tab-separated table by default and switches to JSON when the
+top-level `--json` flag is set. `--filter` takes `field=value`
+pairs and can be repeated; `--filter-in` takes `field=v1,v2` for
+membership tests.
 
 ```sh
 puf ns ls
-puf upsert --namespace notes docs.jsonl
-puf query --namespace notes --vector '[…]' --top-k 10 --filter '{"tag":"code"}'
+puf upsert notes -f docs.jsonl
+puf query notes --vector '0.1,0.2,0.3' --top-k 10 --filter tag=code
 ```
 
 the point of building this was not to compete with turbopuffer. it was to
